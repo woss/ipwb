@@ -43,7 +43,9 @@ def main():
         hstr = hdrs.protocol + ' ' + hdrs.statusline
         for h in hdrs.headers:
           hstr += "\n" + ": ".join(h)
-      
+        
+        statusCode = hdrs.statusline.split()[0]
+        
         if not entry.buffer: return
         
         entry.buffer.seek(0)
@@ -83,7 +85,7 @@ def main():
         
         encrKey = "" #TODO
         
-        obj = {"header_digest": hdrHash, "payload_digest": pldHash, "mime_type": mime, "encryption_key": encrKey}
+        obj = {"header_digest": hdrHash, "payload_digest": pldHash, "status_code": statusCode, "mime_type": mime, "encryption_key": encrKey}
         objJSON = json.dumps(obj);
         
         cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON) 
