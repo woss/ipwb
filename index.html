@@ -4,6 +4,8 @@
 <style type="text/css">
 #wrapper {margin: auto; text-align: center;}
 #submit, #url {font-size: 72px; font-family: Consolas, sans-serif;}
+#memCount {font-size: 30px;  font-family: Consolas, sans-serif;}
+h1 {font-size: 72px; margin-bottom: 1.0em; font-family: sans-serif;}
 </style>
 <script>
   function handleSubmit() {
@@ -20,8 +22,9 @@
   </form>
   </div>
   <footer>
-  <p>Total Mementos available: </p>
+  <p id="memCount"><span>MEMCOUNT</span> Mementos available</p>
   </footer>
+  <a href="http://localhost:5001/webui">IPFS WebUI</a>
 </div>
 </body>
 </html>

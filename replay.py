@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from surt import surt
 import sys
 import ipfsApi
@@ -23,11 +26,13 @@ def show_uri(path):
     global IPFS_API
     
     if len(path) == 0:
-      print "foo"
       with open('index.html','r') as indexFile:
-        return Response(indexFile.read())
+        html = indexFile.read()
+        html = html.replace('MEMCOUNT', str(retrieveMemCount()))
+        return Response(html)
         sys.exit()
-    (datetime, urir) = path.split('/', 1)
+    #(datetime, urir) = path.split('/', 1)
+    urir = path
     
     # show the user profile for that user
     cdxLine = ''
@@ -59,11 +64,19 @@ def show_uri(path):
     
     return resp
 
+
+def retrieveMemCount():
+  with open(INDEX_FILE, 'r') as cdxFile:
+    for i, l in enumerate(cdxFile):
+      pass
+    return i+1
+
 def getCDXLine(surtURI):
   with open(INDEX_FILE, 'r') as cdxFile:
     bsResp = iter_exact(cdxFile, surtURI)
     cdxLine = bsResp.next()
     return cdxLine
+
 
 def getClosestCDXLine(surtURI, datetime):
   cdxlobj = getCDXLines(surtURI)
