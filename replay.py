@@ -1,5 +1,5 @@
 from surt import surt
-
+import sys
 import ipfsApi
 import json
 from pywb.utils.binsearch import iter_exact
@@ -7,23 +7,34 @@ from flask import Flask
 from flask import Response
 
 app = Flask(__name__)
-
+app.debug = True
 #@app.route("/")
 #def hello():
 #    return "Hello World!"
 IP = '127.0.0.1'
 PORT = '5001'
 IPFS_API = ipfsApi.Client(IP, PORT)
+INDEX_FILE = 'samples/indexes/sample-1.cdxj'
 
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def show_uri(path):
     global IPFS_API
+    
+    if len(path) == 0:
+      print "foo"
+      with open('index.html','r') as indexFile:
+        return Response(indexFile.read())
+        sys.exit()
     (datetime, urir) = path.split('/', 1)
-    print datetime
+    
     # show the user profile for that user
-    cdxLine = getCDXLine(surt(path))
+    cdxLine = ''
+    try:
+      cdxLine = getCDXLine(surt(path))
+    except:
+      return Response(path+ ' not found :( <a href="http://localhost:5000">Go home</a>')
     cdxParts = cdxLine.split(" ", 2)
     surtURI = cdxParts[0]
     datetime = cdxParts[1]
@@ -49,10 +60,32 @@ def show_uri(path):
     return resp
 
 def getCDXLine(surtURI):
-  with open('index.cdx', 'r') as cdxFile:
+  with open(INDEX_FILE, 'r') as cdxFile:
     bsResp = iter_exact(cdxFile, surtURI)
     cdxLine = bsResp.next()
     return cdxLine
+
+def getClosestCDXLine(surtURI, datetime):
+  cdxlobj = getCDXLines(surtURI)
+  mingap = float("inf")
+  closest = None
+  for cdxl in cdxlobj:
+    gap = abs(int(datetime) - int(cdxl[1]))
+    if gap < mingap:
+      mingap = gap
+      closest = cdxl
+  return closest
+
+def getCDXLines(surtURI):
+  with open('index.cdx', 'r') as cdxFile:
+    cdxlobj = []
+    bsResp = iter_exact(cdxFile, surtURI)
+    for cdxl in bsResp:
+      (suri, dttm, jobj) = cdxl.split(' ', 2)
+      if suri != surtURI:
+        break
+      cdxlobj.append((suri, dttm, jobj))
+    return cdxlobj
 
     
 

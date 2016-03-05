@@ -1,0 +1,27 @@
+<html>
+<head>
+<title>Inter-planetary Wayback (IPWB)</title>
+<style type="text/css">
+#wrapper {margin: auto; text-align: center;}
+#submit, #url {font-size: 72px; font-family: Consolas, sans-serif;}
+</style>
+<script>
+  function handleSubmit() {
+    document.location += document.getElementById('url').value;
+  }
+</script>
+</head>
+<body>
+<div id="wrapper">
+  <div>
+  <h1>Inter-planetary Wayback (IPWB)</h1>
+  <form onsubmit="handleSubmit(); return false;">
+  <input type="text" placeholder="http://" id="url" />
+  </form>
+  </div>
+  <footer>
+  <p>Total Mementos available: </p>
+  </footer>
+</div>
+</body>
+</html>
