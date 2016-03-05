@@ -31,7 +31,7 @@ def main():
 
     loader = ArcWarcRecordLoader(verify_http=True)
 
-    warcFileFullPath = '/Users/machawk1/Desktop/testWarc.warc.gz'
+    warcFileFullPath = sys.argv[1]
 
     with open(warcFileFullPath, 'rb') as warc:
         iter = TextRecordParser(**options)
@@ -132,4 +132,7 @@ class TextRecordParser(DefaultRecordParser):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        logError("Usage:\n\n{0} </path/to/file.warc[.gz]>\n".format(sys.argv[0]))
+        sys.exit(0)
     main()
