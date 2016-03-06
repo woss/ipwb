@@ -21,88 +21,89 @@ PORT = '5001'
 
 IPFS_API = ipfsApi.Client(IP, PORT)
 
+# TODO: Check PEP-8 for indention guidance
 
 def main():
-    options = {'cdxj': True, 'include_all': False,
-               'surt_ordered': False}
+    textRecordParserOptions = {'cdxj': True, 'include_all': False, 'surt_ordered': False}
     cdxLines = ''
+    ipfsRetryCount = 5 # Attempts to push a WARC record to IPFS before giving up
+    ipfsTempPath = '/tmp/ipfs/'
 
     # Read WARC file
-
-    loader = ArcWarcRecordLoader(verify_http=True)
-
+    loader = ArcWarcRecordLoader(verify_http = True)
     warcFileFullPath = sys.argv[1]
 
     with open(warcFileFullPath, 'rb') as warc:
-        iter = TextRecordParser(**options)
-        idx = 0
+        iter = TextRecordParser(**textRecordParserOptions)
+
         for entry in iter(warc):
-            if entry.record.rec_type == 'response':
-                if entry.get('mime') in ('text/dns', 'text/whois'):
-                    continue
+            # Only consider WARC response records from requests for web resources
+            # TODO: Change conditional to return on non-HTTP responses to reduce branch depth
+            if entry.record.rec_type != 'response' or entry.get('mime') in ('text/dns', 'text/whois'):
+              continue
 
-                hdrs = entry.record.status_headers
-                hstr = hdrs.protocol + ' ' + hdrs.statusline
-                for h in hdrs.headers:
-                    hstr += "\n" + ': '.join(h)
+            hdrs = entry.record.status_headers
+            hstr = hdrs.protocol + ' ' + hdrs.statusline
+            for h in hdrs.headers:
+                hstr += "\n" + ': '.join(h)
 
-                statusCode = hdrs.statusline.split()[0]
+            statusCode = hdrs.statusline.split()[0]
 
-                if not entry.buffer:
-                    return
+            if not entry.buffer:
+                return
 
-                entry.buffer.seek(0)
-                payload = entry.buffer.read()
+            entry.buffer.seek(0)
+            payload = entry.buffer.read()
 
-                tmpFilePath = '/tmp/ipfs/'
-                fileHash = md5.new(hstr).hexdigest()
+            fileHash = md5.new(hstr).hexdigest()
 
-                hdrfn = tmpFilePath + 'header_' + fileHash
-                pldfn = tmpFilePath + 'payload_' + fileHash
+            hdrfn = ipfsTempPath + 'header_' + fileHash
+            pldfn = ipfsTempPath + 'payload_' + fileHash
 
-                writeFile(hdrfn, hstr)
-                writeFile(pldfn, payload)
+            writeFile(hdrfn, hstr)
+            writeFile(pldfn, payload)
 
-                hdrHash = ''
-                pldHash = ''
-                retryCount = 0
-                while retryCount < 5:
-                    try:
-                        hdrHash = pushToIPFS(hdrfn)
-                        pldHash = pushToIPFS(pldfn)
-                        break
-                    except:
-                        logError('IPFS failed on ' + entry.get('url'))
-                        retryCount += 1
+            httpHeaderIPFSHash = ''
+            payloadIPFSHash = ''
+            retryCount = 0
+            
+            while retryCount < ipfsRetryCount:
+                try:
+                    httpHeaderIPFSHash = pushToIPFS(hdrfn)
+                    payloadIPFSHash = pushToIPFS(pldfn)
+                    break
+                except:
+                    logError('IPFS failed on ' + entry.get('url'))
+                    retryCount += 1
 
-                if retryCount >= 5:
-                    logError('Skipping ' + entry.get('url'))
+            if retryCount >= ipfsRetryCount:
+                logError('Skipping ' + entry.get('url'))
 
-                    continue
+                continue
 
-                uri = surt(entry.get('url'))
-                timestamp = entry.get('timestamp')
-                mime = entry.get('mime')
+            uri = surt(entry.get('url'))
+            timestamp = entry.get('timestamp')
+            mime = entry.get('mime')
 
-                encrKey = ''  # TODO
+            encrKey = ''  # TODO
 
-                obj = {
-                    'header_digest': hdrHash,
-                    'payload_digest': pldHash,
-                    'status_code': statusCode,
-                    'mime_type': mime,
-                    'encryption_key': encrKey,
-                    }
-                objJSON = json.dumps(obj)
+            obj = {
+                'header_digest': httpHeaderIPFSHash,
+                'payload_digest': payloadIPFSHash,
+                'status_code': statusCode,
+                'mime_type': mime,
+                'encryption_key': encrKey,
+                }
+            objJSON = json.dumps(obj)
 
-                cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
-                cdxLines += cdxjLine
-                print cdxjLine
+            cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
+            cdxLines += cdxjLine
+            print cdxjLine
 
-                resHeader = pullFromIPFS(hdrHash)
-                resPayload = pullFromIPFS(pldHash)
+            resHeader = pullFromIPFS(httpHeaderIPFSHash)
+            resPayload = pullFromIPFS(payloadIPFSHash)
 
-                warcContents = resHeader + "\n\n" + resPayload
+            warcContents = resHeader + "\n\n" + resPayload
 
 
 def logError(errIn):
