@@ -66,7 +66,9 @@ def main():
             httpHeaderIPFSHash = ''
             payloadIPFSHash = ''
             retryCount = 0
-            
+
+            # TODO: First check that IPFS daemon is running, how do we do this?
+
             while retryCount < ipfsRetryCount:
                 try:
                     httpHeaderIPFSHash = pushToIPFS(hdrfn)
@@ -118,6 +120,7 @@ def pullFromIPFS(hash):
 def pushToIPFS(path):
     global IPFS_API
     res = IPFS_API.add(path)
+    # TODO: verify that the add was successful
     return res['Hash']
 
 
