@@ -29,6 +29,10 @@ def main():
     ipfsRetryCount = 5 # Attempts to push a WARC record to IPFS before giving up
     ipfsTempPath = '/tmp/ipfs/'
 
+    # Create temp path if it does not already exist
+    if not os.path.exists(ipfsTempPath):
+      os.makedirs(ipfsTempPath)
+
     # Read WARC file
     loader = ArcWarcRecordLoader(verify_http = True)
     warcFileFullPath = sys.argv[1]
