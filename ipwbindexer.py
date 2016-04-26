@@ -15,6 +15,7 @@ from pywb.warc.recordloader import ArcWarcRecordLoader
 from pywb.utils.bufferedreaders import DecompressingBufferedReader
 from pywb.utils.statusandheaders import StatusAndHeadersParser
 from surt import surt
+from requests.packages.urllib3.exceptions import NewConnectionError
 
 IP = '127.0.0.1'
 PORT = '5001'
@@ -74,8 +75,12 @@ def main():
                     httpHeaderIPFSHash = pushToIPFS(hdrfn)
                     payloadIPFSHash = pushToIPFS(pldfn)
                     break
+                except NewConnectionError:
+                    print 'IPFS daemon is likely not running.\nRun "ipfs daemon" in another terminal session.'
+                    sys.exit()
                 except:
                     logError('IPFS failed on ' + entry.get('url'))
+                    #print sys.exc_info()[0]
                     retryCount += 1
 
             if retryCount >= ipfsRetryCount:
