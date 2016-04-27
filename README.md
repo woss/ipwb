@@ -7,7 +7,7 @@ Two main components exist in the protype:
 * **replay.py** - a very rudimentary replay script to resolve fetches for IPFS-content for on-demand replay in the browser. Plagued with [zombies](http://ws-dl.blogspot.com/2012/10/2012-10-10-zombies-in-archives.html). A placeholder until we get more familiar with modifying the [pywb](github.com/ikreymer/pywb) codebase for a truer replay system.
 
 ## Running ##
-Before running the code, ipfs must be installed. See the [https://ipfs.io/docs/install/](Install IPFS) page to accomplish this. In the future, we hope to make this more automated. Once ipfs is installed, start the daemon:
+Before running the code, ipfs must be installed. See the <a href="https://ipfs.io/docs/install/">Install IPFS</a> page to accomplish this. In the future, we hope to make this more automated. Once ipfs is installed, start the daemon:
 
 ```sh
 ipfs daemon
