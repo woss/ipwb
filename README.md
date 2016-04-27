@@ -10,7 +10,7 @@ Two main components exist in the protype:
 Before running the code, ipfs must be installed. See the [https://ipfs.io/docs/install/](Install IPFS) page to accomplish this. In the future, we hope to make this more automated. Once ipfs is installed, start the daemon:
 
 ```sh
-$ ipfs daemon
+ipfs daemon
 ```
 
 ### Indexing ###
