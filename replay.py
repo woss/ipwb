@@ -6,6 +6,7 @@ import sys
 import ipfsApi
 import json
 from pywb.utils.binsearch import iter_exact
+from pywb.utils.canonicalize import unsurt
 from flask import Flask
 from flask import Response
 
@@ -29,6 +30,7 @@ def show_uri(path):
       with open('index.html','r') as indexFile:
         html = indexFile.read()
         html = html.replace('MEMCOUNT', str(retrieveMemCount()))
+        html = html.replace('var uris = []', 'var uris = ' + getURIsInCDXJ())
         return Response(html)
         sys.exit()
     #(datetime, urir) = path.split('/', 1)
@@ -64,6 +66,13 @@ def show_uri(path):
     
     return resp
 
+def getURIsInCDXJ(cdxjFile = INDEX_FILE):
+  with open(cdxjFile) as indexFile:
+    uris = []
+    for i, l in enumerate(indexFile):
+      uris.append(unsurt(l.split(' ')[0]))
+      pass
+    return json.dumps(uris)
 
 def retrieveMemCount():
   with open(INDEX_FILE, 'r') as cdxFile:
