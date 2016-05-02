@@ -3,7 +3,7 @@
 This repo contains the code for the initial integration between [WARC](http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717)s and [IPFS](https://github.com/ipfs/ipfs) as developed at the [Archives Unleashed Hackathon](http://archivesunleashed.ca) in Toronto, Canada in March 2016.
 
 Two main components exist in the protype:
-* **ipwbindexer.py** - takes a WARC input, extracts the HTTP headers, HTTP payload (response body), and relevant parts of the WARC header. Creates temp files of these. Pushes temp files into IPFS using a locally running ipfs daemon.
+* **ipwbindexer.py** - takes the path to a WARC input, extracts the HTTP headers, HTTP payload (response body), and relevant parts of the WARC response header from the WARC specified. Creates temp files of these. Pushes temp files into IPFS using a locally running ipfs daemon. Creates a [CDXJ](https://github.com/oduwsdl/ORS/wiki/CDXJ) file with this metadata for `replay.py`.
 * **replay.py** - a very rudimentary replay script to resolve fetches for IPFS-content for on-demand replay in the browser. Plagued with [zombies](http://ws-dl.blogspot.com/2012/10/2012-10-10-zombies-in-archives.html). A placeholder until we get more familiar with modifying the <a href="https://github.com/ikreymer/pywb">pywb</a> codebase for a truer replay system.
 
 ## Running ##
