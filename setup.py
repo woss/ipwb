@@ -17,7 +17,9 @@ setup(
     license='MIT',
     long_description=long_description,
     provides=[
-      'ipwb'
+      'ipwb',
+      'ipwb.indexer',
+      'ipwb.replay'
     ],
     install_requires=[
       'pywb',
