@@ -25,6 +25,7 @@ IPFS_API = ipfsApi.Client(IP, PORT)
 # TODO: Check PEP-8 for indention guidance
 
 def main():
+    checkArgs(sys.argv) # Verify that a WARC file has been passed in
     textRecordParserOptions = {'cdxj': True, 'include_all': False, 'surt_ordered': False}
     cdxLines = ''
     ipfsRetryCount = 5 # Attempts to push a WARC record to IPFS before giving up
@@ -138,6 +139,11 @@ def writeFile(filename, content):
         tmpFile.write(content)
 
 
+def checkArgs(args):
+    if len(args) < 2:
+        logError("Usage:\n\n{0} </path/to/file.warc[.gz]>\n".format(args[0]))
+        sys.exit(0)    
+
 class TextRecordParser(DefaultRecordParser):
 
     def create_payload_buffer(self, entry):
@@ -145,7 +151,5 @@ class TextRecordParser(DefaultRecordParser):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        logError("Usage:\n\n{0} </path/to/file.warc[.gz]>\n".format(sys.argv[0]))
-        sys.exit(0)
+    checkArgs(sys.argv)
     main()
