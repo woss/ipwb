@@ -30,7 +30,7 @@ Before running the code, ipfs must be installed. See the `Install IPFS <https://
 
 ::
 
-      ipfs daemon
+      $ ipfs daemon
 
 
 Indexing
@@ -39,7 +39,7 @@ In a separate terminal session (or the same if you started the daemon in the bac
 
 ::
 
-      ipwb (path to warc or warc.gz)
+      $ ipwb (path to warc or warc.gz)
 
 
 ...for example, from the root of the ipwb repository:
