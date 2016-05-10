@@ -37,7 +37,6 @@ def main():
 
     # Read WARC file
     loader = ArcWarcRecordLoader(verify_http = True)
-    print sys.argv
     warcFileFullPath = sys.argv[1]
 
     with open(warcFileFullPath, 'rb') as warc:
@@ -141,9 +140,6 @@ def writeFile(filename, content):
 
 
 def checkArgs(args):
-    print "checking args"
-    print args
-    print "done checking args"
     if len(args) < 2:
         logError("Usage:\n\n{0} </path/to/file.warc[.gz]>\n".format(args[0]))
         sys.exit(0)    
