@@ -14,7 +14,15 @@ ipwb can be run from source (see Indexing below) or installed via pip:
 
 ::
 
-      pip install ipwb
+      $ pip install ipwb
+       
+...or from source in a virtual environment
+
+::
+
+      $ virtualenv ipwb
+      $ source ipwb/bin/activate
+      (ipwb) $ pip install -r requirements.txt
 
 Running
 -------
@@ -39,6 +47,12 @@ In a separate terminal session (or the same if you started the daemon in the bac
 ::
 
       ipwb samples/warcs/sample-1.warc.gz
+
+Alternatively, if running from source:
+
+::
+
+      (ipwb) $ ipwb/indexer.py (path to warc or warc.gz)
 
 
 `indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temp files are created for the HTTP response headers and payload, and these two temp files are pushed into IPFS.
