@@ -26,6 +26,12 @@ setup(
       'surt',
       'ipfs-api'
     ],
+    entry_points="""
+        [console_scripts]
+        ipwb = ipwb.indexer:main
+        ipwb.indexer = ipwb.indexer:main
+        ipwb.replay = ipwb.replay:main
+    """,
     keywords='http web archives ipfs distributed odu wayback',
     classifiers=[
       'Development Status :: 2 - Pre-Alpha',
