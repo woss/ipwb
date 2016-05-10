@@ -34,6 +34,7 @@ setup(
       'Topic :: Internet :: WWW/HTTP',
       'Topic :: System :: Archiving',
       'Topic :: System :: Archiving :: Backup',
+      'Topic :: System :: Archiving :: Mirroring',
       'Topic :: Utilities',
     ]
 )
