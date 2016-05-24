@@ -33,6 +33,12 @@ Before running the code, ipfs must be installed. See the `Install IPFS <https://
       $ ipfs daemon
 
 
+If you encounter a conflict with the default API port of 5001 when starting the daemon, running the following prior to launching the daemon will change the API port to access to one of your choosing (here, shown to be 5002):
+
+::
+
+      $ ipfs config Addresses.API /ip4/127.0.0.1/tcp/5002
+
 Indexing
 --------
 In a separate terminal session (or the same if you started the daemon in the background), instruct ipwb to push a WARC into IPFS:
