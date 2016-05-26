@@ -7,6 +7,7 @@ import md5
 import json
 import pywb.warc.cdxindexer
 import ipfsApi
+import argparse
 
 from io import BytesIO
 from pywb.warc.archiveiterator import ArchiveIterator, DefaultRecordParser
@@ -116,7 +117,10 @@ def main():
             cdxLines += cdxjLine
             print cdxjLine
 
+
+            #print httpHeaderIPFSHash
             resHeader = pullFromIPFS(httpHeaderIPFSHash)
+            #print resHeader
             resPayload = pullFromIPFS(payloadIPFSHash)
 
             warcContents = resHeader + "\n\n" + resPayload
@@ -143,11 +147,14 @@ def writeFile(filename, content):
         tmpFile.write(content)
 
 
-def checkArgs(args):
-    if len(args) < 2:
-        logError("Usage:\n\n{0} </path/to/file.warc[.gz]>\n".format(args[0]))
-        sys.exit(0)
-
+def checkArgs(argsIn):
+    parser = argparse.ArgumentParser(description='InterPlanetary Wayback (ipwb) Indexer')
+    parser.add_argument('-o', '--outfile', help='Path of newly created CDXJ. Shows progress by default unless suppressed with -q')
+    parser.add_argument('-p', '--progress', help='Show progress of processing WARC file.', action='store_true')
+    parser.add_argument('-q', '--quiet', help='Quiet mode. Show nothing on stdout. Use -o to also write to a file.', action='store_true')
+    parser.add_argument('warcPath', help="Path to a WARC[.gz] file")
+    results = parser.parse_args()
+    # TODO: create a logToFile() function if flag is set
 
 class TextRecordParser(DefaultRecordParser):
 
