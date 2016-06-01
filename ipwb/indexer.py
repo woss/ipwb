@@ -7,6 +7,7 @@ import md5
 import json
 import pywb.warc.cdxindexer
 import ipfsApi
+import argparse
 
 from io import BytesIO
 from pywb.warc.archiveiterator import ArchiveIterator, DefaultRecordParser
@@ -16,6 +17,8 @@ from pywb.utils.bufferedreaders import DecompressingBufferedReader
 from pywb.utils.statusandheaders import StatusAndHeadersParser
 from surt import surt
 from requests.packages.urllib3.exceptions import NewConnectionError
+from requests.exceptions import ConnectionError
+import requests
 
 IP = '127.0.0.1'
 PORT = '5001'
@@ -24,9 +27,12 @@ IPFS_API = ipfsApi.Client(IP, PORT)
 
 # TODO: Check PEP-8 for indention guidance
 
-
 def main():
-    checkArgs(sys.argv)  # Verify that a WARC file has been passed in
+    args = checkArgs(sys.argv)  # Verify that a WARC file has been passed in
+    verifyDaemonIsAlive(args.daemon_address)
+    verifyFileExists(args.warcPath)
+    #verifyFileExists(
+
     textRecordParserOptions = {
       'cdxj': True,
       'include_all': False,
@@ -116,11 +122,28 @@ def main():
             cdxLines += cdxjLine
             print cdxjLine
 
+
+            #print httpHeaderIPFSHash
             resHeader = pullFromIPFS(httpHeaderIPFSHash)
+            #print resHeader
             resPayload = pullFromIPFS(payloadIPFSHash)
 
             warcContents = resHeader + "\n\n" + resPayload
 
+
+def verifyDaemonIsAlive(hostAndPort):
+    try:
+      resp = requests.get('http://' + hostAndPort)
+      return True
+    except ConnectionError:
+      print "Daemon is not running"
+      sys.exit()
+
+def verifyFileExists(warcPath):
+    if os.path.isfile(warcPath):
+      return
+    print "File at " + warcPath + "does not exist!"
+    sys.exit()
 
 def logError(errIn):
     print >> sys.stderr, errIn
@@ -143,11 +166,16 @@ def writeFile(filename, content):
         tmpFile.write(content)
 
 
-def checkArgs(args):
-    if len(args) < 2:
-        logError("Usage:\n\n{0} </path/to/file.warc[.gz]>\n".format(args[0]))
-        sys.exit(0)
-
+def checkArgs(argsIn):
+    parser = argparse.ArgumentParser(description='InterPlanetary Wayback (ipwb) Indexer')
+    parser.add_argument('-d', '--daemon', help='Location of ipfs daemon (default 127.0.0.1:5001)', default=IP+':'+PORT, dest='daemon_address')
+    parser.add_argument('-o', '--outfile', help='Path of newly created CDXJ. Shows progress by default unless suppressed with -q')
+    parser.add_argument('-p', '--progress', help='Show progress of processing WARC file.', action='store_true')
+    parser.add_argument('-q', '--quiet', help='Quiet mode. Show nothing on stdout. Use -o to also write to a file.', action='store_true')
+    parser.add_argument('warcPath', help="Path to a WARC[.gz] file")
+    results = parser.parse_args()
+    return results
+    # TODO: create a logToFile() function if flag is set
 
 class TextRecordParser(DefaultRecordParser):
 
