@@ -5,7 +5,7 @@ InterPlanetary Wayback (ipwb)
 Peer-To-Peer Permanence of Web Archives
 ---------------------------------------
 
-Extract payload and HTTP headers from WARCs, push to IPFS, index to CDXJ and replay WARCs from IPFS.
+Extract payload and HTTP headers from WARCs, pushes to IPFS, indexes to CDXJ with IPFS hashes, and replay WARCs from IPFS using pywb.
 
 Two main components exist in the protype:
 
