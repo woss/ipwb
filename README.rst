@@ -1,3 +1,5 @@
+.. image:: https://raw.githubusercontent.com/oduwsdl/ipwb/master/docs/logo.png
+
 InterPlanetary Wayback (ipwb)
 =============================
 
