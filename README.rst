@@ -2,8 +2,10 @@
 
 InterPlanetary Wayback (ipwb)
 =============================
+Peer-To-Peer Permanence of Web Archives
+---------------------------------------
 
-This repo contains the code for the initial integration between `WARC <http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717>`_\ s and `IPFS <https://github.com/ipfs/ipfs>`_ as developed at the `Archives Unleashed Hackathon <http://archivesunleashed.ca>`_ in Toronto, Canada in March 2016.
+Extract payload and HTTP headers from WARCs, push to IPFS, index to CDXJ and replay WARCs from IPFS.
 
 Two main components exist in the protype:
 
@@ -69,3 +71,11 @@ Replaying
 ---------
 
 (TODO)
+
+Project History
+---------
+This repo contains the code for the initial integration between `WARC <http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717>`_\ s and `IPFS <https://github.com/ipfs/ipfs>`_ as developed at the `Archives Unleashed Hackathon <http://archivesunleashed.ca>`_ in Toronto, Canada in March 2016.
+
+License
+---------
+MIT
