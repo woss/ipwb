@@ -1,4 +1,5 @@
 .. image:: https://raw.githubusercontent.com/oduwsdl/ipwb/master/docs/logo.png
+    :target: https://pypi.python.org/pypi/ipwb
 
 InterPlanetary Wayback (ipwb)
 =============================
@@ -73,7 +74,7 @@ Replaying
 (TODO)
 
 Project History
----------
+---------------
 This repo contains the code for the initial integration between `WARC <http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717>`_\ s and `IPFS <https://github.com/ipfs/ipfs>`_ as developed at the `Archives Unleashed Hackathon <http://archivesunleashed.ca>`_ in Toronto, Canada in March 2016.
 
 License
