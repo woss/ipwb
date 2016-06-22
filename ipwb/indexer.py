@@ -110,8 +110,7 @@ def main():
             encrKey = ''  # TODO
 
             obj = {
-                'header_digest': httpHeaderIPFSHash,
-                'payload_digest': payloadIPFSHash,
+                'locator': 'urn:ipfs/' + httpHeaderIPFSHash + '/' + payloadIPFSHash,
                 'status_code': statusCode,
                 'mime_type': mime,
                 'encryption_key': encrKey,

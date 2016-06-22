@@ -25,7 +25,7 @@ INDEX_FILE = 'samples/indexes/sample-1.cdxj'
 @app.route('/<path:path>')
 def show_uri(path):
     global IPFS_API
-    
+
     if len(path) == 0:
       with open('index.html','r') as indexFile:
         html = indexFile.read()
@@ -35,7 +35,7 @@ def show_uri(path):
         sys.exit()
     #(datetime, urir) = path.split('/', 1)
     urir = path
-    
+
     # show the user profile for that user
     cdxLine = ''
     try:
@@ -46,15 +46,15 @@ def show_uri(path):
     surtURI = cdxParts[0]
     datetime = cdxParts[1]
     jObj = json.loads(cdxParts[2])
-    
-    payload = IPFS_API.cat(jObj['payload_digest'])
-    header = IPFS_API.cat(jObj['header_digest'])
+    digests = jObj['locator'].split('/')
+    payload = IPFS_API.cat(digests[-1])
+    header = IPFS_API.cat(digests[-2])
 
     #print header
     #print payload
     hLines = header.split('\n')
     hLines.pop(0)
-    
+
     resp = Response(payload)
 
     for idx,hLine in enumerate(hLines):
@@ -62,8 +62,8 @@ def show_uri(path):
       if k.lower() != "content-type":
         k = "X-Archive-Orig-" + k
       resp.headers[k] = v
-      
-    
+
+
     return resp
 
 def getURIsInCDXJ(cdxjFile = INDEX_FILE):
@@ -109,11 +109,11 @@ def getCDXLines(surtURI):
       cdxlobj.append((suri, dttm, jobj))
     return cdxlobj
 
-    
+
 
 if __name__ == "__main__":
     app.run()
-    
+
 # Read in URI, convert to SURT
   #surt(uriIn)
 # Get SURTed URI lines in CDXJ
@@ -126,4 +126,4 @@ if __name__ == "__main__":
 
 
 if __name__ == '__main__':
-  main()  
+  main()
