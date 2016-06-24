@@ -18,34 +18,42 @@ app.debug = True
 IP = '127.0.0.1'
 PORT = '5001'
 IPFS_API = ipfsApi.Client(IP, PORT)
-INDEX_FILE = 'samples/indexes/sample-1.cdxj'
+INDEX_FILE = 'samples/indexes/sample-2.cdxj'
 
+@app.route('/webui/<path:path>')
+def showWebUI(path):
+  path = 'ipwb/webui/' + path
+  with open(path, 'r') as webuiFile:
+    content = webuiFile.read()
+    if 'index.html' in path:
+      content = content.replace('MEMCOUNT', str(retrieveMemCount()))
+      content = content.replace('var uris = []', 'var uris = ' + getURIsInCDXJ())
+    return Response(content)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def show_uri(path):
-    global IPFS_API
-
+    global IPFS_API, IP, PORT
+    
     if len(path) == 0:
-      with open('index.html','r') as indexFile:
-        html = indexFile.read()
-        html = html.replace('MEMCOUNT', str(retrieveMemCount()))
-        html = html.replace('var uris = []', 'var uris = ' + getURIsInCDXJ())
-        return Response(html)
-        sys.exit()
+      return showWebUI('index.html')
+      sys.exit()
+
     #(datetime, urir) = path.split('/', 1)
     urir = path
-
+    
     # show the user profile for that user
     cdxLine = ''
     try:
       cdxLine = getCDXLine(surt(path))
     except:
-      return Response(path+ ' not found :( <a href="http://localhost:5000">Go home</a>')
+      respString = '{0} not found :( <a href="http://{1}:{2}">Go home</a>'.format(path, IP, PORT)
+      return Response(respString)
     cdxParts = cdxLine.split(" ", 2)
     surtURI = cdxParts[0]
     datetime = cdxParts[1]
     jObj = json.loads(cdxParts[2])
+    
     digests = jObj['locator'].split('/')
     payload = IPFS_API.cat(digests[-1])
     header = IPFS_API.cat(digests[-2])
@@ -54,7 +62,7 @@ def show_uri(path):
     #print payload
     hLines = header.split('\n')
     hLines.pop(0)
-
+    
     resp = Response(payload)
 
     for idx,hLine in enumerate(hLines):
@@ -62,8 +70,8 @@ def show_uri(path):
       if k.lower() != "content-type":
         k = "X-Archive-Orig-" + k
       resp.headers[k] = v
-
-
+      
+    
     return resp
 
 def getURIsInCDXJ(cdxjFile = INDEX_FILE):
@@ -109,11 +117,11 @@ def getCDXLines(surtURI):
       cdxlobj.append((suri, dttm, jobj))
     return cdxlobj
 
-
+    
 
 if __name__ == "__main__":
     app.run()
-
+    
 # Read in URI, convert to SURT
   #surt(uriIn)
 # Get SURTed URI lines in CDXJ

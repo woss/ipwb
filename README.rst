@@ -66,16 +66,33 @@ Alternatively, if running from source:
       (ipwb) $ ipwb/indexer.py (path to warc or warc.gz)
 
 
-`indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temp files are created for the HTTP response headers and payload, and these two temp files are pushed into IPFS.
+`indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temp files are created for the HTTP response headers and payload, and these two temp files are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g., 
+
+::
+
+      (ipwb) $ ipwb/indexer.py (path to warc or warc.gz) >> myArchiveIndex.cdxj
+
+(TODO: add info about specifying the out file as a CLI parameter.)
 
 Replaying
 ---------
 
-(TODO)
+(TODO: add more detailed inf in this section)
+(TODO: add better sample data with more URIs in the repo for better demonstration of ipwb functionality.)
+
+The ipwb replay system can be launched with:
+
+::
+
+      (ipwb) $ ipwb/replay.py
+	  
+Once the daemon is started, the replay system web interface can be accessed through a web browser, e.g., `http://127.0.0.1:5000/http://www.cs.odu.edu/~salam/` with the sample CDXJ file.
+
+(TODO: provide instructions on specifying a CDXJ file/directory to be read from the CDXJ replay system)
 
 Project History
 ---------------
-This repo contains the code for the initial integration between `WARC <http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717>`_\ s and `IPFS <https://github.com/ipfs/ipfs>`_ as developed at the `Archives Unleashed Hackathon <http://archivesunleashed.ca>`_ in Toronto, Canada in March 2016.
+This repo contains the code for the initial integration between `WARC <http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717>`_\ s and `IPFS <https://github.com/ipfs/ipfs>`_ as developed at the `Archives Unleashed Hackathon <http://archivesunleashed.ca>`_ in Toronto, Canada in March 2016. The project was also presented at the Joint Conference on Digital Libraries 2016 in Newark, NJ; the Web Archiving and Digital Libraries (WADL) 2016 workshop in Newark, NJ; and will be presented at the Theory and Practice on Digital Libraries (TPDL) 2016 in Hannover, Germany in September 2016.
 
 License
 ---------
