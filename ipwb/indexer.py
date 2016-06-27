@@ -47,7 +47,7 @@ def main():
 
     # Read WARC file
     loader = ArcWarcRecordLoader(verify_http = True)
-    warcFileFullPath = sys.argv[1]
+    warcFileFullPath = args.warcPath
 
     with open(warcFileFullPath, 'rb') as warc:
         iter = TextRecordParser(**textRecordParserOptions)
@@ -135,7 +135,7 @@ def verifyDaemonIsAlive(hostAndPort):
       resp = requests.get('http://' + hostAndPort)
       return True
     except ConnectionError:
-      print "Daemon is not running"
+      print "Daemon is not running at http://" + hostAndPort
       sys.exit()
 
 def verifyFileExists(warcPath):
