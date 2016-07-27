@@ -25,38 +25,39 @@ PORT = '5001'
 
 IPFS_API = ipfsApi.Client(IP, PORT)
 
-# TODO: Check PEP-8 for indention guidance
 
 def main():
     args = checkArgs(sys.argv)  # Verify that a WARC file has been passed in
     verifyDaemonIsAlive(args.daemon_address)
     verifyFileExists(args.warcPath)
-    #verifyFileExists(
+    # verifyFileExists()
 
     textRecordParserOptions = {
       'cdxj': True,
       'include_all': False,
       'surt_ordered': False}
     cdxLines = ''
-    ipfsRetryCount = 5  # Attempts to push a WARC record to IPFS before giving up
+    ipfsRetryCount = 5  # WARC->IPFS attempts before giving up
     ipfsTempPath = '/tmp/ipfs/'
 
-    # Create temp path if it does not already exist
+    # Create temp path for ipwb temp files if it does not already exist
     if not os.path.exists(ipfsTempPath):
-      os.makedirs(ipfsTempPath)
+        os.makedirs(ipfsTempPath)
 
     # Read WARC file
-    loader = ArcWarcRecordLoader(verify_http = True)
+    loader = ArcWarcRecordLoader(verify_http=True)
     warcFileFullPath = args.warcPath
 
     with open(warcFileFullPath, 'rb') as warc:
         iter = TextRecordParser(**textRecordParserOptions)
 
         for entry in iter(warc):
-            # Only consider WARC response records from requests for web resources
-            # TODO: Change conditional to return on non-HTTP responses to reduce branch depth
-            if entry.record.rec_type != 'response' or entry.get('mime') in ('text/dns', 'text/whois'):
-              continue
+            # Only consider WARC resps records from reqs for web resources
+            ''' TODO: Change conditional to return on non-HTTP responses
+                      to reduce branch depth'''
+            if entry.record.rec_type != 'response' or \
+               entry.get('mime') in ('text/dns', 'text/whois'):
+                continue
 
             hdrs = entry.record.status_headers
             hstr = hdrs.protocol + ' ' + hdrs.statusline
@@ -91,11 +92,12 @@ def main():
                     payloadIPFSHash = pushToIPFS(pldfn)
                     break
                 except NewConnectionError:
-                    print 'IPFS daemon is likely not running.\nRun "ipfs daemon" in another terminal session.'
+                    print 'IPFS daemon is likely not running.'
+                    print 'Run "ipfs daemon" in another terminal session.'
                     sys.exit()
                 except:
                     logError('IPFS failed on ' + entry.get('url'))
-                    #print sys.exc_info()[0]
+                    # print sys.exc_info()[0]
                     retryCount += 1
 
             if retryCount >= ipfsRetryCount:
@@ -107,7 +109,7 @@ def main():
             timestamp = entry.get('timestamp')
             mime = entry.get('mime')
 
-            encrKey = ''  # TODO
+            encrKey = ''  # TODO: Add data encryption functionality
 
             obj = {
                 'locator': 'urn:ipfs/' + httpHeaderIPFSHash + '/' + payloadIPFSHash,
@@ -121,28 +123,30 @@ def main():
             cdxLines += cdxjLine
             print cdxjLine
 
-
-            #print httpHeaderIPFSHash
+            # print httpHeaderIPFSHash
             resHeader = pullFromIPFS(httpHeaderIPFSHash)
-            #print resHeader
+            # print resHeader
             resPayload = pullFromIPFS(payloadIPFSHash)
 
             warcContents = resHeader + "\n\n" + resPayload
 
 
 def verifyDaemonIsAlive(hostAndPort):
+    """Ensure that the IPFS daemon is running via HTTP before proceeding"""
     try:
-      resp = requests.get('http://' + hostAndPort)
-      return True
+        resp = requests.get('http://' + hostAndPort)
+        return True
     except ConnectionError:
-      print "Daemon is not running at http://" + hostAndPort
-      sys.exit()
+        print "Daemon is not running at http://" + hostAndPort
+        sys.exit()
+
 
 def verifyFileExists(warcPath):
     if os.path.isfile(warcPath):
-      return
+        return
     print "File at " + warcPath + "does not exist!"
     sys.exit()
+
 
 def logError(errIn):
     print >> sys.stderr, errIn
@@ -154,6 +158,10 @@ def pullFromIPFS(hash):
 
 
 def pushToIPFS(path):
+    """
+    Call the IPFS API to add the file at the path specified to IPFS.
+    When IPFS returns a hash, return this to the caller
+    """
     global IPFS_API
     res = IPFS_API.add(path)
     # TODO: verify that the add was successful
@@ -166,6 +174,10 @@ def writeFile(filename, content):
 
 
 def checkArgs(argsIn):
+    """
+    Check to ensure valid arguments were passed to the indexer and provide
+    guidance on the available options if not
+    """
     parser = argparse.ArgumentParser(description='InterPlanetary Wayback (ipwb) Indexer')
     parser.add_argument('-d', '--daemon', help='Location of ipfs daemon (default 127.0.0.1:5001)', default=IP+':'+PORT, dest='daemon_address')
     parser.add_argument('-o', '--outfile', help='Path of newly created CDXJ. Shows progress by default unless suppressed with -q')
@@ -175,6 +187,7 @@ def checkArgs(argsIn):
     results = parser.parse_args()
     return results
     # TODO: create a logToFile() function if flag is set
+
 
 class TextRecordParser(DefaultRecordParser):
 
