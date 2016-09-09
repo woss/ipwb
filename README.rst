@@ -94,7 +94,11 @@ Once the daemon is started, the replay system web interface can be accessed thro
 
 Project History
 ---------------
-This repo contains the code for the initial integration between `WARC <http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717>`_\ s and `IPFS <https://github.com/ipfs/ipfs>`_ as developed at the `Archives Unleashed Hackathon <http://archivesunleashed.ca>`_ in Toronto, Canada in March 2016. The project was also presented at the `Joint Conference on Digital Libraries 2016 <http://www.jcdl2016.org/>`_ in Newark, NJ; the `Web Archiving and Digital Libraries (WADL) 2016 workshop <http://fox.cs.vt.edu/wadl2016.html>`_ in Newark, NJ; and will be presented at the `Theory and Practice on Digital Libraries (TPDL) 2016 <http://www.tpdl2016.org/>`_ in Hannover, Germany in September 2016.
+This repo contains the code for the initial integration between `WARC <http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717>`_\ s and `IPFS <https://github.com/ipfs/ipfs>`_ as developed at the `Archives Unleashed Hackathon <http://archivesunleashed.ca>`_ in Toronto, Canada in March 2016. The project was also presented at:
+
+* The `Joint Conference on Digital Libraries 2016 <http://www.jcdl2016.org/>`_ in Newark, NJ in June 2016.
+* The `Web Archiving and Digital Libraries (WADL) 2016 workshop <http://fox.cs.vt.edu/wadl2016.html>`_ in Newark, NJ in June 2016.
+* The `Theory and Practice on Digital Libraries (TPDL) 2016 <http://www.tpdl2016.org/>`_ in Hannover, Germany in September 2016.
 
 License
 ---------
