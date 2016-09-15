@@ -165,7 +165,7 @@ def pushToIPFS(path):
     global IPFS_API
     res = IPFS_API.add(path)
     # TODO: verify that the add was successful
-    return res['Hash']
+    return res[0]['Hash']
 
 
 def writeFile(filename, content):
