@@ -13,14 +13,15 @@
   </form>
   </div>
   <footer>
-  <p id="memCount"><a id="memCountListLink"><span>MEMCOUNT</span></a> Memento<span id="plural">s</span> available</p>
+  <p id="memCount"><a id="memCountListLink"><span id="memCountInt">MEMCOUNT</span></a> Memento<span id="plural">s</span> available</p>
   <ul id="uriList"></ul>
   </footer>
-  <a href="http://localhost:5001/webui">IPFS WebUI</a>
+  <a href="http://localhost:5001/webui" id="webui">IPFS WebUI</a>
 </div>
 
 <script>
 addEventListeners()
+setPlurality()
 </script>
 </body>
 </html>

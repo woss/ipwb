@@ -10,6 +10,7 @@ function showURIs () {
   if (ul.childNodes.length > 0) {
     return // Prevent multiple adds of the URI list to the DOM
   }
+
   for (var i = 0; i < uris.length; i++) {
     var li = document.createElement('li')
     var a = document.createElement('a')
@@ -25,4 +26,11 @@ function showURIs () {
 function addEventListeners () {
   var target = document.getElementById('memCountListLink')
   target.addEventListener('click', showURIs, false)
+}
+
+function setPlurality () {
+  var count = document.getElementById('memCountInt').innerHTML;
+  if (count == 1) {
+    document.getElementById('plural').classList.add('hidden')
+  }
 }
