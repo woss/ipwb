@@ -115,7 +115,7 @@ def main():
                 'locator': 'urn:ipfs/' + httpHeaderIPFSHash + '/' + payloadIPFSHash,
                 'status_code': statusCode,
                 'mime_type': mime,
-                'encryption_key': encrKey,
+                #'encryption_key': encrKey,
                 }
             objJSON = json.dumps(obj)
 
@@ -180,9 +180,11 @@ def checkArgs(argsIn):
     """
     parser = argparse.ArgumentParser(description='InterPlanetary Wayback (ipwb) Indexer')
     parser.add_argument('-d', '--daemon', help='Location of ipfs daemon (default 127.0.0.1:5001)', default=IP+':'+PORT, dest='daemon_address')
-    parser.add_argument('-o', '--outfile', help='Path of newly created CDXJ. Shows progress by default unless suppressed with -q')
-    parser.add_argument('-p', '--progress', help='Show progress of processing WARC file.', action='store_true')
-    parser.add_argument('-q', '--quiet', help='Quiet mode. Show nothing on stdout. Use -o to also write to a file.', action='store_true')
+    parser.add_argument('-o', '--outfile', help='Path of newly created CDXJ.') # Shows progress by default unless suppressed with -q')
+    parser.add_argument('-v', '--version', help='Report the version of ipwb', action='version',  version='InterPlanetary Wayback XX')
+
+    #parser.add_argument('-p', '--progress', help='Show progress of processing WARC file.', action='store_true')
+    #parser.add_argument('-q', '--quiet', help='Quiet mode. Show nothing on stdout. Use -o to also write to a file.', action='store_true')
     parser.add_argument('warcPath', help="Path to a WARC[.gz] file")
     results = parser.parse_args()
     return results
