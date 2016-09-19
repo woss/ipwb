@@ -12,18 +12,25 @@
 <meta name="application-name" content="ipwb">
 <meta name="theme-color" content="#ffffff">
 
+<script>
+var uris = []
+</script>
 </head>
 <body>
 <div id="wrapper">
   <div>
-  <h1>InterPlanetary Wayback (ipwb)</h1>
+  <h1><img src="./webui/logo.png" alt="ipwb" /></h1>
   <form onsubmit="handleSubmit(); return false;">
   <input type="text" placeholder="http://" id="url" />
   </form>
   </div>
   <footer>
   <p id="memCount"><a id="memCountListLink"><span id="memCountInt">MEMCOUNT</span></a> Memento<span id="plural">s</span> available</p>
-  <ul id="uriList"></ul>
+  <div id="uris" class="hidden">
+    <h3 id="urisHeader">URIs locally available</h3>
+    <ul id="uriList"></ul>
+  </div>
+  <p>Archive Index(es): INDEXSRC</p>
   </footer>
   <a href="http://localhost:5001/webui" id="webui">IPFS WebUI</a>
 </div>

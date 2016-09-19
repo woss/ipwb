@@ -3,6 +3,7 @@
 
 from surt import surt
 import sys
+import os
 import ipfsApi
 import json
 from pywb.utils.binsearch import iter_exact
@@ -28,6 +29,7 @@ def showWebUI(path):
     if 'index.html' in path:
       content = content.replace('MEMCOUNT', str(retrieveMemCount()))
       content = content.replace('var uris = []', 'var uris = ' + getURIsInCDXJ())
+      content = content.replace('INDEXSRC', os.path.abspath(INDEX_FILE))
     return Response(content)
 
 @app.route('/', defaults={'path': ''})

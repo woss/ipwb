@@ -1,11 +1,14 @@
 #wrapper {margin: auto; text-align: center;}
 #submit, #url {font-size: 72px; font-family: Consolas, sans-serif;}
 #memCount {font-size: 30px;  font-family: Consolas, sans-serif;}
-h1 {font-size: 72px; margin-bottom: 1.0em; font-family: sans-serif;}
+h1 {font-size: 72px; margin-bottom: 0.5em; font-family: sans-serif;}
+h1 img {height: 2.0em;}
 .hidden {display: none;}
-#uriList {list-style-type: none;}
+#uriList {list-style-type: none; text-align: left; width: 40%; margin: auto;}
 a#memCountListLink {border-bottom: 1px dotted black;}
 a#memCountListLink.activated {border-bottom: 2px solid #009900;}
 a#memCountListLink.activated:hover {cursor: default;}
 a#memCountListLink:hover {cursor: pointer;}
 a#webui {position: absolute; bottom: 5px;}
+
+#uris {width: 50%; border-bottom: 3px double #ccc; border-top: 1px solid #ccc; padding-bottom: 5px; width: 100%;}

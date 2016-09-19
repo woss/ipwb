@@ -1,5 +1,3 @@
-var uris = []
-
 function handleSubmit () {
   document.location += document.getElementById('url').value
 }
@@ -10,7 +8,7 @@ function showURIs () {
   if (ul.childNodes.length > 0) {
     return // Prevent multiple adds of the URI list to the DOM
   }
-
+  
   for (var i = 0; i < uris.length; i++) {
     var li = document.createElement('li')
     var a = document.createElement('a')
@@ -21,6 +19,7 @@ function showURIs () {
     ul.appendChild(li)
   }
   document.getElementById('memCountListLink').classList = ['activated']
+  document.getElementById('uris').classList.remove('hidden')
 }
 
 function addEventListeners () {
