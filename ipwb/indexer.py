@@ -76,12 +76,6 @@ def main():
 
             fileHash = md5.new(hstr).hexdigest()
 
-            hdrfn = ipfsTempPath + 'header_' + fileHash
-            pldfn = ipfsTempPath + 'payload_' + fileHash
-
-            writeFile(hdrfn, hstr)
-            writeFile(pldfn, payload)
-
             httpHeaderIPFSHash = ''
             payloadIPFSHash = ''
             retryCount = 0
@@ -90,8 +84,8 @@ def main():
 
             while retryCount < ipfsRetryCount:
                 try:
-                    httpHeaderIPFSHash = pushToIPFS(hdrfn)
-                    payloadIPFSHash = pushToIPFS(pldfn)
+                    httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
+                    payloadIPFSHash = pushBytesToIPFS(bytes(payload))
                     break
                 except NewConnectionError:
                     print 'IPFS daemon is likely not running.'
@@ -159,14 +153,18 @@ def pullFromIPFS(hash):
     return IPFS_API.cat(hash)
 
 
-def pushToIPFS(path):
+def pushBytesToIPFS(bytes):
     """
-    Call the IPFS API to add the file at the path specified to IPFS.
+    Call the IPFS API to add the byte string to IPFS.
     When IPFS returns a hash, return this to the caller
     """
     global IPFS_API
-    res = IPFS_API.add(path)
+    res = IPFS_API.add_bytes(bytes)
     # TODO: verify that the add was successful
+    
+    # Receiving weirdness where res is sometimes a dictionary and sometimes a unicode string
+    if type(res).__name__ == 'unicode':
+      return res
     return res[0]['Hash']
 
 
