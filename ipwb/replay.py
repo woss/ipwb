@@ -10,6 +10,8 @@ from pywb.utils.binsearch import iter_exact
 from pywb.utils.canonicalize import unsurt
 from flask import Flask
 from flask import Response
+from requests.exceptions import ConnectionError
+import requests
 
 app = Flask(__name__)
 app.debug = True
@@ -44,6 +46,14 @@ def show_uri(path):
         return showWebUI('index.html')
         sys.exit()
 
+    if not isDaemonAlive(IP+':'+PORT):
+      errStr = ('IPFS daemon not running. '
+        'Start it using $ ipfs daemon on the command-line '
+        ' or from the <a href="/">'
+        'IPWB replay homepage</a>'
+      )
+      return Response(errStr)
+
     # (datetime, urir) = path.split('/', 1)
     # urir = path
 
@@ -56,12 +66,14 @@ def show_uri(path):
                       ' <a href="http://{1}:{2}">Go home</a>').format(
                         path, IP, PORT)
         return Response(respString)
+        
     cdxParts = cdxLine.split(" ", 2)
     # surtURI = cdxParts[0]
     # datetime = cdxParts[1]
     jObj = json.loads(cdxParts[2])
 
     digests = jObj['locator'].split('/')
+    
     payload = IPFS_API.cat(digests[-1])
     header = IPFS_API.cat(digests[-2])
 
@@ -80,6 +92,14 @@ def show_uri(path):
 
     return resp
 
+def isDaemonAlive(hostAndPort):
+    """Ensure that the IPFS daemon is running via HTTP before proceeding"""
+    try:
+        requests.get('http://' + hostAndPort)
+        return True
+    except ConnectionError:
+        print "Daemon is not running at http://" + hostAndPort
+        return False
 
 def getURIsInCDXJ(cdxjFile=INDEX_FILE):
     with open(cdxjFile) as indexFile:
@@ -103,7 +123,7 @@ def getCDXLine(surtURI):
         cdxLine = bsResp.next()
         return cdxLine
 
-
+''' # Unused
 def getClosestCDXLine(surtURI, datetime):
     cdxlobj = getCDXLines(surtURI)
     mingap = float("inf")
@@ -126,7 +146,7 @@ def getCDXLines(surtURI):
                 break
             cdxlobj.append((suri, dttm, jobj))
         return cdxlobj
-
+'''
 if __name__ == "__main__":
     app.run()
 
