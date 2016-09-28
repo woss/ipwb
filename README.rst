@@ -96,7 +96,7 @@ Once the daemon is started, the replay system web interface can be accessed thro
 
 Project History
 ---------------
-This repo contains the code for the initial integration between `WARC`_\ s and `IPFS`_ as developed at the `Archives Unleashed Hackathon`_ in Toronto, Canada in March 2016. The project was also presented at:
+This repo contains the code for integrating `WARC`_\ s and `IPFS`_ as developed at the `Archives Unleashed Hackathon`_ in Toronto, Canada in March 2016. The project was also presented at:
 
 * The `Joint Conference on Digital Libraries 2016`_ in Newark, NJ in June 2016.
 * The `Web Archiving and Digital Libraries (WADL) 2016 workshop`_ in Newark, NJ in June 2016.
