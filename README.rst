@@ -7,6 +7,7 @@ Peer-To-Peer Permanence of Web Archives
 ---------------------------------------
 
 .. image:: https://api.travis-ci.org/oduwsdl/ipwb.png?branch=master
+.. image:: https://img.shields.io/pypi/v/ipwb.svg
 
 InterPlanetary Wayback (ipwb) facilitates permanence and collaboration in web archives by disseminating the contents of WARC files into the IPFS network. `IPFS`_ is a peer-to-peer content-addressable file system that inherently allows deduplication and facilitates opt-in replication. ipwb splits the header and payload of WARC response records before disseminating into IPFS to leverage the deduplication, build a `CDXJ index`_, and combine them at the time of replay. 
 
