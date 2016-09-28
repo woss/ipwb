@@ -1,3 +1,4 @@
 git+git://github.com/ikreymer/pywb.git
 git+git://github.com/rajbot/surt#egg=surt
 ipfs-api
+flask
