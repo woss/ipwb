@@ -29,7 +29,8 @@ def showWebUI(path):
         content = webuiFile.read()
         if 'index.html' in path:
             content = content.replace('MEMCOUNT', str(retrieveMemCount()))
-            content = content.replace('var uris = []', 'var uris = ' + getURIsInCDXJ())
+            content = content.replace(
+              'var uris = []', 'var uris = ' + getURIsInCDXJ())
             content = content.replace('INDEXSRC', os.path.abspath(INDEX_FILE))
         return Response(content)
 
@@ -44,18 +45,20 @@ def show_uri(path):
         sys.exit()
 
     # (datetime, urir) = path.split('/', 1)
-    urir = path
+    # urir = path
 
     # show the user profile for that user
     cdxLine = ''
     try:
-       cdxLine = getCDXLine(surt(path))
+        cdxLine = getCDXLine(surt(path))
     except:
-        respString = '{0} not found :( <a href="http://{1}:{2}">Go home</a>'.format(path, IP, PORT)
+        respString = ('{0} not found :(' +
+                      ' <a href="http://{1}:{2}">Go home</a>').format(
+                        path, IP, PORT)
         return Response(respString)
     cdxParts = cdxLine.split(" ", 2)
-    surtURI = cdxParts[0]
-    datetime = cdxParts[1]
+    # surtURI = cdxParts[0]
+    # datetime = cdxParts[1]
     jObj = json.loads(cdxParts[2])
 
     digests = jObj['locator'].split('/')
