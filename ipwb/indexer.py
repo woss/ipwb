@@ -3,18 +3,12 @@
 
 import sys
 import os
-import md5
 import json
-import pywb.warc.cdxindexer
 import ipfsApi
 import argparse
 
 from io import BytesIO
-from pywb.warc.archiveiterator import ArchiveIterator, DefaultRecordParser
-from pywb.utils.loaders import LimitReader
-from pywb.warc.recordloader import ArcWarcRecordLoader
-from pywb.utils.bufferedreaders import DecompressingBufferedReader
-from pywb.utils.statusandheaders import StatusAndHeadersParser
+from pywb.warc.archiveiterator import DefaultRecordParser
 from surt import surt
 from requests.packages.urllib3.exceptions import NewConnectionError
 from requests.exceptions import ConnectionError
@@ -47,7 +41,7 @@ def main():
         os.makedirs(ipfsTempPath)
 
     # Read WARC file
-    loader = ArcWarcRecordLoader(verify_http=True)
+    # loader = ArcWarcRecordLoader(verify_http=True)
     warcFileFullPath = args.warcPath
 
     with open(warcFileFullPath, 'rb') as warc:
@@ -74,7 +68,7 @@ def main():
             entry.buffer.seek(0)
             payload = entry.buffer.read()
 
-            fileHash = md5.new(hstr).hexdigest()
+            # fileHash = md5.new(hstr).hexdigest()
 
             httpHeaderIPFSHash = ''
             payloadIPFSHash = ''
@@ -105,13 +99,14 @@ def main():
             timestamp = entry.get('timestamp')
             mime = entry.get('mime')
 
-            encrKey = ''  # TODO: Add data encryption functionality
+            # encrKey = ''  # TODO: Add data encryption functionality
 
             obj = {
-                'locator': 'urn:ipfs/' + httpHeaderIPFSHash + '/' + payloadIPFSHash,
+                'locator': 'urn:ipfs/{0}/{1}'.format(
+                  httpHeaderIPFSHash, payloadIPFSHash),
                 'status_code': statusCode,
                 'mime_type': mime,
-                #'encryption_key': encrKey,
+                # 'encryption_key': encrKey,
                 }
             objJSON = json.dumps(obj)
 
@@ -120,18 +115,16 @@ def main():
             print cdxjLine
 
             # print httpHeaderIPFSHash
-            resHeader = pullFromIPFS(httpHeaderIPFSHash)
+            # resHeader = pullFromIPFS(httpHeaderIPFSHash)
             # print resHeader
-            resPayload = pullFromIPFS(payloadIPFSHash)
-
-            warcContents = resHeader + "\n\n" + resPayload
+            # resPayload = pullFromIPFS(payloadIPFSHash)
+            # warcContents = resHeader + "\n\n" + resPayload
 
 
 def verifyDaemonIsAlive(hostAndPort):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
     try:
-        resp = requests.get('http://' + hostAndPort)
-        return True
+        requests.get('http://' + hostAndPort)
     except ConnectionError:
         print "Daemon is not running at http://" + hostAndPort
         sys.exit()
@@ -161,10 +154,11 @@ def pushBytesToIPFS(bytes):
     global IPFS_API
     res = IPFS_API.add_bytes(bytes)
     # TODO: verify that the add was successful
-    
-    # Receiving weirdness where res is sometimes a dictionary and sometimes a unicode string
+
+    # Receiving weirdness where res is sometimes a dictionary and sometimes
+    #  a unicode string
     if type(res).__name__ == 'unicode':
-      return res
+        return res
     return res[0]['Hash']
 
 
@@ -178,13 +172,25 @@ def checkArgs(argsIn):
     Check to ensure valid arguments were passed to the indexer and provide
     guidance on the available options if not
     """
-    parser = argparse.ArgumentParser(description='InterPlanetary Wayback (ipwb) Indexer')
-    parser.add_argument('-d', '--daemon', help='Location of ipfs daemon (default 127.0.0.1:5001)', default=IP+':'+PORT, dest='daemon_address')
-    parser.add_argument('-o', '--outfile', help='Path of newly created CDXJ.') # Shows progress by default unless suppressed with -q')
-    parser.add_argument('-v', '--version', help='Report the version of ipwb', action='version',  version='InterPlanetary Wayback ' + ipwbVersion)
-    
-    #parser.add_argument('-p', '--progress', help='Show progress of processing WARC file.', action='store_true')
-    #parser.add_argument('-q', '--quiet', help='Quiet mode. Show nothing on stdout. Use -o to also write to a file.', action='store_true')
+    parser = argparse.ArgumentParser(
+      description='InterPlanetary Wayback (ipwb) Indexer')
+    parser.add_argument(
+      '-d', '--daemon',
+      help='Location of ipfs daemon (default 127.0.0.1:5001)',
+      default=IP+':'+PORT, dest='daemon_address')
+    parser.add_argument('-o', '--outfile', help='Path of newly created CDXJ.')
+    parser.add_argument(
+      '-v', '--version', help='Report the version of ipwb', action='version',
+      version='InterPlanetary Wayback ' + ipwbVersion)
+
+    '''parser.add_argument(
+      '-p', '--progress', help='Show progress of processing WARC file.',
+      action='store_true')
+    parser.add_argument(
+      '-q', '--quiet',
+      help='Quiet mode. Show nothing on stdout. Use -o to also write to file.',
+      action='store_true')
+    '''
     parser.add_argument('warcPath', help="Path to a WARC[.gz] file")
     results = parser.parse_args()
     return results
