@@ -152,6 +152,7 @@ def pushBytesToIPFS(bytes):
     When IPFS returns a hash, return this to the caller
     """
     global IPFS_API
+
     res = IPFS_API.add_bytes(bytes)
     # TODO: verify that the add was successful
 

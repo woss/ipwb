@@ -20,7 +20,8 @@ setup(
     provides=[
       'ipwb',
       'ipwb.indexer',
-      'ipwb.replay'
+      'ipwb.replay',
+      'ipwb.util'
     ],
     install_requires=[
       'pywb',

@@ -11,20 +11,18 @@ from pywb.utils.canonicalize import unsurt
 from flask import Flask
 from flask import Response
 from requests.exceptions import ConnectionError
-from os.path import expanduser
+
 import requests
+
+import util as ipwbConfig
+from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT, INDEX_FILE
 
 app = Flask(__name__)
 app.debug = True
 # @app.route("/")
 # def hello():
 #    return "Hello World!"
-IPFSAPI_IP = '127.0.0.1'
-IPFSAPI_PORT = 5001
-IPWBREPLAY_IP = '127.0.0.1'
-IPWBREPLAY_PORT = 5000
 IPFS_API = ipfsApi.Client(IPFSAPI_IP, IPFSAPI_PORT)
-INDEX_FILE = 'samples/indexes/sample-2.cdxj'
 
 
 @app.route('/webui/<path:path>')
@@ -43,21 +41,18 @@ def showWebUI(path):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def show_uri(path):
-    global IPFS_API, IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
+    global IPFS_API
 
     if len(path) == 0:
         return showWebUI('index.html')
         sys.exit()
 
-    if not isDaemonAlive(IP+':'+PORT):
+    if not isDaemonAlive('{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT)):
         errStr = ('IPFS daemon not running. '
                   'Start it using $ ipfs daemon on the command-line '
                   ' or from the <a href="/">'
                   'IPWB replay homepage</a>')
         return Response(errStr)
-
-    # (datetime, urir) = path.split('/', 1)
-    # urir = path
 
     # show the user profile for that user
     cdxLine = ''
@@ -66,7 +61,7 @@ def show_uri(path):
     except:
         respString = ('{0} not found :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
-                        path, IP, PORT)
+                        path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
 
     cdxParts = cdxLine.split(" ", 2)
@@ -76,7 +71,10 @@ def show_uri(path):
 
     digests = jObj['locator'].split('/')
 
+    print 'y'
+    print digests[-1]
     payload = IPFS_API.cat(digests[-1])
+    print 'x'
     header = IPFS_API.cat(digests[-2])
 
     # print header
@@ -128,46 +126,6 @@ def getCDXLine(surtURI):
         return cdxLine
 
 
-# IPFS Config manipulation from here on out.
-def readIPFSConfig():
-    with open(expanduser("~") + '/.ipfs/config', 'r') as f:
-        return json.load(f)
-
-
-def writeIPFSConfig(jsonToWrite):
-    with open(expanduser("~") + '/.ipfs/config', 'w') as f:
-        f.write(json.dumps(jsonToWrite, indent=4, sort_keys=True))
-
-
-def getIPFSAPIPort(ipfsJSON=None):
-    if not ipfsJSON:
-        ipfsJSON = readIPFSConfig()
-    ipfsAPIPort = os.path.basename(ipfsJSON['Addresses']['API'])
-
-
-def getIPWBReplayConfig(ipfsJSON=None):
-    if not ipfsJSON:
-        ipfsJSON = readIPFSConfig()
-    port = None
-    if ('Ipwb' in ipfsJSON and 'Replay' in ipfsJSON['Ipwb'] and
-       'Port' in ipfsJSON['Ipwb']['Replay']):
-        host = ipfsJSON['Ipwb']['Replay']['Host']
-        port = ipfsJSON['Ipwb']['Replay']['Port']
-        return (host, port)
-    else:
-        return None
-
-
-def setIPWBReplayConfig(Host, Port, ipfsJSON=None):
-    if not ipfsJSON:
-        ipfsJSON = readIPFSConfig()
-    ipfsJSON['Ipwb'] = {}
-    ipfsJSON['Ipwb']['Replay'] = {
-      u'Host': Host,
-      u'Port': Port
-    }
-    writeIPFSConfig(ipfsJSON)
-
 
 ''' # Unused
 def getClosestCDXLine(surtURI, datetime):
@@ -194,10 +152,10 @@ def getCDXLines(surtURI):
         return cdxlobj
 '''
 if __name__ == "__main__":
-    hostPort = getIPWBReplayConfig()
+    hostPort = ipwbConfig.getIPWBReplayConfig()
     if not hostPort:
-        setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
-        hostPort = getIPWBReplayConfig()
+        ipwbConfig.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
+        hostPort = ipwbConfig.getIPWBReplayConfig()
     # print hostPort
     # sys.exit()
     app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
