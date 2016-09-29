@@ -11,6 +11,7 @@ from pywb.utils.canonicalize import unsurt
 from flask import Flask
 from flask import Response
 from requests.exceptions import ConnectionError
+from os.path import expanduser
 import requests
 
 app = Flask(__name__)
@@ -18,9 +19,11 @@ app.debug = True
 # @app.route("/")
 # def hello():
 #    return "Hello World!"
-IP = '127.0.0.1'
-PORT = '5001'
-IPFS_API = ipfsApi.Client(IP, PORT)
+IPFSAPI_IP = '127.0.0.1'
+IPFSAPI_PORT = 5001
+IPWBREPLAY_IP = '127.0.0.1'
+IPWBREPLAY_PORT = 5000
+IPFS_API = ipfsApi.Client(IPFSAPI_IP, IPFSAPI_PORT)
 INDEX_FILE = 'samples/indexes/sample-2.cdxj'
 
 
@@ -40,7 +43,7 @@ def showWebUI(path):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def show_uri(path):
-    global IPFS_API, IP, PORT
+    global IPFS_API, IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
 
     if len(path) == 0:
         return showWebUI('index.html')
@@ -124,6 +127,48 @@ def getCDXLine(surtURI):
         cdxLine = bsResp.next()
         return cdxLine
 
+
+# IPFS Config manipulation from here on out.
+def readIPFSConfig():
+    with open(expanduser("~") + '/.ipfs/config', 'r') as f:
+        return json.load(f)
+
+
+def writeIPFSConfig(jsonToWrite):
+    with open(expanduser("~") + '/.ipfs/config', 'w') as f:
+        f.write(json.dumps(jsonToWrite, indent=4, sort_keys=True))
+
+
+def getIPFSAPIPort(ipfsJSON=None):
+    if not ipfsJSON:
+        ipfsJSON = readIPFSConfig()
+    ipfsAPIPort = os.path.basename(ipfsJSON['Addresses']['API'])
+
+
+def getIPWBReplayConfig(ipfsJSON=None):
+    if not ipfsJSON:
+        ipfsJSON = readIPFSConfig()
+    port = None
+    if ('Ipwb' in ipfsJSON and 'Replay' in ipfsJSON['Ipwb'] and
+       'Port' in ipfsJSON['Ipwb']['Replay']):
+        host = ipfsJSON['Ipwb']['Replay']['Host']
+        port = ipfsJSON['Ipwb']['Replay']['Port']
+        return (host, port)
+    else:
+        return None
+
+
+def setIPWBReplayConfig(Host, Port, ipfsJSON=None):
+    if not ipfsJSON:
+        ipfsJSON = readIPFSConfig()
+    ipfsJSON['Ipwb'] = {}
+    ipfsJSON['Ipwb']['Replay'] = {
+      u'Host': Host,
+      u'Port': Port
+    }
+    writeIPFSConfig(ipfsJSON)
+
+
 ''' # Unused
 def getClosestCDXLine(surtURI, datetime):
     cdxlobj = getCDXLines(surtURI)
@@ -149,7 +194,13 @@ def getCDXLines(surtURI):
         return cdxlobj
 '''
 if __name__ == "__main__":
-    app.run()
+    hostPort = getIPWBReplayConfig()
+    if not hostPort:
+        setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
+        hostPort = getIPWBReplayConfig()
+    # print hostPort
+    # sys.exit()
+    app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
 
 # Read in URI, convert to SURT
 #  surt(uriIn)
