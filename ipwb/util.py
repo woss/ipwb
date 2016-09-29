@@ -8,6 +8,7 @@ IPWBREPLAY_PORT = 5000
 
 INDEX_FILE = 'samples/indexes/sample-2.cdxj'
 
+
 def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
     try:

@@ -15,7 +15,8 @@ from requests.exceptions import ConnectionError
 import requests
 
 import util as ipwbConfig
-from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT, INDEX_FILE
+from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
+from util import INDEX_FILE
 
 app = Flask(__name__)
 app.debug = True
@@ -124,7 +125,6 @@ def getCDXLine(surtURI):
         bsResp = iter_exact(cdxFile, surtURI)
         cdxLine = bsResp.next()
         return cdxLine
-
 
 
 ''' # Unused
