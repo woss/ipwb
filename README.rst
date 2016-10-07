@@ -16,6 +16,8 @@ InterPlanetary Wayback primarily consists of two scripts:
 - **ipwb/indexer.py** - archival indexing script that takes the path to a WARC input, extracts the HTTP headers, HTTP payload (response body), and relevant parts of the WARC-response record header from the WARC specified and creates byte string representations. The indexer then pushes the byte strings into IPFS using a locally running ipfs daemon then creates a `CDXJ`_ file with this metadata for `replay.py`.
 - **ipwb/replay.py** - rudimentary replay script to resolve requests for archival content contained in IPFS for replay in the browser.
 
+A pictorial representation of the ipwb indexing and replay process:
+
 .. image:: https://raw.githubusercontent.com/oduwsdl/ipwb/master/docs/diagram_72.png
 
 Installing
