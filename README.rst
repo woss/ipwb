@@ -79,13 +79,12 @@ Alternatively, if running from source:
 
       (ipwb) $ ipwb/indexer.py (path to warc or warc.gz) >> myArchiveIndex.cdxj
 
-(TODO: add info about specifying the out file as a CLI parameter.)
+(TODO: add info about specifying the out file as a parameter)
 
 Replaying
 ---------
 
-(TODO: add more detailed inf in this section)
-(TODO: add better sample data with more URIs in the repo for better demonstration of ipwb functionality.)
+(TODO: add more detailed info in this section, better sample data with more URIs in the repo for better demonstration of ipwb functionality)
 
 The ipwb replay system can be launched with:
 
