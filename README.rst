@@ -35,6 +35,7 @@ ipwb can be run from source (see Indexing below) or installed via pip:
       $ virtualenv ipwb
       $ source ipwb/bin/activate
       (ipwb) $ pip install -r requirements.txt
+      (ipwb) $ pip install ./
 
 Setup
 -----
@@ -66,7 +67,7 @@ In a separate terminal session (or the same if you started the daemon in the bac
 
       ipwb samples/warcs/sample-1.warc.gz
 
-Alternatively, if running from source:
+Alternatively, if running from source without installation:
 
 .. code-block:: bash
 
