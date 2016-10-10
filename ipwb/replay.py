@@ -151,7 +151,8 @@ def getCDXLines(surtURI):
             cdxlobj.append((suri, dttm, jobj))
         return cdxlobj
 '''
-if __name__ == "__main__":
+
+def main():
     hostPort = ipwbConfig.getIPWBReplayConfig()
     if not hostPort:
         ipwbConfig.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
@@ -159,6 +160,10 @@ if __name__ == "__main__":
     # print hostPort
     # sys.exit()
     app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
+
+
+if __name__ == "__main__":
+    main()
 
 # Read in URI, convert to SURT
 #  surt(uriIn)
