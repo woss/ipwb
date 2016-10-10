@@ -1,4 +1,3 @@
 pywb
-surt
 ipfs-api
 flask

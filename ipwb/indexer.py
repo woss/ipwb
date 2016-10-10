@@ -9,7 +9,7 @@ import argparse
 
 from io import BytesIO
 from pywb.warc.archiveiterator import DefaultRecordParser
-from surt import surt
+from pywb.utils.canonicalize import canonicalize as surt
 from requests.packages.urllib3.exceptions import NewConnectionError
 from requests.exceptions import ConnectionError
 import requests

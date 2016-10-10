@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from surt import surt
 import sys
 import os
 import ipfsApi
 import json
 from pywb.utils.binsearch import iter_exact
 from pywb.utils.canonicalize import unsurt
+from pywb.utils.canonicalize import canonicalize as surt
 from flask import Flask
 from flask import Response
 from requests.exceptions import ConnectionError
@@ -72,10 +72,9 @@ def show_uri(path):
 
     digests = jObj['locator'].split('/')
 
-    print 'y'
-    print digests[-1]
+    # print digests[-1]
     payload = IPFS_API.cat(digests[-1])
-    print 'x'
+
     header = IPFS_API.cat(digests[-2])
 
     # print header
