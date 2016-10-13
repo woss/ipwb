@@ -18,10 +18,7 @@ setup(
     license='MIT',
     long_description=long_description,
     provides=[
-      'ipwb',
-      'ipwb.indexer',
-      'ipwb.replay',
-      'ipwb.util'
+      'ipwb'
     ],
     install_requires=[
       'pywb',
@@ -30,9 +27,7 @@ setup(
     ],
     entry_points="""
         [console_scripts]
-        ipwb = ipwb.indexer:main
-        ipwb.indexer = ipwb.indexer:main
-        ipwb.replay = ipwb.replay:main
+        ipwb = ipwb.__main__:main
     """,
     keywords='http web archives ipfs distributed odu wayback',
     classifiers=[

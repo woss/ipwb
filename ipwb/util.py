@@ -1,5 +1,7 @@
 from os.path import expanduser
 import json
+import requests
+from requests.exceptions import ConnectionError
 
 IPFSAPI_IP = '127.0.0.1'
 IPFSAPI_PORT = 5001

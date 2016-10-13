@@ -22,11 +22,8 @@ PORT = '5001'
 IPFS_API = ipfsApi.Client(IP, PORT)
 
 
-def main():
-    args = checkArgs(sys.argv)  # Verify that a WARC file has been passed in
-    verifyDaemonIsAlive(args.daemon_address)
-    verifyFileExists(args.warcPath)
-    # verifyFileExists()
+def indexFileAt(warcPath):
+    verifyFileExists(warcPath)
 
     textRecordParserOptions = {
       'cdxj': True,
@@ -42,7 +39,7 @@ def main():
 
     # Read WARC file
     # loader = ArcWarcRecordLoader(verify_http=True)
-    warcFileFullPath = args.warcPath
+    warcFileFullPath = warcPath
 
     with open(warcFileFullPath, 'rb') as warc:
         iter = TextRecordParser(**textRecordParserOptions)
@@ -133,7 +130,7 @@ def verifyDaemonIsAlive(hostAndPort):
 def verifyFileExists(warcPath):
     if os.path.isfile(warcPath):
         return
-    print "File at " + warcPath + "does not exist!"
+    print "File at " + warcPath + " does not exist!"
     sys.exit()
 
 
@@ -166,36 +163,6 @@ def pushBytesToIPFS(bytes):
 def writeFile(filename, content):
     with open(filename, 'w') as tmpFile:
         tmpFile.write(content)
-
-
-def checkArgs(argsIn):
-    """
-    Check to ensure valid arguments were passed to the indexer and provide
-    guidance on the available options if not
-    """
-    parser = argparse.ArgumentParser(
-      description='InterPlanetary Wayback (ipwb) Indexer')
-    parser.add_argument(
-      '-d', '--daemon',
-      help='Location of ipfs daemon (default 127.0.0.1:5001)',
-      default=IP+':'+PORT, dest='daemon_address')
-    parser.add_argument('-o', '--outfile', help='Path of newly created CDXJ.')
-    parser.add_argument(
-      '-v', '--version', help='Report the version of ipwb', action='version',
-      version='InterPlanetary Wayback ' + ipwbVersion)
-
-    '''parser.add_argument(
-      '-p', '--progress', help='Show progress of processing WARC file.',
-      action='store_true')
-    parser.add_argument(
-      '-q', '--quiet',
-      help='Quiet mode. Show nothing on stdout. Use -o to also write to file.',
-      action='store_true')
-    '''
-    parser.add_argument('warcPath', help="Path to a WARC[.gz] file")
-    results = parser.parse_args()
-    return results
-    # TODO: create a logToFile() function if flag is set
 
 
 class TextRecordParser(DefaultRecordParser):
