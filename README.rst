@@ -71,14 +71,14 @@ Alternatively, if running from source without installation:
 
 .. code-block:: bash
 
-      (ipwb) $ python ipwb/ index (path to warc or warc.gz)
+      (ipwb) $ python ipwb index (path to warc or warc.gz)
 
 
 `indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g., 
 
 .. code-block:: bash
 
-      (ipwb) $ ipwb/ index (path to warc or warc.gz) >> myArchiveIndex.cdxj
+      (ipwb) $ ipwb index (path to warc or warc.gz) >> myArchiveIndex.cdxj
 
 (TODO: add info about specifying the out file as a parameter)
 
