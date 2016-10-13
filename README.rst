@@ -58,27 +58,27 @@ In a separate terminal session (or the same if you started the daemon in the bac
 
 .. code-block:: bash
 
-      $ ipwb (path to warc or warc.gz)
+      $ ipwb index (path to warc or warc.gz)
 
 
 ...for example, from the root of the ipwb repository:
 
 .. code-block:: bash
 
-      ipwb samples/warcs/sample-1.warc.gz
+      ipwb index samples/warcs/sample-1.warc.gz
 
 Alternatively, if running from source without installation:
 
 .. code-block:: bash
 
-      (ipwb) $ ipwb/indexer.py (path to warc or warc.gz)
+      (ipwb) $ python ipwb/ index (path to warc or warc.gz)
 
 
 `indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g., 
 
 .. code-block:: bash
 
-      (ipwb) $ ipwb/indexer.py (path to warc or warc.gz) >> myArchiveIndex.cdxj
+      (ipwb) $ ipwb/ index (path to warc or warc.gz) >> myArchiveIndex.cdxj
 
 (TODO: add info about specifying the out file as a parameter)
 
@@ -91,7 +91,7 @@ The ipwb replay system can be launched with:
 
 .. code-block:: bash
 
-      (ipwb) $ ipwb/replay.py
+      (ipwb) $ ipwb replay
 	  
 Once the daemon is started, the replay system web interface can be accessed through a web browser, e.g., `http://127.0.0.1:5000/http://www.cs.odu.edu/~salam/` with the sample CDXJ file.
 
