@@ -34,32 +34,37 @@ def checkArgs(argsIn):
     """
     parser = argparse.ArgumentParser(
         description='InterPlanetary Wayback (ipwb)', prog="ipwb")
-    subparsers = parser.add_subparsers(title="ipwb commands",
+    subparsers = parser.add_subparsers(
+        title="ipwb commands",
         description="Invoke using \"ipwb <command>\", e.g., ipwb replay")
 
-    indexParser = subparsers.add_parser('index',
+    indexParser = subparsers.add_parser(
+        'index',
         prog="ipwb",
         description="Index a WARC file for replay in ipwb",
         help="Index a WARC file for replay in ipwb")
-    indexParser.add_argument('warcPath',
+    indexParser.add_argument(
+        'warcPath',
         help="Path to a WARC[.gz] file",
         metavar="index <warcPath>",
         default=None)
     indexParser.set_defaults(func=checkArgs_index)
-    replayParser = subparsers.add_parser('replay',
+    replayParser = subparsers.add_parser(
+        'replay',
         prog="ipwb replay",
         help="Start the ipwb replay system")
     replayParser.set_defaults(func=checkArgs_replay)
 
     parser.add_argument(
-      '-d', '--daemon',
-      help='Location of ipfs daemon (default 127.0.0.1:5001)',
-      default=IP+':'+PORT, dest='daemon_address')
-    parser.add_argument('-o', '--outfile',
+        '-d', '--daemon',
+        help='Location of ipfs daemon (default 127.0.0.1:5001)',
+        default=IP+':'+PORT, dest='daemon_address')
+    parser.add_argument(
+        '-o', '--outfile',
         help='Filename of newly created CDXJ index file')
     parser.add_argument(
-      '-v', '--version', help='Report the version of ipwb', action='version',
-      version='InterPlanetary Wayback ' + ipwbVersion)
+        '-v', '--version', help='Report the version of ipwb', action='version',
+        version='InterPlanetary Wayback ' + ipwbVersion)
 
     # parser.add_argument('replay',
     #   help="Index a WARC file", default=None, nargs='?')
