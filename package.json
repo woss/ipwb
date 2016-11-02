@@ -1,0 +1,29 @@
+{
+  "name": "InterPlanetary Wayback (ipwb)",
+  "description": "Web Archive integration with IPFS",
+  "author": {
+    "email": "mkelly@cs.odu.edu",
+    "name": "Mat Kelly",
+    "url": "http://www.cs.odu.edu/~mkelly/"
+  },
+  "keywords": [
+    "archive",
+    "web archive",
+    "warc",
+    "ipfs",
+    "distributed",
+    "wayback"
+  ],
+  "license": "GPLv3",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/oduwsdl/ipwb.git"
+  },
+  "scripts": {
+    "test": "standard"
+  },
+  "devDependencies": {
+    "standard" :"^8.5.0"
+  },
+  "standard": {}
+}
