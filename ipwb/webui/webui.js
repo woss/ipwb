@@ -33,3 +33,48 @@ function setPlurality () {
     document.getElementById('plural').classList.add('hidden')
   }
 }
+
+function assignStatusButtonHandlers () {
+  button = document.getElementsByTagName('button')[0]
+  if (button.innerHTML === 'Start') {
+    button.addEventListener('click', startIPFSDaemon)
+  } else {
+    button.addEventListener('click', stopIPFSDaemon)
+  }
+}
+
+function startIPFSDaemon () {
+  sendCommandToIPFSDaemon('start')
+  this.innerHTML = 'Starting...'
+  this.setAttribute('disabled', 'disabled')
+}
+
+function stopIPFSDaemon () {
+  sendCommandToIPFSDaemon('stop')
+  this.innerHTML = 'Stopping...'
+  this.setAttribute('disabled','disabled')
+}
+
+function sendCommandToIPFSDaemon (cmd) {
+    var xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
+           if (xmlhttp.status == 200) {
+               console.log(xmlhttp.responseText);
+               window.setTimeout(function () {
+                 document.location.reload(true)
+               }, 4000)
+           }
+           else if (xmlhttp.status == 400) {
+              console.log('error 400')
+           }
+           else {
+               console.log('something else other than 200 was returned');
+           }
+        }
+    };
+
+    xmlhttp.open('GET', '/daemon/' + cmd, true);
+    xmlhttp.send();
+}

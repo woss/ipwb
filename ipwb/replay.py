@@ -5,6 +5,7 @@ import sys
 import os
 import ipfsApi
 import json
+import subprocess
 from pywb.utils.binsearch import iter_exact
 from pywb.utils.canonicalize import unsurt
 from pywb.utils.canonicalize import canonicalize as surt
@@ -39,6 +40,26 @@ def showWebUI(path):
         return Response(content)
 
 
+@app.route('/daemon/<cmd>')
+def commandDaemon(cmd):
+    if cmd == 'status':
+        return generateDaemonStatusButton()
+    elif cmd == 'start':
+        subprocess.Popen(['ipfs', 'daemon'])
+        # retString = 'Failed to start IPFS daemon'
+        # if 'Daemon is ready' in check_output():
+        #  retString = 'IPFS daemon started'
+        return Response('IPFS daemon starting...')
+
+    elif cmd == 'stop':
+        subprocess.call(['killall', 'ipfs'])
+        return Response('IPFS daemon stopping...')
+    else:
+        print 'ERROR, bad command sent to daemon API!'
+        print cmd
+        return Response('bad command!')
+
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def show_uri(path):
@@ -48,11 +69,12 @@ def show_uri(path):
         return showWebUI('index.html')
         sys.exit()
 
-    if not isDaemonAlive('{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT)):
+    daemonAddress = '{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT)
+    if not ipwbConfig.isDaemonAlive(daemonAddress):
         errStr = ('IPFS daemon not running. '
                   'Start it using $ ipfs daemon on the command-line '
                   ' or from the <a href="/">'
-                  'IPWB replay homepage</a>')
+                  'IPWB replay homepage</a>.')
         return Response(errStr)
 
     # show the user profile for that user
@@ -93,7 +115,24 @@ def show_uri(path):
     return resp
 
 
-def isDaemonAlive(hostAndPort):
+def generateDaemonStatusButton():
+    text = 'Not Running'
+    buttonText = 'Start'
+    if ipwbConfig.isDaemonAlive():
+        text = 'Running'
+        buttonText = 'Stop'
+
+    statusPageHTML = '<html id="status{0}" class="status">'.format(buttonText)
+    statusPageHTML += ('<head><base href="/webui/" /><link rel="stylesheet" '
+                       'type="text/css" href="webui.css" />'
+                       '<script src="webui.js"></script>'
+                       '</head><body>')
+    buttonHTML = '{0}<button>{1}</button>'.format(text, buttonText)
+    footer = '<script>assignStatusButtonHandlers()</script></body></html>'
+    return Response('{0}{1}{2}'.format(statusPageHTML, buttonHTML, footer))
+
+
+'''def isDaemonAlive(hostAndPort):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
     try:
         requests.get('http://' + hostAndPort)
@@ -101,6 +140,7 @@ def isDaemonAlive(hostAndPort):
     except ConnectionError:
         print "Daemon is not running at http://" + hostAndPort
         return False
+'''
 
 
 def getURIsInCDXJ(cdxjFile=INDEX_FILE):

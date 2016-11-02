@@ -13,3 +13,12 @@ a#memCountListLink:hover {cursor: pointer;}
 a#webui {position: absolute; bottom: 5px;}
 
 #uris {width: 50%; border-bottom: 3px double #ccc; border-top: 1px solid #ccc; padding-bottom: 5px; width: 100%;}
+
+div#iframeWrapper {text-overflow: hidden; color: blue; margin-bottom: 2.0em;}
+div#iframeWrapper p {display: inline-block; height: 10px; margin-top: 0; vertical-align: top;}
+iframe#daemonStatus {border: 0; height: 50px; width: 200px; display: inline-block; vertical-align: bottom;}
+
+html.status body {margin: 0 0 0 2px; padding: 0;}
+html#statusStart {color: red;}
+html#statusStop {color: green;}
+html.status button {display: inline-block; margin-left: 5px;}
