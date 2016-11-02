@@ -8,7 +8,7 @@ function showURIs () {
   if (ul.childNodes.length > 0) {
     return // Prevent multiple adds of the URI list to the DOM
   }
-  
+
   for (var i = 0; i < uris.length; i++) {
     var li = document.createElement('li')
     var a = document.createElement('a')
@@ -28,14 +28,14 @@ function addEventListeners () {
 }
 
 function setPlurality () {
-  var count = document.getElementById('memCountInt').innerHTML;
-  if (count == 1) {
+  var count = document.getElementById('memCountInt').innerHTML
+  if (count === 1) {
     document.getElementById('plural').classList.add('hidden')
   }
 }
 
 function assignStatusButtonHandlers () {
-  button = document.getElementsByTagName('button')[0]
+  var button = document.getElementsByTagName('button')[0]
   if (button.innerHTML === 'Start') {
     button.addEventListener('click', startIPFSDaemon)
   } else {
@@ -52,29 +52,26 @@ function startIPFSDaemon () {
 function stopIPFSDaemon () {
   sendCommandToIPFSDaemon('stop')
   this.innerHTML = 'Stopping...'
-  this.setAttribute('disabled','disabled')
+  this.setAttribute('disabled', 'disabled')
 }
 
 function sendCommandToIPFSDaemon (cmd) {
-    var xmlhttp = new XMLHttpRequest();
+  var xmlhttp = new XMLHttpRequest()
 
-    xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
-           if (xmlhttp.status == 200) {
-               console.log(xmlhttp.responseText);
-               window.setTimeout(function () {
-                 document.location.reload(true)
-               }, 4000)
-           }
-           else if (xmlhttp.status == 400) {
-              console.log('error 400')
-           }
-           else {
-               console.log('something else other than 200 was returned');
-           }
-        }
-    };
+  xmlhttp.onreadystatechange = function () {
+    if (xmlhttp.readyState === XMLHttpRequest.DONE) {
+      if (xmlhttp.status === 200) {
+        window.setTimeout(function () {
+          document.location.reload(true)
+        }, 4000)
+      } else if (xmlhttp.status === 400) {
+        console.log('error 400')
+      } else {
+        console.log('something else other than 200 was returned')
+      }
+    }
+  }
 
-    xmlhttp.open('GET', '/daemon/' + cmd, true);
-    xmlhttp.send();
+  xmlhttp.open('GET', '/daemon/' + cmd, true)
+  xmlhttp.send()
 }
