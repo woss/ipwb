@@ -59,6 +59,13 @@ def commandDaemon(cmd):
         print cmd
         return Response('bad command!')
 
+# This route needs better restructuring but is currently only used to get the
+# webUI location for the ipwb webUI, more setting might need to be fetched in
+# the future.
+@app.route('/config/<requestedSetting>')
+def getRequestedSetting(requestedSetting):
+    return Response(ipwbConfig.getIPFSAPIHostAndPort()+'/webui')
+    
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

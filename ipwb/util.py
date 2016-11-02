@@ -1,4 +1,5 @@
 from os.path import expanduser
+from os.path import basename
 import json
 import requests
 from requests.exceptions import ConnectionError
@@ -55,10 +56,17 @@ def writeIPFSConfig(jsonToWrite):
         f.write(json.dumps(jsonToWrite, indent=4, sort_keys=True))
 
 
+def getIPFSAPIHostAndPort(ipfsJSON=None):
+    if not ipfsJSON:
+        ipfsJSON = readIPFSConfig()
+        
+    (scheme,host,protocol,port) = ipfsJSON['Addresses']['API'][1:].split('/')
+    return host + ':' + port
+
 def getIPFSAPIPort(ipfsJSON=None):
     if not ipfsJSON:
         ipfsJSON = readIPFSConfig()
-    ipfsAPIPort = os.path.basename(ipfsJSON['Addresses']['API'])
+    ipfsAPIPort = basename(ipfsJSON['Addresses']['API'])
 
 
 def getIPWBReplayConfig(ipfsJSON=None):
