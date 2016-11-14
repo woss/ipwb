@@ -25,6 +25,8 @@ function showURIs () {
 function addEventListeners () {
   var target = document.getElementById('memCountListLink')
   target.addEventListener('click', showURIs, false)
+  
+  getIPFSWebUIAddress()
 }
 
 function setPlurality () {
@@ -55,23 +57,45 @@ function stopIPFSDaemon () {
   this.setAttribute('disabled', 'disabled')
 }
 
+function getIPFSWebUIAddress () {
+  var setIPFSWebUILink = function (resp) {
+    document.getElementById('webui').setAttribute('href', 'http://' + resp) 
+    console.log(resp)
+  }
+  var fail = function () {console.log('fail')}
+  var err = function () {console.log('err')}
+  makeAnAJAXRequest('/config/openEndedPlaceHolder', setIPFSWebUILink, fail, err)
+}
+
+function updateIPFSDaemonButtonUI () {
+  window.setTimeout(function () {
+    document.location.reload(true)
+  }, 4000)
+}
+
 function sendCommandToIPFSDaemon (cmd) {
-  var xmlhttp = new XMLHttpRequest()
+  var failFunction = function () {console.log('Comm w/ ipfs daemon failed.');}
+  var errFunction = function () {console.log('Error talking to ipfs daemon.');}
+  makeAnAJAXRequest('/daemon/' + cmd, updateIPFSDaemonButtonUI,
+    failFunction, errFunction)
+}
+
+function makeAnAJAXRequest(address, successFunction, failFunction, errorFunction) {
+ var xmlhttp = new XMLHttpRequest()
 
   xmlhttp.onreadystatechange = function () {
     if (xmlhttp.readyState === XMLHttpRequest.DONE) {
       if (xmlhttp.status === 200) {
-        window.setTimeout(function () {
-          document.location.reload(true)
-        }, 4000)
+        successFunction(xmlhttp.responseText)
       } else if (xmlhttp.status === 400) {
-        console.log('error 400')
+        failFunction()
       } else {
-        console.log('something else other than 200 was returned')
+        errorFunction
       }
     }
   }
 
-  xmlhttp.open('GET', '/daemon/' + cmd, true)
+  xmlhttp.open('GET', address, true)
   xmlhttp.send()
+
 }
