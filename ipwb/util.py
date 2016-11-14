@@ -59,9 +59,12 @@ def writeIPFSConfig(jsonToWrite):
 def getIPFSAPIHostAndPort(ipfsJSON=None):
     if not ipfsJSON:
         ipfsJSON = readIPFSConfig()
-        
-    (scheme,host,protocol,port) = ipfsJSON['Addresses']['API'][1:].split('/')
+
+    (scheme, host, protocol, port) = (
+        ipfsJSON['Addresses']['API'][1:].split('/')
+    )
     return host + ':' + port
+
 
 def getIPFSAPIPort(ipfsJSON=None):
     if not ipfsJSON:
