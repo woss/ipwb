@@ -59,7 +59,7 @@ function stopIPFSDaemon () {
 
 function getIPFSWebUIAddress () {
   var setIPFSWebUILink = function (resp) {
-    //document.getElementById('webui').href 
+    document.getElementById('webui').setAttribute('href', 'http://' + resp) 
     console.log(resp)
   }
   var fail = function () {console.log('fail')}
