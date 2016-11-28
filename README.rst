@@ -31,11 +31,13 @@ ipwb can be run from source (see Indexing below) or installed via pip:
 ...or from source in a virtual environment:
 
 .. code-block:: bash
-
-      $ virtualenv ipwb
-      $ source ipwb/bin/activate
-      (ipwb) $ pip install -r requirements.txt
-      (ipwb) $ pip install ./
+      
+      $ git clone https://github.com/oduwsdl/ipwb
+      $ cd ipwb
+      $ virtualenv ipwbve
+      $ source ipwbve/bin/activate
+      (ipwbve) $ pip install -r requirements.txt
+      (ipwbve) $ pip install ./
 
 Setup
 -----
@@ -71,14 +73,14 @@ Alternatively, if running from source without installation:
 
 .. code-block:: bash
 
-      (ipwb) $ python ipwb index (path to warc or warc.gz)
+      (ipwbve) $ python ipwb index (path to warc or warc.gz)
 
 
 `indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g., 
 
 .. code-block:: bash
 
-      (ipwb) $ ipwb index (path to warc or warc.gz) >> myArchiveIndex.cdxj
+      (ipwbve) $ ipwb index (path to warc or warc.gz) >> myArchiveIndex.cdxj
 
 (TODO: add info about specifying the out file as a parameter)
 
