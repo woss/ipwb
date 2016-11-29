@@ -6,6 +6,7 @@ import os
 import ipfsApi
 import json
 import subprocess
+import pkg_resources
 from pywb.utils.binsearch import iter_exact
 from pywb.utils.canonicalize import unsurt
 from pywb.utils.canonicalize import canonicalize as surt
@@ -29,15 +30,15 @@ IPFS_API = ipfsApi.Client(IPFSAPI_IP, IPFSAPI_PORT)
 
 @app.route('/webui/<path:path>')
 def showWebUI(path):
-    path = 'ipwb/webui/' + path
-    with open(path, 'r') as webuiFile:
-        content = webuiFile.read()
-        if 'index.html' in path:
-            content = content.replace('MEMCOUNT', str(retrieveMemCount()))
-            content = content.replace(
-              'var uris = []', 'var uris = ' + getURIsInCDXJ())
-            content = content.replace('INDEXSRC', os.path.abspath(INDEX_FILE))
-        return Response(content)
+    webuiPath = '/'.join(('webui', path)).replace('ipwb.replay', 'ipwb')
+    content = pkg_resources.resource_string(__name__, webuiPath)
+    if 'index.html' in path:
+        content = content.replace(
+            'MEMCOUNT', str(retrieveMemCount(INDEX_FILE)))
+        content = content.replace(
+            'var uris = []', 'var uris = ' + getURIsInCDXJ())
+        content = content.replace('INDEXSRC', os.path.abspath(INDEX_FILE))
+    return Response(content)
 
 
 @app.route('/daemon/<cmd>')
@@ -60,12 +61,17 @@ def commandDaemon(cmd):
         return Response('bad command!')
 
 
+@app.errorhandler(Exception)
+def all_exception_handler(error):
+    return 'Error', 500
+
+
 # This route needs better restructuring but is currently only used to get the
 # webUI location for the ipwb webUI, more setting might need to be fetched in
 # the future.
 @app.route('/config/<requestedSetting>')
 def getRequestedSetting(requestedSetting):
-    return Response(ipwbConfig.getIPFSAPIHostAndPort()+'/webui')
+    return Response(ipwbConfig.getIPFSAPIHostAndPort() + '/webui')
 
 
 @app.route('/', defaults={'path': ''})
@@ -92,7 +98,7 @@ def show_uri(path):
     except:
         respString = ('{0} not found :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
-                        path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
+            path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
 
     cdxParts = cdxLine.split(" ", 2)
@@ -151,24 +157,37 @@ def generateDaemonStatusButton():
 '''
 
 
+def getIndexFileContents(cdxjFile=INDEX_FILE):
+    indexFilePath = '/{0}'.format(cdxjFile).replace('ipwb.replay', 'ipwb')
+    indexFileContent = pkg_resources.resource_string(__name__, indexFilePath)
+    return indexFileContent
+
+
+def getIndexFileFullPath(cdxjFile=INDEX_FILE):
+    indexFilePath = '/{0}'.format(cdxjFile).replace('ipwb.replay', 'ipwb')
+    indexFileName = pkg_resources.resource_filename(__name__, indexFilePath)
+    return indexFileName
+
+
 def getURIsInCDXJ(cdxjFile=INDEX_FILE):
-    with open(cdxjFile) as indexFile:
-        uris = []
-        for i, l in enumerate(indexFile):
-            uris.append(unsurt(l.split(' ')[0]))
-            pass
-        return json.dumps(uris)
+    lines = getIndexFileContents(cdxjFile).split('\n')
+    uris = []
+    for i, l in enumerate(lines):
+        uris.append(unsurt(l.split(' ')[0]))
+        pass
+    return json.dumps(uris)
 
 
-def retrieveMemCount():
-    with open(INDEX_FILE, 'r') as cdxFile:
-        for i, l in enumerate(cdxFile):
-            pass
-        return i+1
+def retrieveMemCount(cdxjFile=INDEX_FILE):
+    lines = getIndexFileContents(cdxjFile).split('\n')
+    for i, l in enumerate(lines):
+        pass
+    return i + 1
 
 
-def getCDXLine(surtURI):
-    with open(INDEX_FILE, 'r') as cdxFile:
+def getCDXLine(surtURI, cdxjFile=INDEX_FILE):
+    fullFilePath = getIndexFileFullPath(cdxjFile)
+    with open(fullFilePath, 'r') as cdxFile:
         bsResp = iter_exact(cdxFile, surtURI)
         cdxLine = bsResp.next()
         return cdxLine

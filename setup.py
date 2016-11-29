@@ -18,35 +18,43 @@ setup(
     license='MIT',
     long_description=long_description,
     provides=[
-      'ipwb'
+        'ipwb'
     ],
     install_requires=[
-      'pywb',
-      'surt',
-      'ipfs-api'
+        'pywb',
+        'surt',
+        'ipfs-api'
     ],
     entry_points="""
         [console_scripts]
         ipwb = ipwb.__main__:main
     """,
+    package_data={
+        'ipwb': [
+            'webui/*.*',
+            'webui/favicons/*.*',
+            'samples/indexes/*.*',
+            'samples/warcs/*.*'
+          ]
+    },
     keywords='http web archives ipfs distributed odu wayback',
     classifiers=[
-      'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 2 - Pre-Alpha',
 
-      'Environment :: Web Environment',
+        'Environment :: Web Environment',
 
-      'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 2.7',
 
-      'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: MIT License',
 
-      'Intended Audience :: Developers',
-      'Intended Audience :: Information Technology',
-      'Intended Audience :: Science/Research',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Information Technology',
+        'Intended Audience :: Science/Research',
 
-      'Topic :: Internet :: WWW/HTTP',
-      'Topic :: System :: Archiving',
-      'Topic :: System :: Archiving :: Backup',
-      'Topic :: System :: Archiving :: Mirroring',
-      'Topic :: Utilities',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: System :: Archiving',
+        'Topic :: System :: Archiving :: Backup',
+        'Topic :: System :: Archiving :: Mirroring',
+        'Topic :: Utilities',
     ]
 )
