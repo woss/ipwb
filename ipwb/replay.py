@@ -188,7 +188,7 @@ def getURIsInCDXJ(cdxjFile=INDEX_FILE):
     if not indexFileContents:
         return 0
 
-    lines = indexFileContents.split('\n')
+    lines = indexFileContents.strip().split('\n')
 
     uris = []
     for i, l in enumerate(lines):
@@ -198,14 +198,13 @@ def getURIsInCDXJ(cdxjFile=INDEX_FILE):
 
 
 def retrieveMemCount(cdxjFile=INDEX_FILE):
-    print "Beez"
     print "Retrieving URI-Ms from {0}".format(cdxjFile)
     indexFileContents = getIndexFileContents(cdxjFile)
 
     if not indexFileContents:
         return 0
 
-    lines = indexFileContents.split('\n')
+    lines = indexFileContents.strip().split('\n')
     if not lines:
         print "Index file not found"
         return 0

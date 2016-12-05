@@ -31,7 +31,7 @@ function addEventListeners () {
 
 function setPlurality () {
   var count = document.getElementById('memCountInt').innerHTML
-  if (count === 1) {
+  if (count === "1") {
     document.getElementById('plural').classList.add('hidden')
   }
 }
