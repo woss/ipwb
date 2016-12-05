@@ -20,6 +20,9 @@ import util as ipwbConfig
 from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
 from util import INDEX_FILE
 
+from Crypto.Cipher import XOR
+import base64
+
 app = Flask(__name__)
 app.debug = True
 # @app.route("/")
@@ -101,23 +104,25 @@ def show_uri(path):
     try:
         cdxLine = getCDXLine(surt(path))
     except:
+        print sys.exc_info()[0]
         respString = ('{0} not found :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
 
-    print "test"
+
     cdxParts = cdxLine.split(" ", 2)
     # surtURI = cdxParts[0]
     # datetime = cdxParts[1]
     jObj = json.loads(cdxParts[2])
 
     digests = jObj['locator'].split('/')
-
-    # print digests[-1]
     payload = IPFS_API.cat(digests[-1])
-
     header = IPFS_API.cat(digests[-2])
+
+    if 'encryption_method' in jObj:
+      payload = XOR.new(jObj['encryption_key']).decrypt(base64.b64decode(payload))
+      header = XOR.new(jObj['encryption_key']).decrypt(base64.b64decode(header))
 
     # print header
     # print payload
@@ -150,17 +155,6 @@ def generateDaemonStatusButton():
     buttonHTML = '{0}<button>{1}</button>'.format(text, buttonText)
     footer = '<script>assignStatusButtonHandlers()</script></body></html>'
     return Response('{0}{1}{2}'.format(statusPageHTML, buttonHTML, footer))
-
-
-'''def isDaemonAlive(hostAndPort):
-    """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    try:
-        requests.get('http://' + hostAndPort)
-        return True
-    except ConnectionError:
-        print "Daemon is not running at http://" + hostAndPort
-        return False
-'''
 
 
 def getIndexFileContents(cdxjFile=INDEX_FILE):
@@ -216,8 +210,10 @@ def retrieveMemCount(cdxjFile=INDEX_FILE):
 def getCDXLine(surtURI, cdxjFile=INDEX_FILE):
     fullFilePath = getIndexFileFullPath(cdxjFile)
     with open(fullFilePath, 'r') as cdxFile:
+        print "looking for {0} in {1}".format(surtURI, fullFilePath)
         bsResp = iter_exact(cdxFile, surtURI)
         cdxLine = bsResp.next()
+
         return cdxLine
 
 

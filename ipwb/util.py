@@ -9,7 +9,7 @@ IPFSAPI_PORT = 5001
 IPWBREPLAY_IP = '127.0.0.1'
 IPWBREPLAY_PORT = 5000
 
-INDEX_FILE = 'samples/indexes/sample-2.cdxj'
+INDEX_FILE = 'samples/indexes/sample-encrypted.cdxj'
 
 
 def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):

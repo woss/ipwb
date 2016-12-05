@@ -79,11 +79,11 @@ def indexFileAt(warcPath, encrypt=False):
             while retryCount < ipfsRetryCount:
                 try:
                     if encrypt:
+                        # Dummy encryption, use something better in production
                         key = raw_input("Enter a key for encryption: ")
-                        xKey = XOR.new(key)
-                        hstr = base64.b64encode(xKey.encrypt(hstr))
-                        payload = base64.b64encode(xKey.encrypt(payload))
-
+ 
+                        hstr = base64.b64encode(XOR.new(key).encrypt(hstr))
+                        payload = base64.b64encode(XOR.new(key).encrypt(payload))
                     httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
                     payloadIPFSHash = pushBytesToIPFS(bytes(payload))
                     break
@@ -115,7 +115,8 @@ def indexFileAt(warcPath, encrypt=False):
                 # 'encryption_key': encrKey,
                 }
             if encrypt:
-                obj['encrypt'] = key
+                obj['encryption_key'] = key
+                obj['encryption_method'] = 'xor'
             objJSON = json.dumps(obj)
 
             cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
