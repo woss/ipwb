@@ -67,7 +67,7 @@ In a separate terminal session (or the same if you started the daemon in the bac
 
 .. code-block:: bash
 
-      ipwb index samples/warcs/sample-1.warc.gz
+      ipwb index ipwb/samples/warcs/sample-1.warc.gz
 
 Alternatively, if running from source without installation:
 
