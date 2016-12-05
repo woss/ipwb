@@ -16,10 +16,9 @@ def main():
 
 
 def checkArgs_index(args):
-    # print "TODO: start indexing file at path: " + args.warcPath
     if not util.isDaemonAlive():
         sys.exit()
-    indexer.indexFileAt(args.warcPath)
+    indexer.indexFileAt(args.warcPath, args.e)
 
 
 def checkArgs_replay(args):
@@ -48,6 +47,11 @@ def checkArgs(argsIn):
         help="Path to a WARC[.gz] file",
         metavar="index <warcPath>",
         default=None)
+    indexParser.add_argument(
+        '-e',
+        help="Encrypt WARC content prior to disseminating to IPFS",
+        action='store_true',
+        default=False)
     indexParser.set_defaults(func=checkArgs_index)
     replayParser = subparsers.add_parser(
         'replay',

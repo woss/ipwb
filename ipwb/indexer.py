@@ -14,6 +14,9 @@ from requests.packages.urllib3.exceptions import NewConnectionError
 from requests.exceptions import ConnectionError
 import requests
 
+from Crypto.Cipher import XOR
+import base64
+
 from __init__ import __version__ as ipwbVersion
 
 IP = '127.0.0.1'
@@ -22,7 +25,7 @@ PORT = '5001'
 IPFS_API = ipfsApi.Client(IP, PORT)
 
 
-def indexFileAt(warcPath):
+def indexFileAt(warcPath, encrypt=False):
     verifyFileExists(warcPath)
 
     textRecordParserOptions = {
@@ -75,6 +78,11 @@ def indexFileAt(warcPath):
 
             while retryCount < ipfsRetryCount:
                 try:
+                    if encrypt:
+                        key = raw_input("Enter a key for encryption: ")
+                        hstr = base64.b64encode(XOR.new(key).encrypt(hstr))
+                        payload = base64.b64encode(XOR.new(key).encrypt(payload))
+                                       
                     httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
                     payloadIPFSHash = pushBytesToIPFS(bytes(payload))
                     break
@@ -105,6 +113,8 @@ def indexFileAt(warcPath):
                 'mime_type': mime,
                 # 'encryption_key': encrKey,
                 }
+            if encrypt:
+                obj['encrypt'] = key
             objJSON = json.dumps(obj)
 
             cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
@@ -150,7 +160,7 @@ def pushBytesToIPFS(bytes):
     """
     global IPFS_API
 
-    res = IPFS_API.add_bytes(bytes)
+    res = IPFS_API.add_bytes(bytes) # bytes)
     # TODO: verify that the add was successful
 
     # Receiving weirdness where res is sometimes a dictionary and sometimes
@@ -173,4 +183,5 @@ class TextRecordParser(DefaultRecordParser):
 
 if __name__ == '__main__':
     checkArgs(sys.argv)
+    print "foo"
     main()

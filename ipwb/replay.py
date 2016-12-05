@@ -33,11 +33,15 @@ def showWebUI(path):
     webuiPath = '/'.join(('webui', path)).replace('ipwb.replay', 'ipwb')
     content = pkg_resources.resource_string(__name__, webuiPath)
     if 'index.html' in path:
+        print "lorem"
+        iFile = pkg_resources.resource_filename(__name__, INDEX_FILE)
         content = content.replace(
-            'MEMCOUNT', str(retrieveMemCount(INDEX_FILE)))
+            'MEMCOUNT', str(retrieveMemCount(iFile)))
+        print "ipsum"
         content = content.replace(
-            'var uris = []', 'var uris = ' + getURIsInCDXJ())
-        content = content.replace('INDEXSRC', os.path.abspath(INDEX_FILE))
+            'var uris = []', 
+            'var uris = {0}'.format(getURIsInCDXJ(iFile)))
+        content = content.replace('INDEXSRC', iFile)
     return Response(content)
 
 
@@ -63,6 +67,7 @@ def commandDaemon(cmd):
 
 @app.errorhandler(Exception)
 def all_exception_handler(error):
+    print error
     return 'Error', 500
 
 
@@ -101,6 +106,7 @@ def show_uri(path):
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
 
+    print "test"
     cdxParts = cdxLine.split(" ", 2)
     # surtURI = cdxParts[0]
     # datetime = cdxParts[1]
@@ -158,19 +164,37 @@ def generateDaemonStatusButton():
 
 
 def getIndexFileContents(cdxjFile=INDEX_FILE):
+    if not os.path.exists(cdxjFile):
+        return ""
     indexFilePath = '/{0}'.format(cdxjFile).replace('ipwb.replay', 'ipwb')
-    indexFileContent = pkg_resources.resource_string(__name__, indexFilePath)
+    
+    #print "{0}{1}".format(__name__, indexFilePath)
+    #print "{0}".format(pkg_resources.get_resource_filename(__name__, indexFilePath))
+    #if not get_resource_filename(__name__, indexFilePath)
+    #  print "Could not find the index file at {0}".format(indexFilePath)
+    #  return None
+    indexFileContent = ''
+    with open(cdxjFile, 'r') as f:
+      indexFileContent = f.read()
+    #indexFileContent = pkg_resources.resource_string(__name__, indexFilePath)
     return indexFileContent
 
 
 def getIndexFileFullPath(cdxjFile=INDEX_FILE):
     indexFilePath = '/{0}'.format(cdxjFile).replace('ipwb.replay', 'ipwb')
+    
     indexFileName = pkg_resources.resource_filename(__name__, indexFilePath)
     return indexFileName
 
 
 def getURIsInCDXJ(cdxjFile=INDEX_FILE):
-    lines = getIndexFileContents(cdxjFile).split('\n')
+    indexFileContents = getIndexFileContents(cdxjFile)
+    
+    if not indexFileContents:
+      return 0
+    
+    lines = indexFileContents.split('\n')
+    
     uris = []
     for i, l in enumerate(lines):
         uris.append(unsurt(l.split(' ')[0]))
@@ -179,7 +203,17 @@ def getURIsInCDXJ(cdxjFile=INDEX_FILE):
 
 
 def retrieveMemCount(cdxjFile=INDEX_FILE):
-    lines = getIndexFileContents(cdxjFile).split('\n')
+    print "Beez"
+    print "Retrieving URI-Ms from {0}".format(cdxjFile)
+    indexFileContents = getIndexFileContents(cdxjFile)
+    
+    if not indexFileContents:
+      return 0
+    
+    lines = indexFileContents.split('\n')
+    if not lines:
+      print "Index file not found"
+      return 0
     for i, l in enumerate(lines):
         pass
     return i + 1
