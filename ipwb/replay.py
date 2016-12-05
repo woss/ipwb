@@ -110,7 +110,6 @@ def show_uri(path):
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
 
-
     cdxParts = cdxLine.split(" ", 2)
     # surtURI = cdxParts[0]
     # datetime = cdxParts[1]
@@ -121,8 +120,10 @@ def show_uri(path):
     header = IPFS_API.cat(digests[-2])
 
     if 'encryption_method' in jObj:
-      payload = XOR.new(jObj['encryption_key']).decrypt(base64.b64decode(payload))
-      header = XOR.new(jObj['encryption_key']).decrypt(base64.b64decode(header))
+        pKey = XOR.new(jObj['encryption_key'])
+        payload = pKey.decrypt(base64.b64decode(payload))
+        hKey = XOR.new(jObj['encryption_key'])
+        header = hKey.decrypt(base64.b64decode(header))
 
     # print header
     # print payload

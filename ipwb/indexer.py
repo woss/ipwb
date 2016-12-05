@@ -81,9 +81,12 @@ def indexFileAt(warcPath, encrypt=False):
                     if encrypt:
                         # Dummy encryption, use something better in production
                         key = raw_input("Enter a key for encryption: ")
- 
-                        hstr = base64.b64encode(XOR.new(key).encrypt(hstr))
-                        payload = base64.b64encode(XOR.new(key).encrypt(payload))
+
+                        hstr = XOR.new(key).encrypt(hstr)
+                        hstr = base64.b64encode(hstr)
+
+                        payload = XOR.new(key).encrypt(payload)
+                        payload = base64.b64encode()
                     httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
                     payloadIPFSHash = pushBytesToIPFS(bytes(payload))
                     break
@@ -111,8 +114,7 @@ def indexFileAt(warcPath, encrypt=False):
                 'locator': 'urn:ipfs/{0}/{1}'.format(
                   httpHeaderIPFSHash, payloadIPFSHash),
                 'status_code': statusCode,
-                'mime_type': mime,
-                # 'encryption_key': encrKey,
+                'mime_type': mime
                 }
             if encrypt:
                 obj['encryption_key'] = key
