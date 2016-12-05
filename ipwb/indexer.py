@@ -86,7 +86,7 @@ def indexFileAt(warcPath, encrypt=False):
                         hstr = base64.b64encode(hstr)
 
                         payload = XOR.new(key).encrypt(payload)
-                        payload = base64.b64encode()
+                        payload = base64.b64encode(payload)
                     httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
                     payloadIPFSHash = pushBytesToIPFS(bytes(payload))
                     break
@@ -96,7 +96,7 @@ def indexFileAt(warcPath, encrypt=False):
                     sys.exit()
                 except:
                     logError('IPFS failed on ' + entry.get('url'))
-                    # print sys.exc_info()[0]
+                    print sys.exc_info()
                     retryCount += 1
 
             if retryCount >= ipfsRetryCount:
