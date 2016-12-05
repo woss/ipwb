@@ -93,7 +93,7 @@ The ipwb replay system can be launched with:
 
 .. code-block:: bash
 
-      (ipwb) $ ipwb replay
+      (ipwbve) $ ipwb replay
 	  
 Once the daemon is started, the replay system web interface can be accessed through a web browser, e.g., `http://127.0.0.1:5000/http://www.cs.odu.edu/~salam/` with the sample CDXJ file.
 
