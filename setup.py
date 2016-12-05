@@ -4,6 +4,7 @@ from setuptools import setup
 from ipwb import __version__
 
 long_description = open('README.rst').read()
+desc = """InterPlanetary Wayback (ipwb): Web Archive integration with IPFS"""
 
 setup(
     name='ipwb',
@@ -12,8 +13,7 @@ setup(
     download_url="https://github.com/oduwsdl/ipwb",
     author='Mat Kelly',
     author_email='mkelly@cs.odu.edu',
-    description="""InterPlanetary Wayback (ipwb):
-      Web Archive integration with IPFS""",
+    description=desc,
     packages=['ipwb'],
     license='MIT',
     long_description=long_description,
