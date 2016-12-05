@@ -80,9 +80,10 @@ def indexFileAt(warcPath, encrypt=False):
                 try:
                     if encrypt:
                         key = raw_input("Enter a key for encryption: ")
-                        hstr = base64.b64encode(XOR.new(key).encrypt(hstr))
-                        payload = base64.b64encode(XOR.new(key).encrypt(payload))
-                                       
+                        xKey = XOR.new(key)
+                        hstr = base64.b64encode(xKey.encrypt(hstr))
+                        payload = base64.b64encode(xKey.encrypt(payload))
+
                     httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
                     payloadIPFSHash = pushBytesToIPFS(bytes(payload))
                     break
@@ -160,7 +161,7 @@ def pushBytesToIPFS(bytes):
     """
     global IPFS_API
 
-    res = IPFS_API.add_bytes(bytes) # bytes)
+    res = IPFS_API.add_bytes(bytes)  # bytes)
     # TODO: verify that the add was successful
 
     # Receiving weirdness where res is sometimes a dictionary and sometimes
