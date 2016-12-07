@@ -22,22 +22,20 @@ A pictorial representation of the ipwb indexing and replay process:
 
 Installing
 ----------
-ipwb can be run from source (see Indexing below) or installed via pip:
+The latest release of ipwb can be installed using pip:
 
 .. code-block:: bash
 
       $ pip install ipwb
-       
-...or from source in a virtual environment:
+
+The latest development version containing changes not yet released can be installed from source:
 
 .. code-block:: bash
       
       $ git clone https://github.com/oduwsdl/ipwb
       $ cd ipwb
-      $ virtualenv ipwbve
-      $ source ipwbve/bin/activate
-      (ipwbve) $ pip install -r requirements.txt
-      (ipwbve) $ pip install ./
+      $ pip install -r requirements.txt
+      $ pip install ./
 
 Setup
 -----
@@ -69,35 +67,38 @@ In a separate terminal session (or the same if you started the daemon in the bac
 
       ipwb index ipwb/samples/warcs/sample-1.warc.gz
 
-Alternatively, if running from source without installation:
-
-.. code-block:: bash
-
-      (ipwbve) $ python ipwb index (path to warc or warc.gz)
-
 
 `indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g., 
 
 .. code-block:: bash
 
-      (ipwbve) $ ipwb index (path to warc or warc.gz) >> myArchiveIndex.cdxj
+      $ ipwb index (path to warc or warc.gz) >> myArchiveIndex.cdxj
 
-(TODO: add info about specifying the out file as a parameter)
+..
+
+        (TODO: add info about specifying the out file as a parameter)
 
 Replaying
 ---------
+..
 
-(TODO: add more detailed info in this section, better sample data with more URIs in the repo for better demonstration of ipwb functionality)
+        (TODO: add more detailed info in this section, better sample data with more URIs in the repo for better demonstration of ipwb functionality)
 
-The ipwb replay system can be launched with:
+An archival replay system is also included with ipwb to re-experience the content disseminated to IPFS . The replay system can be launched with:
 
 .. code-block:: bash
 
-      (ipwbve) $ ipwb replay
+      $ ipwb replay
 	  
-Once the daemon is started, the replay system web interface can be accessed through a web browser, e.g., `http://127.0.0.1:5000/http://www.cs.odu.edu/~salam/` with the sample CDXJ file.
+Once started, the replay system's web interface can be accessed through a web browser, e.g., `http://127.0.0.1:5000/http://www.cs.odu.edu/~salam/` with the sample CDXJ file.
 
-(TODO: provide instructions on specifying a CDXJ file/directory to be read from the CDXJ replay system)
+..
+
+        (TODO: provide instructions on specifying a CDXJ file/directory to be read from the CDXJ replay system)
+
+Debugging
+---------------
+The ipwb indexing and replay system can also be run from source using a virtualenv and calling the `indexer.py` and `replay.py` scripts in the module's ipwb directly from the project's root.
 
 Project History
 ---------------
