@@ -82,10 +82,10 @@ def indexFileAt(warcPath, encrypt=False):
                     if encrypt:
                         # Dummy encryption, use something better in production
                         outputRedirected = os.fstat(0) != os.fstat(1)
-                        promptString = 'Enter a key for encryption: ' 
-                        if outputRedirected: # Prevents prompt in redir output
-                          promptString = ''
-                          print(promptString, file=sys.stderr)
+                        promptString = 'Enter a key for encryption: '
+                        if outputRedirected:  # Prevents prompt in redir output
+                            promptString = ''
+                            print(promptString, file=sys.stderr)
 
                         key = raw_input(promptString)
 
