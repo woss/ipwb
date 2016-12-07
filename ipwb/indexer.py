@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys
 import os
 import json
@@ -80,7 +81,13 @@ def indexFileAt(warcPath, encrypt=False):
                 try:
                     if encrypt:
                         # Dummy encryption, use something better in production
-                        key = raw_input("Enter a key for encryption: ")
+                        outputRedirected = os.fstat(0) != os.fstat(1)
+                        promptString = 'Enter a key for encryption: ' 
+                        if outputRedirected: # Prevents prompt in redir output
+                          promptString = ''
+                          print(promptString, file=sys.stderr)
+
+                        key = raw_input(promptString)
 
                         hstr = XOR.new(key).encrypt(hstr)
                         hstr = base64.b64encode(hstr)
@@ -91,12 +98,12 @@ def indexFileAt(warcPath, encrypt=False):
                     payloadIPFSHash = pushBytesToIPFS(bytes(payload))
                     break
                 except NewConnectionError:
-                    print 'IPFS daemon is likely not running.'
-                    print 'Run "ipfs daemon" in another terminal session.'
+                    print('IPFS daemon is likely not running.')
+                    print('Run "ipfs daemon" in another terminal session.')
                     sys.exit()
                 except:
                     logError('IPFS failed on ' + entry.get('url'))
-                    print sys.exc_info()
+                    print(sys.exc_info())
                     retryCount += 1
 
             if retryCount >= ipfsRetryCount:
@@ -123,11 +130,11 @@ def indexFileAt(warcPath, encrypt=False):
 
             cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
             cdxLines += cdxjLine
-            print cdxjLine
+            print(cdxjLine)
 
-            # print httpHeaderIPFSHash
+            # print(httpHeaderIPFSHash)
             # resHeader = pullFromIPFS(httpHeaderIPFSHash)
-            # print resHeader
+            # print(resHeader)
             # resPayload = pullFromIPFS(payloadIPFSHash)
             # warcContents = resHeader + "\n\n" + resPayload
 
@@ -137,19 +144,19 @@ def verifyDaemonIsAlive(hostAndPort):
     try:
         requests.get('http://' + hostAndPort)
     except ConnectionError:
-        print "Daemon is not running at http://" + hostAndPort
+        print('Daemon is not running at http://' + hostAndPort)
         sys.exit()
 
 
 def verifyFileExists(warcPath):
     if os.path.isfile(warcPath):
         return
-    print "File at " + warcPath + " does not exist!"
+    print('File at ' + warcPath + ' does not exist!')
     sys.exit()
 
 
 def logError(errIn):
-    print >> sys.stderr, errIn
+    print(errIn, file=sys.stderr)
 
 
 def pullFromIPFS(hash):
@@ -187,5 +194,4 @@ class TextRecordParser(DefaultRecordParser):
 
 if __name__ == '__main__':
     checkArgs(sys.argv)
-    print "foo"
     main()
