@@ -74,15 +74,11 @@ In a separate terminal session (or the same if you started the daemon in the bac
 
       $ ipwb index (path to warc or warc.gz) >> myArchiveIndex.cdxj
 
-..
-
-        (TODO: add info about specifying the out file as a parameter)
+.. (TODO: add info about specifying the out file as a parameter)
 
 Replaying
 ---------
-..
-
-        (TODO: add more detailed info in this section, better sample data with more URIs in the repo for better demonstration of ipwb functionality)
+.. (TODO: add more detailed info in this section, better sample data with more URIs in the repo for better demonstration of ipwb functionality)
 
 An archival replay system is also included with ipwb to re-experience the content disseminated to IPFS . The replay system can be launched with:
 
@@ -92,9 +88,7 @@ An archival replay system is also included with ipwb to re-experience the conten
 	  
 Once started, the replay system's web interface can be accessed through a web browser, e.g., `http://127.0.0.1:5000/http://www.cs.odu.edu/~salam/` with the sample CDXJ file.
 
-..
-
-        (TODO: provide instructions on specifying a CDXJ file/directory to be read from the CDXJ replay system)
+.. (TODO: provide instructions on specifying a CDXJ file/directory to be read from the CDXJ replay system)
 
 Debugging
 ---------------
