@@ -3,7 +3,7 @@
 
 import sys
 import os
-import ipfsApi
+import ipfsapi
 import json
 import subprocess
 import pkg_resources
@@ -28,7 +28,7 @@ app.debug = True
 # @app.route("/")
 # def hello():
 #    return "Hello World!"
-IPFS_API = ipfsApi.Client(IPFSAPI_IP, IPFSAPI_PORT)
+IPFS_API = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
 
 
 @app.route('/webui/<path:path>')

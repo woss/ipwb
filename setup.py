@@ -23,7 +23,7 @@ setup(
     install_requires=[
         'pywb',
         'surt',
-        'ipfs-api'
+        'ipfsapi'
     ],
     entry_points="""
         [console_scripts]

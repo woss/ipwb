@@ -1,3 +1,4 @@
 pywb
-ipfs-api
+ipfsapi
 flask
+pycrypto

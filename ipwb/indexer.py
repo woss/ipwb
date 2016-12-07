@@ -4,7 +4,7 @@
 import sys
 import os
 import json
-import ipfsApi
+import ipfsapi
 import argparse
 
 from io import BytesIO
@@ -22,7 +22,7 @@ from __init__ import __version__ as ipwbVersion
 IP = '127.0.0.1'
 PORT = '5001'
 
-IPFS_API = ipfsApi.Client(IP, PORT)
+IPFS_API = ipfsapi.Client(IP, PORT)
 
 
 def indexFileAt(warcPath, encrypt=False):
