@@ -1,8 +1,13 @@
 from os.path import expanduser
 from os.path import basename
 import json
+import sys
 import requests
-from requests.exceptions import ConnectionError
+import ipfsapi
+import exceptions
+import subprocess
+# from requests.exceptions import ConnectionError
+from ipfsapi.exceptions import ConnectionError
 
 IPFSAPI_IP = '127.0.0.1'
 IPFSAPI_PORT = 5001
@@ -14,12 +19,21 @@ INDEX_FILE = 'samples/indexes/sample-encrypted.cdxj'
 
 def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
+    client = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
+
     try:
-        requests.get('http://' + hostAndPort)
+        subprocess.call(['ipfs', '--version'])  # OSError if ipfs not installed
+        client.id()  # ConnectionError if IPFS daemon not running
         return True
     except ConnectionError:
         print "Daemon is not running at http://" + hostAndPort
         return False
+    except OSError:
+        print "IPFS is likely not installed. See https://ipfs.io/docs/install/"
+        sys.exit()
+    except:
+        print 'Unknown error in retrieving daemon status'
+        print sys.exc_info()[0]
 
 
 def getURIsInCDXJ(cdxjFile=INDEX_FILE):
@@ -47,8 +61,13 @@ def getCDXLine(surtURI):
 
 # IPFS Config manipulation from here on out.
 def readIPFSConfig():
-    with open(expanduser("~") + '/.ipfs/config', 'r') as f:
-        return json.load(f)
+    try:
+        with open(expanduser("~") + '/.ipfs/config', 'r') as f:
+            return json.load(f)
+    except IOError:
+        print "IPFS config not found."
+        print "Have you installed ipfs and run ipfs init?"
+        sys.exit()
 
 
 def writeIPFSConfig(jsonToWrite):

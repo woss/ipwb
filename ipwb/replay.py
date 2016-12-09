@@ -40,7 +40,6 @@ def showWebUI(path):
         iFile = pkg_resources.resource_filename(__name__, INDEX_FILE)
         content = content.replace(
             'MEMCOUNT', str(retrieveMemCount(iFile)))
-        print "ipsum"
         content = content.replace(
             'var uris = []',
             'var uris = {0}'.format(getURIsInCDXJ(iFile)))
