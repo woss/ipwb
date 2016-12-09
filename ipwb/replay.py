@@ -19,6 +19,7 @@ import requests
 import util as ipwbConfig
 from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
 from util import INDEX_FILE
+from requests import ReadTimeout
 
 from Crypto.Cipher import XOR
 import base64
@@ -36,7 +37,6 @@ def showWebUI(path):
     webuiPath = '/'.join(('webui', path)).replace('ipwb.replay', 'ipwb')
     content = pkg_resources.resource_string(__name__, webuiPath)
     if 'index.html' in path:
-        print "lorem"
         iFile = pkg_resources.resource_filename(__name__, INDEX_FILE)
         content = content.replace(
             'MEMCOUNT', str(retrieveMemCount(iFile)))
@@ -115,8 +115,20 @@ def show_uri(path):
     jObj = json.loads(cdxParts[2])
 
     digests = jObj['locator'].split('/')
-    payload = IPFS_API.cat(digests[-1])
-    header = IPFS_API.cat(digests[-2])
+
+    try:
+        payload = IPFS_API.cat(digests[-1], timeout=1)
+        header = IPFS_API.cat(digests[-2])
+    except ipfsapi.exceptions.TimeoutError:
+        print "{0} not found at {1}".format(cdxParts[0], digests[-1])
+        respString = ('{0} not found in IPFS :(' +
+                      ' <a href="http://{1}:{2}">Go home</a>').format(
+            path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
+        return Response(respString)
+    except:
+        print sys.exc_info()[0]
+        print "general error"
+        sys.exit()
 
     if 'encryption_method' in jObj:
         pKey = XOR.new(jObj['encryption_key'])
@@ -217,39 +229,14 @@ def getCDXLine(surtURI, cdxjFile=INDEX_FILE):
         return cdxLine
 
 
-''' # Unused
-def getClosestCDXLine(surtURI, datetime):
-    cdxlobj = getCDXLines(surtURI)
-    mingap = float("inf")
-    closest = None
-    for cdxl in cdxlobj:
-        gap = abs(int(datetime) - int(cdxl[1]))
-        if gap < mingap:
-            mingap = gap
-            closest = cdxl
-    return closest
-
-
-def getCDXLines(surtURI):
-    with open('index.cdx', 'r') as cdxFile:
-        cdxlobj = []
-        bsResp = iter_exact(cdxFile, surtURI)
-        for cdxl in bsResp:
-            (suri, dttm, jobj) = cdxl.split(' ', 2)
-            if suri != surtURI:
-                break
-            cdxlobj.append((suri, dttm, jobj))
-        return cdxlobj
-'''
-
-
 def main():
     hostPort = ipwbConfig.getIPWBReplayConfig()
     if not hostPort:
         ipwbConfig.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
         hostPort = ipwbConfig.getIPWBReplayConfig()
-    # print hostPort
-    # sys.exit()
+
+    ipwbConfig.firstRun()
+
     app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
 
 

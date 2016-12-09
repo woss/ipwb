@@ -9,12 +9,14 @@ import subprocess
 # from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import ConnectionError
 
+
 IPFSAPI_IP = '127.0.0.1'
 IPFSAPI_PORT = 5001
 IPWBREPLAY_IP = '127.0.0.1'
 IPWBREPLAY_PORT = 5000
 
 INDEX_FILE = 'samples/indexes/sample-encrypted.cdxj'
+SAMPLE_WARC = 'samples/warcs/salam-home.warc'
 
 
 def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
@@ -22,6 +24,7 @@ def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
     client = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
 
     try:
+        # devnull = open(os.devnull, 'wb')
         subprocess.call(['ipfs', '--version'])  # OSError if ipfs not installed
         client.id()  # ConnectionError if IPFS daemon not running
         return True
@@ -113,3 +116,9 @@ def setIPWBReplayConfig(Host, Port, ipfsJSON=None):
       u'Port': Port
     }
     writeIPFSConfig(ipfsJSON)
+
+
+def firstRun():
+    import indexer
+    # Ensure the sample WARC is in IPFS
+    indexer.indexFileAt('ipwb/' + SAMPLE_WARC, 'radon', True)

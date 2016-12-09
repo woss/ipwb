@@ -26,7 +26,7 @@ PORT = '5001'
 IPFS_API = ipfsapi.Client(IP, PORT)
 
 
-def indexFileAt(warcPath, encrypt=False):
+def indexFileAt(warcPath, encryptionKey=None, quiet=False):
     verifyFileExists(warcPath)
 
     textRecordParserOptions = {
@@ -79,15 +79,11 @@ def indexFileAt(warcPath, encrypt=False):
 
             while retryCount < ipfsRetryCount:
                 try:
-                    if encrypt:
+                    if encryptionKey is not None:
                         # Dummy encryption, use something better in production
-                        outputRedirected = os.fstat(0) != os.fstat(1)
-                        promptString = 'Enter a key for encryption: '
-                        if outputRedirected:  # Prevents prompt in redir output
-                            promptString = ''
-                            print(promptString, file=sys.stderr)
-
-                        key = raw_input(promptString)
+                        key = encryptionKey
+                        if len(encryptionKey) == 0:
+                            key = askUserForEncryptionKey()
 
                         hstr = XOR.new(key).encrypt(hstr)
                         hstr = base64.b64encode(hstr)
@@ -123,20 +119,29 @@ def indexFileAt(warcPath, encrypt=False):
                 'status_code': statusCode,
                 'mime_type': mime
                 }
-            if encrypt:
+            if encryptionKey is not None:
                 obj['encryption_key'] = key
                 obj['encryption_method'] = 'xor'
             objJSON = json.dumps(obj)
 
             cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
             cdxLines += cdxjLine
+
+            if quiet:
+                return
+
             print(cdxjLine)
 
-            # print(httpHeaderIPFSHash)
-            # resHeader = pullFromIPFS(httpHeaderIPFSHash)
-            # print(resHeader)
-            # resPayload = pullFromIPFS(payloadIPFSHash)
-            # warcContents = resHeader + "\n\n" + resPayload
+
+def askUserForEncryptionKey():
+    outputRedirected = os.fstat(0) != os.fstat(1)
+    promptString = 'Enter a key for encryption: '
+    if outputRedirected:  # Prevents prompt in redir output
+        promptString = ''
+        print(promptString, file=sys.stderr)
+
+    key = raw_input(promptString)
+    return key
 
 
 def verifyDaemonIsAlive(hostAndPort):

@@ -18,7 +18,10 @@ def main():
 def checkArgs_index(args):
     if not util.isDaemonAlive():
         sys.exit()
-    indexer.indexFileAt(args.warcPath, args.e)
+    encKey = None
+    if args.e:
+        encKey = ''
+    indexer.indexFileAt(args.warcPath, encKey)
 
 
 def checkArgs_replay(args):
