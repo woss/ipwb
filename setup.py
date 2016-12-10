@@ -20,11 +20,6 @@ setup(
     provides=[
         'ipwb'
     ],
-    install_requires=[
-        'pywb',
-        'surt',
-        'ipfsapi'
-    ],
     entry_points="""
         [console_scripts]
         ipwb = ipwb.__main__:main
