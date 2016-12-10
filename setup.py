@@ -20,6 +20,12 @@ setup(
     provides=[
         'ipwb'
     ],
+    install_requires=[
+        'pywb',
+        'ipfsapi',
+        'flask',
+        'pycrypto'
+    ],
     entry_points="""
         [console_scripts]
         ipwb = ipwb.__main__:main
