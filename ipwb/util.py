@@ -123,4 +123,5 @@ def firstRun():
     import indexer
     # Ensure the sample WARC is in IPFS
     print 'Executing first-run procedure on provided sample data.'
-    indexer.indexFileAt(site.getsitepackages()[0] + '/ipwb/' + SAMPLE_WARC, 'radon', True)
+    indexer.indexFileAt(site.getsitepackages()[0] + '/ipwb/' + SAMPLE_WARC,
+                                                    'radon', True)
