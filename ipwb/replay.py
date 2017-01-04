@@ -25,10 +25,8 @@ from Crypto.Cipher import XOR
 import base64
 
 app = Flask(__name__)
-app.debug = True
-# @app.route("/")
-# def hello():
-#    return "Hello World!"
+app.debug = False
+
 IPFS_API = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
 
 
