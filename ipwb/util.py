@@ -6,6 +6,7 @@ import requests
 import ipfsapi
 import exceptions
 import subprocess
+import site
 # from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import ConnectionError
 
@@ -121,4 +122,5 @@ def setIPWBReplayConfig(Host, Port, ipfsJSON=None):
 def firstRun():
     import indexer
     # Ensure the sample WARC is in IPFS
-    indexer.indexFileAt('ipwb/' + SAMPLE_WARC, 'radon', True)
+    print 'Executing first-run procedure on provided sample data.'
+    indexer.indexFileAt(site.getsitepackages()[0] + '/ipwb/' + SAMPLE_WARC, 'radon', True)
