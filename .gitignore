@@ -44,6 +44,7 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
+tests/samples/warcs/frogTest_*
 
 # Translations
 *.mo
