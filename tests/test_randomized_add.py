@@ -12,12 +12,33 @@ def func(x):
     return x
 
 
-def countCDXJFields(cdxjEntry):
-    return len(cdxjEntry.split(' '))
+def isValidSURT(surt):
+    return True  # The base library does not yet have a way to check this
+
+
+def isValidDatetime(dt):
+    return len(dt) == 14 and dt.isdigit()
+
+
+def isValidJSON(jsonIn):
+    try:
+        j = json.loads(json.dumps(jsonIn))
+    except ValueError:
+        return False
+    return True
+
+
+def checkCDXJFields(cdxjEntry):
+    (surt, dt, json) = cdxjEntry.split(' ', 2)
+    validSURT = isValidSURT(surt)
+    validDT = isValidDatetime(dt)
+    validJSON = isValidJSON(json)
+
+    return validSURT and validDT and validJSON
 
 
 def countCDXJEntries(cdxjData):
-    return len(cdxjData.split('\n'))
+    return len(cdxjData.strip().split('\n'))
 
 
 def checkIPWBJSONFieldPresesence(jsonStr):
@@ -63,12 +84,8 @@ def test_push():
     # use ipwb indexer to push
     cdxj = indexer.indexFileAt(newWARCPath, quiet=True)
 
-    # We need to test the response, namely:
-    # * Valid CDXJ
-    # * Fields are unique to newly generated file (maybe need to refetch)
-    # * ...
     assert countCDXJEntries(cdxj) == 2
     firstEntry = cdxj.split('\n')[0]
-    assert countCDXJFields(firstEntry) == 3
-    firstEntryLastField = firstEntry.split(' ')[-1]
+    assert checkCDXJFields(firstEntry)
+    firstEntryLastField = firstEntry.split(' ', 2)[2]
     assert checkIPWBJSONFieldPresesence(firstEntryLastField)
