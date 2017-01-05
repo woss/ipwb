@@ -61,8 +61,8 @@ def test_push():
     """
     newWARCPath = createUniqueWARC()
     # use ipwb indexer to push
-    cdxj = indexer.indexFileAt(newWARCPath, quiet=True)  # Currently goes to stdout
-  
+    cdxj = indexer.indexFileAt(newWARCPath, quiet=True)
+
     # We need to test the response, namely:
     # * Valid CDXJ
     # * Fields are unique to newly generated file (maybe need to refetch)
