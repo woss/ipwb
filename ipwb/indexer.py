@@ -128,7 +128,7 @@ def indexFileAt(warcPath, encryptionKey=None, quiet=False):
             cdxLines += cdxjLine
 
             if quiet:
-                return
+                return cdxjLine
 
             print(cdxjLine)
 
