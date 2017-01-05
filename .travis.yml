@@ -14,3 +14,4 @@ script:
   - pep8
   - ipfs init
   - ipfs daemon &
+  - pytest
