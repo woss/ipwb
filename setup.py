@@ -62,3 +62,5 @@ setup(
         'Topic :: Utilities',
     ]
 )
+
+# Publish to pypi: python setup.py sdist upload -r pypi
