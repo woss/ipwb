@@ -93,9 +93,10 @@ def indexFileAt(warcPath, encryptionKey=None, quiet=False):
                     httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
                     payloadIPFSHash = pushBytesToIPFS(bytes(payload))
                     break
-                except NewConnectionError:
+                except NewConnectionError as e:
                     print('IPFS daemon is likely not running.')
                     print('Run "ipfs daemon" in another terminal session.')
+                    print(e)
                     sys.exit()
                 except:
                     logError('IPFS failed on ' + entry.get('url'))
@@ -124,13 +125,15 @@ def indexFileAt(warcPath, encryptionKey=None, quiet=False):
                 obj['encryption_method'] = 'xor'
             objJSON = json.dumps(obj)
 
-            cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
+            cdxjLine = '{0} {1} {2}\n'.format(uri, timestamp, objJSON)
             cdxLines += cdxjLine
 
             if quiet:
-                return
+                continue
 
             print(cdxjLine)
+        if quiet:
+            return cdxLines
 
 
 def askUserForEncryptionKey():

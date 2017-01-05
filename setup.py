@@ -26,6 +26,9 @@ setup(
         'flask',
         'pycrypto'
     ],
+    tests_require=[
+        'pytest'
+    ],
     entry_points="""
         [console_scripts]
         ipwb = ipwb.__main__:main

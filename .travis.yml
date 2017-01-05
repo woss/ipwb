@@ -1,8 +1,16 @@
 language: python
 python:
   - "2.7"
+before_script:
+  - wget "https://dist.ipfs.io/go-ipfs/v0.4.4/go-ipfs_v0.4.4_linux-amd64.tar.gz" -O /tmp/ipfs.tar.gz
+  - mkdir $HOME/bin
+  - pushd . && cd $HOME/bin && tar -xzvf /tmp/ipfs.tar.gz && popd
+  - export PATH="$HOME/bin/go-ipfs:$PATH"
 install:
   - pip install -r requirements.txt
+  - pip install -r test-requirements.txt
   - pip install pep8
 script:
   - pep8
+  - ipfs init
+  - ipfs daemon & sleep 10; pytest

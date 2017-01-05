@@ -2,3 +2,4 @@ pywb
 ipfsapi
 flask
 pycrypto
+pytest>=3.0
