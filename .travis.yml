@@ -13,5 +13,4 @@ install:
 script:
   - pep8
   - ipfs init
-  - ipfs daemon &
-  - py.test
+  - ipfs daemon && py.test
