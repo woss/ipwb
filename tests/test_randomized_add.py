@@ -14,8 +14,8 @@ def func(x):
 
 def countCDXJFields(cdxjEntry):
     return len(cdxjEntry.split(' '))
-    
-    
+
+
 def countCDXJEntries(cdxjData):
     return len(cdxjData.split('\n'))
 
@@ -23,6 +23,7 @@ def countCDXJEntries(cdxjData):
 def checkIPWBJSONFieldPresesence(jsonStr):
     keys = json.loads(jsonStr)
     return 'locator' in keys and 'mime_type' in keys and 'status_code' in keys
+
 
 def getRandomString(n):
     return ''.join(random.SystemRandom().choice(
