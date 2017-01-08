@@ -96,7 +96,7 @@ def indexFileAt(warcPath, encryptionKey=None, quiet=False):
                 except NewConnectionError as e:
                     print('IPFS daemon is likely not running.')
                     print('Run "ipfs daemon" in another terminal session.')
-                    print(e)
+                    #print(e)
                     sys.exit()
                 except:
                     logError('IPFS failed on ' + entry.get('url'))
