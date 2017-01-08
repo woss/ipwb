@@ -73,7 +73,6 @@ def checkArgs(argsIn):
         '-v', '--version', help='Report the version of ipwb', action='version',
         version='InterPlanetary Wayback ' + ipwbVersion)
 
-   
     if len(argsIn) == 1:
         parser.print_help()
         sys.exit()
