@@ -1,6 +1,7 @@
 import sys
 import argparse
 from __init__ import __version__ as ipwbVersion
+from util import INDEX_FILE
 
 # ipwb modules
 import replay
@@ -26,7 +27,10 @@ def checkArgs_index(args):
 
 def checkArgs_replay(args):
     # TODO: add any other sub-arguments for replay here
-    replay.main()
+    if hasattr(args, 'index'):
+        replay.start(args.index)
+    else:
+        replay.start()
 
 
 def checkArgs(argsIn):
@@ -60,6 +64,10 @@ def checkArgs(argsIn):
         'replay',
         prog="ipwb replay",
         help="Start the ipwb replay system")
+    replayParser.add_argument(
+        'index',
+        help="CDXJ file to use for replay",
+        nargs='?')
     replayParser.set_defaults(func=checkArgs_replay)
 
     parser.add_argument(

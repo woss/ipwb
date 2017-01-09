@@ -34,14 +34,23 @@ IPFS_API = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
 def showWebUI(path):
     webuiPath = '/'.join(('webui', path)).replace('ipwb.replay', 'ipwb')
     content = pkg_resources.resource_string(__name__, webuiPath)
+
     if 'index.html' in path:
-        iFile = pkg_resources.resource_filename(__name__, INDEX_FILE)
+        iFile = ipwbConfig.getIPWBReplayIndexPath()
+        if iFile is None or iFile == '':
+            iFile = pkg_resources.resource_filename(__name__, INDEX_FILE)
+
+        if not os.path.isabs(iFile):  # Convert rel to abs path
+            iFile = pkg_resources.resource_filename(__name__, iFile)
+
         content = content.replace(
             'MEMCOUNT', str(retrieveMemCount(iFile)))
+
         content = content.replace(
             'var uris = []',
             'var uris = {0}'.format(getURIsInCDXJ(iFile)))
         content = content.replace('INDEXSRC', iFile)
+
     return Response(content)
 
 
@@ -106,10 +115,8 @@ def show_uri(path):
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
-
     cdxParts = cdxLine.split(" ", 2)
-    # surtURI = cdxParts[0]
-    # datetime = cdxParts[1]
+
     jObj = json.loads(cdxParts[2])
 
     digests = jObj['locator'].split('/')
@@ -134,8 +141,6 @@ def show_uri(path):
         hKey = XOR.new(jObj['encryption_key'])
         header = hKey.decrypt(base64.b64decode(header))
 
-    # print header
-    # print payload
     hLines = header.split('\n')
     hLines.pop(0)
 
@@ -171,6 +176,7 @@ def getIndexFileContents(cdxjFile=INDEX_FILE):
     if not os.path.exists(cdxjFile):
         return ""
     indexFilePath = '/{0}'.format(cdxjFile).replace('ipwb.replay', 'ipwb')
+    print 'getting index file at {0}'.format(indexFilePath)
 
     indexFileContent = ''
     with open(cdxjFile, 'r') as f:
@@ -227,19 +233,20 @@ def getCDXLine(surtURI, cdxjFile=INDEX_FILE):
         return cdxLine
 
 
-def main():
+def start(cdxjFile=INDEX_FILE):
     hostPort = ipwbConfig.getIPWBReplayConfig()
     if not hostPort:
         ipwbConfig.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
         hostPort = ipwbConfig.getIPWBReplayConfig()
 
     ipwbConfig.firstRun()
-
+    ipwbConfig.setIPWBReplayIndexPath(cdxjFile)
+    app.cdxjFile = cdxjFile
     app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
 
 
 if __name__ == "__main__":
-    main()
+    start()
 
 # Read in URI, convert to SURT
 #  surt(uriIn)

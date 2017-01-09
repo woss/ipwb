@@ -119,6 +119,23 @@ def setIPWBReplayConfig(Host, Port, ipfsJSON=None):
     writeIPFSConfig(ipfsJSON)
 
 
+def setIPWBReplayIndexPath(cdxj):
+    if cdxj is None:
+        cdxj = INDEX_FILE
+    ipfsJSON = readIPFSConfig()
+    ipfsJSON['Ipwb']['Replay']['Index'] = cdxj
+    writeIPFSConfig(ipfsJSON)
+    return
+
+
+def getIPWBReplayIndexPath():
+    ipfsJSON = readIPFSConfig()
+    if 'Index' in ipfsJSON['Ipwb']['Replay']:
+        return ipfsJSON['Ipwb']['Replay']['Index']
+    else:
+        return ''
+
+
 def firstRun():
     import indexer
     # Ensure the sample WARC is in IPFS
