@@ -96,6 +96,69 @@ Once started, the replay system's web interface can be accessed through a web br
 
 .. (TODO: provide instructions on specifying a CDXJ file/directory to be read from the CDXJ replay system)
 
+Help
+-------------
+Usage of sub-commands in ipwb can be accessed through providing the `-h` or `--help` flag, like any of the below.
+
+.. code-block:: bash
+
+      $ ipwb -h
+      usage: ipwb [-h] [-d DAEMON_ADDRESS] [-o OUTFILE] [-v] {index,replay} ...
+      
+      InterPlanetary Wayback (ipwb)
+      
+      optional arguments:
+        -h, --help            show this help message and exit
+        -d DAEMON_ADDRESS, --daemon DAEMON_ADDRESS
+                              Location of ipfs daemon (default 127.0.0.1:5001)
+        -o OUTFILE, --outfile OUTFILE
+                              Filename of newly created CDXJ index file
+        -v, --version         Report the version of ipwb
+
+
+      ipwb commands:
+        Invoke using "ipwb <command>", e.g., ipwb replay
+      
+        {index,replay}
+          index               Index a WARC file for replay in ipwb
+          replay              Start the ipwb replay system
+
+.. code-block:: bash
+
+      $ ipwb index -h
+      usage: ipwb [-h] [-e] index <warcPath>
+      
+      Index a WARC file for replay in ipwb
+      
+      positional arguments:
+        index <warcPath>  Path to a WARC[.gz] file
+      
+      optional arguments:
+        -h, --help        show this help message and exit
+        -e                Encrypt WARC content prior to disseminating to IPFS
+
+.. code-block:: bash
+
+      $ ipwb replay -h
+      usage: ipwb [-h] [-e] index <warcPath>
+      
+      Index a WARC file for replay in ipwb
+      
+      positional arguments:
+        index <warcPath>  Path to a WARC[.gz] file
+      
+      optional arguments:
+        -h, --help        show this help message and exit
+        -e                Encrypt WARC content prior to disseminating to IPFS
+      Katja:ipwb machawk1$ ipwb replay -h
+      usage: ipwb replay [-h] [index]
+      
+      positional arguments:
+        index       CDXJ file to use for replay
+      
+      optional arguments:
+        -h, --help  show this help message and exit
+
 Debugging
 ---------------
 The ipwb indexing and replay system can also be run from source using a virtualenv and calling the `indexer.py` and `replay.py` scripts in the module's ipwb directly from the project's root.
