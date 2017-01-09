@@ -65,7 +65,7 @@ In a separate terminal session (or the same if you started the daemon in the bac
 
 .. code-block:: bash
 
-      ipwb index ipwb/samples/warcs/sample-1.warc.gz
+      $ ipwb index ipwb/samples/warcs/sample-1.warc.gz
 
 
 `indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g., 
@@ -80,11 +80,17 @@ Replaying
 ---------
 .. (TODO: add more detailed info in this section, better sample data with more URIs in the repo for better demonstration of ipwb functionality)
 
-An archival replay system is also included with ipwb to re-experience the content disseminated to IPFS . The replay system can be launched with:
+An archival replay system is also included with ipwb to re-experience the content disseminated to IPFS . The replay system can be launched using the provided sample data with:
 
 .. code-block:: bash
 
       $ ipwb replay
+	  
+A CDXJ index can also be provided and used by the ipwb replay system by specifying the path of the index file as a parameter to the replay system:
+
+.. code-block:: bash
+
+      $ ipwb replay <path/to/cdxj>
 	  
 Once started, the replay system's web interface can be accessed through a web browser, e.g., `http://127.0.0.1:5000/http://www.cs.odu.edu/~salam/` with the sample CDXJ file.
 
