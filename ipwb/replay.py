@@ -37,11 +37,14 @@ def showWebUI(path):
 
     if 'index.html' in path:
         iFile = ipwbConfig.getIPWBReplayIndexPath()
+
         if iFile is None or iFile == '':
             iFile = pkg_resources.resource_filename(__name__, INDEX_FILE)
 
         if not os.path.isabs(iFile):  # Convert rel to abs path
-            iFile = pkg_resources.resource_filename(__name__, iFile)
+            iFileAbs = pkg_resources.resource_filename(__name__, iFile)
+            if os.path.exists(iFileAbs):
+                iFile = iFileAbs  # Local file
 
         content = content.replace(
             'MEMCOUNT', str(retrieveMemCount(iFile)))
@@ -172,28 +175,53 @@ def generateDaemonStatusButton():
     return Response('{0}{1}{2}'.format(statusPageHTML, buttonHTML, footer))
 
 
-def getIndexFileContents(cdxjFile=INDEX_FILE):
-    if not os.path.exists(cdxjFile):
-        return ""
-    indexFilePath = '/{0}'.format(cdxjFile).replace('ipwb.replay', 'ipwb')
+def fetchRemoteCDXJFile(path):
+    fileContents = ''
+    path = path.replace('ipfs://', '')
+    # TODO: Take into account /ipfs/(hash), first check if this is correct fmt
+
+    if '://' not in path:  # isAIPFSHash
+        # TODO: Check if a valid IPFS hash
+        print 'No scheme in path, assuming IPFS hash and fetching...'
+
+        dataFromIPFS = IPFS_API.cat(path)
+        print 'Data successfully obtained from IPFS'
+        return dataFromIPFS
+    else:  # http://, ftp://, smb://, file://
+        print 'Path contains a scheme, fetching remote file...'
+        fileContents = ipwbConfig.fetchRemoteFile(path)
+        return fileContents
+
+    if not ipwbConfig.isValidCDXJ(fileContents):
+        return None
+    return fileContents
+
+
+def getIndexFileContents(cdxjFilePath=INDEX_FILE):
+    if not os.path.exists(cdxjFilePath):
+        print 'File {0} does not exist locally, fetching remote'.format(
+                                                                 cdxjFilePath)
+        return fetchRemoteCDXJFile(cdxjFilePath) or ''
+
+    indexFilePath = '/{0}'.format(cdxjFilePath).replace('ipwb.replay', 'ipwb')
     print 'getting index file at {0}'.format(indexFilePath)
 
     indexFileContent = ''
-    with open(cdxjFile, 'r') as f:
+    with open(cdxjFilePath, 'r') as f:
         indexFileContent = f.read()
 
     return indexFileContent
 
 
-def getIndexFileFullPath(cdxjFile=INDEX_FILE):
-    indexFilePath = '/{0}'.format(cdxjFile).replace('ipwb.replay', 'ipwb')
+def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
+    indexFilePath = '/{0}'.format(cdxjFilePath).replace('ipwb.replay', 'ipwb')
 
     indexFileName = pkg_resources.resource_filename(__name__, indexFilePath)
     return indexFileName
 
 
-def getURIsInCDXJ(cdxjFile=INDEX_FILE):
-    indexFileContents = getIndexFileContents(cdxjFile)
+def getURIsInCDXJ(cdxjFilePath=INDEX_FILE):
+    indexFileContents = getIndexFileContents(cdxjFilePath)
 
     if not indexFileContents:
         return 0
@@ -207,9 +235,9 @@ def getURIsInCDXJ(cdxjFile=INDEX_FILE):
     return json.dumps(uris)
 
 
-def retrieveMemCount(cdxjFile=INDEX_FILE):
-    print "Retrieving URI-Ms from {0}".format(cdxjFile)
-    indexFileContents = getIndexFileContents(cdxjFile)
+def retrieveMemCount(cdxjFilePath=INDEX_FILE):
+    print "Retrieving URI-Ms from {0}".format(cdxjFilePath)
+    indexFileContents = getIndexFileContents(cdxjFilePath)
 
     if not indexFileContents:
         return 0
@@ -223,8 +251,8 @@ def retrieveMemCount(cdxjFile=INDEX_FILE):
     return i + 1
 
 
-def getCDXLine(surtURI, cdxjFile=INDEX_FILE):
-    fullFilePath = getIndexFileFullPath(cdxjFile)
+def getCDXLine(surtURI, cdxjFilePath=INDEX_FILE):
+    fullFilePath = getIndexFileFullPath(cdxjFilePath)
     with open(fullFilePath, 'r') as cdxFile:
         print "looking for {0} in {1}".format(surtURI, fullFilePath)
         bsResp = iter_exact(cdxFile, surtURI)
@@ -233,15 +261,15 @@ def getCDXLine(surtURI, cdxjFile=INDEX_FILE):
         return cdxLine
 
 
-def start(cdxjFile=INDEX_FILE):
+def start(cdxjFilePath=INDEX_FILE):
     hostPort = ipwbConfig.getIPWBReplayConfig()
     if not hostPort:
         ipwbConfig.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
         hostPort = ipwbConfig.getIPWBReplayConfig()
 
     ipwbConfig.firstRun()
-    ipwbConfig.setIPWBReplayIndexPath(cdxjFile)
-    app.cdxjFile = cdxjFile
+    ipwbConfig.setIPWBReplayIndexPath(cdxjFilePath)
+    app.cdxjFilePath = cdxjFilePath
     app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
 
 

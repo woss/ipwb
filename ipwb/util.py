@@ -40,6 +40,11 @@ def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
         print sys.exc_info()[0]
 
 
+def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
+    # Also, be sure to mind the meta headers starting with @/#, etc.
+    return True
+
+
 def getURIsInCDXJ(cdxjFile=INDEX_FILE):
     with open(cdxjFile) as indexFile:
         uris = []
@@ -54,6 +59,18 @@ def retrieveMemCount():
         for i, l in enumerate(cdxFile):
             pass
         return i+1
+
+
+def fetchRemoteFile(path):
+    try:
+        r = requests.get(path)
+        return r.text
+    except ConnectionError:
+        print 'File at {0} is unavailable.'.format(path)
+    except:
+        print 'An unknown error occurred trying to fetch {0}'.format(path)
+        print sys.exc_info()[0]
+    return None
 
 
 def getCDXLine(surtURI):
