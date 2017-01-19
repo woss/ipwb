@@ -11,7 +11,37 @@ def test_retrieveWARCRecord_fromIPFSHash():
 
 
 @pytest.mark.skip(reason='not implemented')
-def test_retrieveWARCRecord_fromCDXJFile():
+def test_retrieveWARCRecord_fromLocalCDXJFile():
+    pass
+
+
+@pytest.mark.skip(reason='not implemented')
+def test_retrieveWARCRecord_fromRemoteCDXJFile_ByIPFSHash():
+    pass
+
+
+@pytest.mark.skip(reason='not implemented')
+def test_retrieveWARCRecord_fromRemoteCDXJFile_ByHTTP():
+    pass
+
+
+@pytest.mark.skip(reason='not implemented')
+def test_retrieveWARCRecord_fromRemoteCDXJFile_ByHTTPS():
+    pass
+
+
+@pytest.mark.skip(reason='not implemented')
+def test_retrieveWARCRecord_fromRemoteCDXJFile_ByFTP():
+    pass
+
+
+@pytest.mark.skip(reason='not implemented')
+def test_retrieveWARCRecord_fromRemoteCDXJFile_ByBitTorrentMagnetLink():
+    pass
+
+
+@pytest.mark.skip(reason='not implemented')
+def test_retrieveWARCRecord_fromRemoteCDXJFile_BySMB():
     pass
 
 
