@@ -65,4 +65,9 @@ def test_exclusionInWebpage_selectIrrelevantResources():
     pass
 
 
+@pytest.mark.skip(reason='not implemented')
+def test_fileImport_nonCDXJ(): # Fail w/ friendly message when non-cdxj
+    pass
+
+
 # TODO: Have unit tests for each function in replay.py
