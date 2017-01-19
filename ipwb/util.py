@@ -1,5 +1,6 @@
 from os.path import expanduser
 from os.path import basename
+from os import devnull
 import json
 import sys
 import requests
@@ -25,9 +26,11 @@ def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
     client = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
 
     try:
-        # devnull = open(os.devnull, 'wb')
-        subprocess.call(['ipfs', '--version'])  # OSError if ipfs not installed
-        client.id()  # ConnectionError if IPFS daemon not running
+        # OSError if ipfs not installed
+        subprocess.call(['ipfs', '--version'], stdout=open(devnull, 'wb'))
+
+        # ConnectionError if IPFS daemon not running
+        client.id()
         return True
     except ConnectionError:
         print "Daemon is not running at http://" + hostAndPort
