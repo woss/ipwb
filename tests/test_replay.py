@@ -66,7 +66,7 @@ def test_exclusionInWebpage_selectIrrelevantResources():
 
 
 @pytest.mark.skip(reason='not implemented')
-def test_fileImport_nonCDXJ(): # Fail w/ friendly message when non-cdxj
+def test_fileImport_nonCDXJ():  # Fail w/ friendly message when non-cdxj
     pass
 
 
