@@ -47,6 +47,7 @@ def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
 class InvalidCDXJException(Exception):
     pass
 
+
 def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
     # Also, be sure to mind the meta headers starting with @/#, etc.
     try:
@@ -59,8 +60,8 @@ def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
                 else:
                     raise InvalidCDXJException()
             metadataAllowed = False
-            (uri, datetime, cdxjJSON) = line.split(' ',2)
-            unsurt(uri) # Will throw an exception if invalid
+            (uri, datetime, cdxjJSON) = line.split(' ', 2)
+            unsurt(uri)  # Will throw an exception if invalid
             # SURT ok
             if not datetime.isdigit() or len(datetime) != 14:
                 raise InvalidCDXJException()
