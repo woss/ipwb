@@ -9,6 +9,7 @@ import exceptions
 import subprocess
 import site
 # from requests.exceptions import ConnectionError
+from pywb.utils.canonicalize import unsurt
 from ipfsapi.exceptions import ConnectionError
 
 
@@ -43,9 +44,31 @@ def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
         print sys.exc_info()[0]
 
 
+class InvalidCDXJException(Exception):
+    pass
+
 def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
     # Also, be sure to mind the meta headers starting with @/#, etc.
-    return True
+    try:
+        metadataAllowed = True
+        lines = stringIn.split('\n')
+        for line in lines:
+            if line[0] == '@' or line[1] == '!':
+                if metadataAllowed:
+                    continue
+                else:
+                    raise InvalidCDXJException()
+            metadataAllowed = False
+            (uri, datetime, cdxjJSON) = line.split(' ',2)
+            unsurt(uri) # Will throw an exception if invalid
+            # SURT ok
+            if not datetime.isdigit() or len(datetime) != 14:
+                raise InvalidCDXJException()
+            json.loads(cdxjJSON)
+        return True
+    except:
+        print sys.exc_info()[0]
+        return False
 
 
 def getURIsInCDXJ(cdxjFile=INDEX_FILE):
@@ -158,6 +181,7 @@ def getIPWBReplayIndexPath():
 
 def firstRun():
     import indexer
+
     # Ensure the sample WARC is in IPFS
     print 'Executing first-run procedure on provided sample data.'
     indexer.indexFileAt(site.getsitepackages()[0] + '/ipwb/' + SAMPLE_WARC,

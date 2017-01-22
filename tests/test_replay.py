@@ -1,4 +1,7 @@
 import pytest
+from ipwb import util
+
+import testUtil as ipwbTest
 
 # Successful retrieval
 # Accurate retrieval
@@ -68,6 +71,22 @@ def test_exclusionInWebpage_selectIrrelevantResources():
 @pytest.mark.skip(reason='not implemented')
 def test_fileImport_nonCDXJ():  # Fail w/ friendly message when non-cdxj
     pass
+
+
+@pytest.mark.cdxjValidation
+def test_cdxj_valid():
+    # Missing fields
+    assert not util.isValidCDXJ('test')
+    # Valid SURT
+    assert util.isValidCDXJ(r"""edu,odu,cs)/~salam 20160305192247 {"locator": "urn:ipfs/QmeVWGtnfuJ1QnpmtKKnyArVgEpq7v31kktEfh6c8mDiXE/QmZWKQRBNXNrVZ69LoGpMNJi5NU66gDhnGtQukWJepv7Kr", "encryption_method": "xor", "encryption_key": "radon", "mime_type": "text/html", "status_code": "200"}""")
+    # Bad JSON in third field
+    assert not util.isValidCDXJ(r"""edu,odu,cs)/ 20160305192247 radon""")
+    # Valid SURT
+    assert util.isValidCDXJ(r"""edu,odu,cs)/ 20160305192247 {}""")
+    #Invalid datetime
+    assert not util.isValidCDXJ(r"""edu,odu,cs)/ 2016030519224 {}""")
+    # Invalid SURT URI, pywb catches its own ValueError
+    #assert not util.isValidCDXJ(r"""foo.bar 20160305192247 {}""")
 
 
 # TODO: Have unit tests for each function in replay.py

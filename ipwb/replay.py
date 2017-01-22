@@ -222,6 +222,9 @@ def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
 
 def getURIsInCDXJ(cdxjFilePath=INDEX_FILE):
     indexFileContents = getIndexFileContents(cdxjFilePath)
+    if not ipwbConfig.isValidCDXJ(indexFileContents):
+        print "Invalid CDXJ line!"
+        return 0
 
     if not indexFileContents:
         return 0
@@ -238,6 +241,9 @@ def getURIsInCDXJ(cdxjFilePath=INDEX_FILE):
 def retrieveMemCount(cdxjFilePath=INDEX_FILE):
     print "Retrieving URI-Ms from {0}".format(cdxjFilePath)
     indexFileContents = getIndexFileContents(cdxjFilePath)
+    if not ipwbConfig.isValidCDXJ(indexFileContents):
+        print "Invalid CDXJ line, cannot get Memento count"
+        return 0
 
     if not indexFileContents:
         return 0
