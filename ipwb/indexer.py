@@ -124,7 +124,7 @@ def indexFileAt(warcPath, encryptionKey=None, quiet=False):
                 obj['encryption_method'] = 'xor'
             objJSON = json.dumps(obj)
 
-            cdxjLine = '{0} {1} {2}\n'.format(uri, timestamp, objJSON)
+            cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
             cdxLines += cdxjLine
 
             if quiet:
