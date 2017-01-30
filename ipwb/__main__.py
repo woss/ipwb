@@ -22,6 +22,7 @@ def checkArgs_index(args):
     encKey = None
     if args.e:
         encKey = ''
+
     indexer.indexFileAt(args.warcPath, encKey)
 
 
@@ -53,6 +54,7 @@ def checkArgs(argsIn):
         'warcPath',
         help="Path to a WARC[.gz] file",
         metavar="index <warcPath>",
+        nargs='+',
         default=None)
     indexParser.add_argument(
         '-e',

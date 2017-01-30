@@ -27,23 +27,56 @@ PORT = '5001'
 IPFS_API = ipfsapi.Client(IP, PORT)
 
 
-def indexFileAt(warcPath, encryptionKey=None, quiet=False):
-    verifyFileExists(warcPath)
-
-    textRecordParserOptions = {
-      'cdxj': True,
-      'include_all': False,
-      'surt_ordered': False}
-    cdxLines = ''
+# TODO: put this method definition below indexFileAt()
+def pushToIPFS(hstr, payload, encryptionKey):
     ipfsRetryCount = 5  # WARC->IPFS attempts before giving up
+    retryCount = 0
+    while retryCount < ipfsRetryCount:
+        try:
+            if encryptionKey is not None:
+                # Dummy encryption, use something better in production
+                key = encryptionKey
+                if len(encryptionKey) == 0:
+                    key = askUserForEncryptionKey()
+
+                hstr = XOR.new(key).encrypt(hstr)
+                hstr = base64.b64encode(hstr)
+
+                payload = XOR.new(key).encrypt(payload)
+                payload = base64.b64encode(payload)
+            httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
+            payloadIPFSHash = pushBytesToIPFS(bytes(payload))
+            return [httpHeaderIPFSHash, payloadIPFSHash]
+        except NewConnectionError as e:
+            print('IPFS daemon is likely not running.')
+            print('Run "ipfs daemon" in another terminal session.')
+            sys.exit()
+        except:
+            logError('IPFS failed on ' + entry.get('url'))
+            # print(sys.exc_info())
+            retryCount += 1
+
+    return None  # Process of adding to IPFS failed
+
+
+def createIPFSTempPath():
     ipfsTempPath = '/tmp/ipfs/'
 
     # Create temp path for ipwb temp files if it does not already exist
     if not os.path.exists(ipfsTempPath):
         os.makedirs(ipfsTempPath)
 
-    # Read WARC file
-    # loader = ArcWarcRecordLoader(verify_http=True)
+
+def indexFileAt(warcPaths, encryptionKey=None, quiet=False):
+    for warcPath in warcPaths:
+        verifyFileExists(warcPath)
+
+    textRecordParserOptions = {
+      'cdxj': True,
+      'include_all': False,
+      'surt_ordered': False}
+    cdxLines = ''
+
     warcFileFullPath = warcPath
 
     with open(warcFileFullPath, 'rb') as warc:
@@ -70,49 +103,22 @@ def indexFileAt(warcPath, encryptionKey=None, quiet=False):
             entry.buffer.seek(0)
             payload = entry.buffer.read()
 
-            # fileHash = md5.new(hstr).hexdigest()
-
             httpHeaderIPFSHash = ''
             payloadIPFSHash = ''
             retryCount = 0
 
-            # TODO: First check that IPFS daemon is running, how do we do this?
+            ipfsHashes = pushToIPFS(hstr, payload, encryptionKey)
 
-            while retryCount < ipfsRetryCount:
-                try:
-                    if encryptionKey is not None:
-                        # Dummy encryption, use something better in production
-                        key = encryptionKey
-                        if len(encryptionKey) == 0:
-                            key = askUserForEncryptionKey()
-
-                        hstr = XOR.new(key).encrypt(hstr)
-                        hstr = base64.b64encode(hstr)
-
-                        payload = XOR.new(key).encrypt(payload)
-                        payload = base64.b64encode(payload)
-                    httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
-                    payloadIPFSHash = pushBytesToIPFS(bytes(payload))
-                    break
-                except NewConnectionError as e:
-                    print('IPFS daemon is likely not running.')
-                    print('Run "ipfs daemon" in another terminal session.')
-                    sys.exit()
-                except:
-                    logError('IPFS failed on ' + entry.get('url'))
-                    # print(sys.exc_info())
-                    retryCount += 1
-
-            if retryCount >= ipfsRetryCount:
+            if ipfsHashes is None:
                 logError('Skipping ' + entry.get('url'))
 
                 continue
 
+            (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
+
             uri = surt(entry.get('url'))
             timestamp = entry.get('timestamp')
             mime = entry.get('mime')
-
-            # encrKey = ''  # TODO: Add data encryption functionality
 
             obj = {
                 'locator': 'urn:ipfs/{0}/{1}'.format(
