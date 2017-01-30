@@ -12,7 +12,8 @@ from io import BytesIO
 from pywb.warc.archiveiterator import DefaultRecordParser
 from pywb.utils.canonicalize import canonicalize as surt
 from requests.packages.urllib3.exceptions import NewConnectionError
-from requests.exceptions import ConnectionError
+from ipfsapi.exceptions import ConnectionError
+# from requests.exceptions import ConnectionError
 import requests
 
 from Crypto.Cipher import XOR
@@ -99,7 +100,7 @@ def indexFileAt(warcPath, encryptionKey=None, quiet=False):
                     sys.exit()
                 except:
                     logError('IPFS failed on ' + entry.get('url'))
-                    print(sys.exc_info())
+                    # print(sys.exc_info())
                     retryCount += 1
 
             if retryCount >= ipfsRetryCount:
