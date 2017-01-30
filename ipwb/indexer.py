@@ -70,6 +70,7 @@ def createIPFSTempPath():
 def indexFileAt(warcPaths, encryptionKey=None, quiet=False):
     if type(warcPaths) is str:
         warcPaths = [warcPaths]
+
     for warcPath in warcPaths:
         verifyFileExists(warcPath)
 
@@ -79,70 +80,71 @@ def indexFileAt(warcPaths, encryptionKey=None, quiet=False):
       'surt_ordered': False}
     cdxLines = ''
 
-    warcFileFullPath = warcPath
+    for warcPath in warcPaths:
+        warcFileFullPath = warcPath
 
-    with open(warcFileFullPath, 'rb') as warc:
-        iter = TextRecordParser(**textRecordParserOptions)
+        with open(warcFileFullPath, 'rb') as warc:
+            iter = TextRecordParser(**textRecordParserOptions)
 
-        for entry in iter(warc):
-            # Only consider WARC resps records from reqs for web resources
-            ''' TODO: Change conditional to return on non-HTTP responses
-                      to reduce branch depth'''
-            if entry.record.rec_type != 'response' or \
-               entry.get('mime') in ('text/dns', 'text/whois'):
-                continue
+            for entry in iter(warc):
+                # Only consider WARC resps records from reqs for web resources
+                ''' TODO: Change conditional to return on non-HTTP responses
+                          to reduce branch depth'''
+                if entry.record.rec_type != 'response' or \
+                   entry.get('mime') in ('text/dns', 'text/whois'):
+                    continue
 
-            hdrs = entry.record.status_headers
-            hstr = hdrs.protocol + ' ' + hdrs.statusline
-            for h in hdrs.headers:
-                hstr += "\n" + ': '.join(h)
+                hdrs = entry.record.status_headers
+                hstr = hdrs.protocol + ' ' + hdrs.statusline
+                for h in hdrs.headers:
+                    hstr += "\n" + ': '.join(h)
 
-            statusCode = hdrs.statusline.split()[0]
+                statusCode = hdrs.statusline.split()[0]
 
-            if not entry.buffer:
-                return
+                if not entry.buffer:
+                    return
 
-            entry.buffer.seek(0)
-            payload = entry.buffer.read()
+                entry.buffer.seek(0)
+                payload = entry.buffer.read()
 
-            httpHeaderIPFSHash = ''
-            payloadIPFSHash = ''
-            retryCount = 0
+                httpHeaderIPFSHash = ''
+                payloadIPFSHash = ''
+                retryCount = 0
 
-            ipfsHashes = pushToIPFS(hstr, payload, encryptionKey)
+                ipfsHashes = pushToIPFS(hstr, payload, encryptionKey)
 
-            if ipfsHashes is None:
-                logError('Skipping ' + entry.get('url'))
+                if ipfsHashes is None:
+                    logError('Skipping ' + entry.get('url'))
 
-                continue
+                    continue
 
-            (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
+                (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
 
-            uri = surt(entry.get('url'))
-            timestamp = entry.get('timestamp')
-            mime = entry.get('mime')
+                uri = surt(entry.get('url'))
+                timestamp = entry.get('timestamp')
+                mime = entry.get('mime')
 
-            obj = {
-                'locator': 'urn:ipfs/{0}/{1}'.format(
-                  httpHeaderIPFSHash, payloadIPFSHash),
-                'status_code': statusCode,
-                'mime_type': mime
-                }
-            if encryptionKey is not None:
-                obj['encryption_key'] = key
-                obj['encryption_method'] = 'xor'
-            objJSON = json.dumps(obj)
+                obj = {
+                    'locator': 'urn:ipfs/{0}/{1}'.format(
+                      httpHeaderIPFSHash, payloadIPFSHash),
+                    'status_code': statusCode,
+                    'mime_type': mime
+                    }
+                if encryptionKey is not None:
+                    obj['encryption_key'] = key
+                    obj['encryption_method'] = 'xor'
+                objJSON = json.dumps(obj)
 
-            cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
+                cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
 
-            if quiet:
-                cdxLines += cdxjLine + '\n'
-                continue
-            cdxLines += cdxjLine
+                if quiet:
+                    cdxLines += cdxjLine + '\n'
+                    continue
+                cdxLines += cdxjLine
 
-            print(cdxjLine)
-        if quiet:
-            return cdxLines
+                print(cdxjLine)
+    if quiet:
+        return cdxLines
 
 
 def askUserForEncryptionKey():
