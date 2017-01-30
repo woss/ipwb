@@ -68,6 +68,8 @@ def createIPFSTempPath():
 
 
 def indexFileAt(warcPaths, encryptionKey=None, quiet=False):
+    if type(warcPaths) is str:
+        warcPaths = [warcPaths] 
     for warcPath in warcPaths:
         verifyFileExists(warcPath)
 
