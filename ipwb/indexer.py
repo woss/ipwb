@@ -125,10 +125,11 @@ def indexFileAt(warcPath, encryptionKey=None, quiet=False):
             objJSON = json.dumps(obj)
 
             cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
-            cdxLines += cdxjLine
 
             if quiet:
+                cdxLines += cdxjLine + '\n'
                 continue
+            cdxLines += cdxjLine
 
             print(cdxjLine)
         if quiet:
