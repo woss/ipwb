@@ -27,7 +27,7 @@ def checkArgs_index(args):
         compressionLevel = 6  # Magic 6, TA-DA!
 
     indexer.indexFileAt(args.warcPath, encKey, compressionLevel,
-                        args.compressFirst)
+                        args.compressFirst, debug=args.debug)
 
 
 def checkArgs_replay(args):
@@ -73,6 +73,11 @@ def checkArgs(argsIn):
     indexParser.add_argument(
         '--compressFirst',
         help="Compress data before encryption, where applicable",
+        action='store_true',
+        default=False)
+    indexParser.add_argument(
+        '--debug',
+        help="Convenience flag to help with testing and debugging",
         action='store_true',
         default=False)
     indexParser.set_defaults(func=checkArgs_index)

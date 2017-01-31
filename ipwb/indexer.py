@@ -24,6 +24,7 @@ from __init__ import __version__ as ipwbVersion
 
 IP = '127.0.0.1'
 PORT = '5001'
+DEBUG = False
 
 IPFS_API = ipfsapi.Client(IP, PORT)
 
@@ -68,7 +69,11 @@ def createIPFSTempPath():
 
 
 def indexFileAt(warcPaths, encryptionKey=None,
-                compressionLevel=None, encryptTHENCompress=True, quiet=False):
+                compressionLevel=None, encryptTHENCompress=True,
+                quiet=False, debug=False):
+    global DEBUG
+    DEBUG = debug
+
     if type(warcPaths) is str:
         warcPaths = [warcPaths]
 
@@ -165,6 +170,8 @@ def indexFileAt(warcPaths, encryptionKey=None,
 
 
 def askUserForEncryptionKey():
+    if DEBUG: return 'ipwb'
+
     outputRedirected = os.fstat(0) != os.fstat(1)
     promptString = 'Enter a key for encryption: '
     if outputRedirected:  # Prevents prompt in redir output
