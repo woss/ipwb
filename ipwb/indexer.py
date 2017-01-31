@@ -7,6 +7,7 @@ import os
 import json
 import ipfsapi
 import argparse
+import zlib
 
 from io import BytesIO
 from pywb.warc.archiveiterator import DefaultRecordParser
@@ -28,22 +29,11 @@ IPFS_API = ipfsapi.Client(IP, PORT)
 
 
 # TODO: put this method definition below indexFileAt()
-def pushToIPFS(hstr, payload, encryptionKey):
+def pushToIPFS(hstr, payload):
     ipfsRetryCount = 5  # WARC->IPFS attempts before giving up
     retryCount = 0
     while retryCount < ipfsRetryCount:
         try:
-            if encryptionKey is not None:
-                # Dummy encryption, use something better in production
-                key = encryptionKey
-                if len(encryptionKey) == 0:
-                    key = askUserForEncryptionKey()
-
-                hstr = XOR.new(key).encrypt(hstr)
-                hstr = base64.b64encode(hstr)
-
-                payload = XOR.new(key).encrypt(payload)
-                payload = base64.b64encode(payload)
             httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
             payloadIPFSHash = pushBytesToIPFS(bytes(payload))
             return [httpHeaderIPFSHash, payloadIPFSHash]
@@ -59,6 +49,20 @@ def pushToIPFS(hstr, payload, encryptionKey):
     return None  # Process of adding to IPFS failed
 
 
+def encrypt(hstr, payload, encryptionKey):
+    key = encryptionKey
+    if len(encryptionKey) == 0:
+        key = askUserForEncryptionKey()
+
+    hstr = XOR.new(key).encrypt(hstr)
+    hstr = base64.b64encode(hstr)
+
+    payload = XOR.new(key).encrypt(payload)
+    payload = base64.b64encode(payload)
+
+    return [hstr, payload]
+
+
 def createIPFSTempPath():
     ipfsTempPath = '/tmp/ipfs/'
 
@@ -67,7 +71,8 @@ def createIPFSTempPath():
         os.makedirs(ipfsTempPath)
 
 
-def indexFileAt(warcPaths, encryptionKey=None, quiet=False):
+def indexFileAt(warcPaths, encryptionKey=None,
+                compressionLevel=None, encryptTHENCompress=True, quiet=False):
     if type(warcPaths) is str:
         warcPaths = [warcPaths]
 
@@ -111,7 +116,20 @@ def indexFileAt(warcPaths, encryptionKey=None, quiet=False):
                 payloadIPFSHash = ''
                 retryCount = 0
 
-                ipfsHashes = pushToIPFS(hstr, payload, encryptionKey)
+                if encryptTHENCompress:
+                    if encryptionKey is not None:
+                        (hstr, payload) = encrypt(hstr, payload, encryptionKey)
+                    if compressionLevel is not None:
+                        hstr = zlib.compress(hstr, compressionLevel)
+                        payload = zlib.compress(payload, compressionLevel)
+                else:
+                    if compressionLevel is not None:
+                        hstr = zlib.compress(hstr, compressionLevel)
+                        payload = zlib.compress(payload, compressionLevel)
+                    if encryptionKey is not None:
+                        (hstr, payload) = encrypt(hstr, payload, encryptionKey)
+
+                ipfsHashes = pushToIPFS(hstr, payload)
 
                 if ipfsHashes is None:
                     logError('Skipping ' + entry.get('url'))
@@ -131,7 +149,7 @@ def indexFileAt(warcPaths, encryptionKey=None, quiet=False):
                     'mime_type': mime
                     }
                 if encryptionKey is not None:
-                    obj['encryption_key'] = key
+                    obj['encryption_key'] = encryptionKey
                     obj['encryption_method'] = 'xor'
                 objJSON = json.dumps(obj)
 

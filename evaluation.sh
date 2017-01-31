@@ -12,8 +12,8 @@ function runSizeMessage {
   SECONDS=0
   ipfs daemon &
   ipwb index mkelly2.warc > /tmp/xxx
-  echo $!
-  #kill -SIGKILL $!
+  #echo $!
+  kill -SIGKILL $!
 
   echo "$SECONDS second(s) elapsed"
 
@@ -39,4 +39,6 @@ ipwb --version
 runSizeMessage
 #runSizeCompressMessage
 
-#runSizeEncryptMessage
+runSizeEncryptMessage
+
+#export IPFS_PATH=/path/to/ipfsrepo

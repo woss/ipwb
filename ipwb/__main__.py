@@ -20,10 +20,14 @@ def checkArgs_index(args):
     if not util.isDaemonAlive():
         sys.exit()
     encKey = None
+    compressionLevel = None
     if args.e:
         encKey = ''
+    if args.c:
+        compressionLevel = 6  # Magic 6, TA-DA!
 
-    indexer.indexFileAt(args.warcPath, encKey)
+    indexer.indexFileAt(args.warcPath, encKey, compressionLevel,
+                        args.compressFirst)
 
 
 def checkArgs_replay(args):
@@ -64,6 +68,11 @@ def checkArgs(argsIn):
     indexParser.add_argument(
         '-c',
         help="Compress WARC content prior to disseminating to IPFS",
+        action='store_true',
+        default=False)
+    indexParser.add_argument(
+        '--compressFirst',
+        help="Compress data before encryption, where applicable",
         action='store_true',
         default=False)
     indexParser.set_defaults(func=checkArgs_index)
