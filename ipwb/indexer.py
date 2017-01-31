@@ -170,7 +170,8 @@ def indexFileAt(warcPaths, encryptionKey=None,
 
 
 def askUserForEncryptionKey():
-    if DEBUG: return 'ipwb'
+    if DEBUG:  # Allows testing instead of requiring a user prompt
+        return 'ipwb'
 
     outputRedirected = os.fstat(0) != os.fstat(1)
     promptString = 'Enter a key for encryption: '
