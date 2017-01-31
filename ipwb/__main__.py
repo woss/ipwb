@@ -61,6 +61,11 @@ def checkArgs(argsIn):
         help="Encrypt WARC content prior to disseminating to IPFS",
         action='store_true',
         default=False)
+    indexParser.add_argument(
+        '-c',
+        help="Compress WARC content prior to disseminating to IPFS",
+        action='store_true',
+        default=False)
     indexParser.set_defaults(func=checkArgs_index)
     replayParser = subparsers.add_parser(
         'replay',
