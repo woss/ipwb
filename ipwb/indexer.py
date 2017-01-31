@@ -50,14 +50,10 @@ def pushToIPFS(hstr, payload):
 
 
 def encrypt(hstr, payload, encryptionKey):
-    key = encryptionKey
-    if len(encryptionKey) == 0:
-        key = askUserForEncryptionKey()
-
-    hstr = XOR.new(key).encrypt(hstr)
+    hstr = XOR.new(encryptionKey).encrypt(hstr)
     hstr = base64.b64encode(hstr)
 
-    payload = XOR.new(key).encrypt(payload)
+    payload = XOR.new(encryptionKey).encrypt(payload)
     payload = base64.b64encode(payload)
 
     return [hstr, payload]
@@ -84,6 +80,9 @@ def indexFileAt(warcPaths, encryptionKey=None,
       'include_all': False,
       'surt_ordered': False}
     cdxLines = ''
+
+    if encryptionKey is not None and len(encryptionKey) == 0:
+        encryptionKey = askUserForEncryptionKey()
 
     for warcPath in warcPaths:
         warcFileFullPath = warcPath

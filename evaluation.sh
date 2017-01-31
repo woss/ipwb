@@ -11,7 +11,7 @@ function runSizeMessage {
   
   SECONDS=0
   ipfs daemon &
-  ipwb index mkelly2.warc > /tmp/xxx
+  ipwb index mkelly2.warc
   #echo $!
   kill -SIGKILL $!
 
@@ -21,12 +21,12 @@ function runSizeMessage {
 }
 
 function runSizeEncryptMessage {
-  echo "Running size(compress(msg))"
+  echo "Running size(encrypt(msg))"
   cleanIPFS
   
   SECONDS=0
   ipfs daemon &
-  ipwb index -e mkelly2.warc > /tmp/xxx
+  ipwb index -e mkelly2.warc
   kill -SIGKILL $!
 
   echo "$SECONDS second(s) elapsed"
