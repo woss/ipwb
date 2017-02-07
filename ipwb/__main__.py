@@ -1,5 +1,7 @@
 import sys
 import argparse
+import string  # For generating a temp file for stdin
+import random  # For generating a temp file for stdin
 from __init__ import __version__ as ipwbVersion
 from util import INDEX_FILE
 
@@ -31,9 +33,20 @@ def checkArgs_index(args):
 
 
 def checkArgs_replay(args):
+    likelyPiping = not sys.stdin.isatty()
+    if likelyPiping:
+        cdxjIn = ''.join(sys.stdin.readlines())
+
+        # Write data to temp file (sub-optimal)
+        tempFilePath = '/tmp/' + ''.join(random.sample(
+              string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
+        with open(tempFilePath, 'w') as f:
+            f.write(cdxjIn)
+        args.index = tempFilePath
+
     # TODO: add any other sub-arguments for replay here
-    if hasattr(args, 'index'):
-        replay.start(args.index)
+    if hasattr(args, 'index') and args.index is not None:
+        replay.start(cdxjFilePath=args.index)
     else:
         replay.start()
 

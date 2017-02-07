@@ -110,8 +110,9 @@ def show_uri(path):
 
     # show the user profile for that user
     cdxLine = ''
+
     try:
-        cdxLine = getCDXLine(surt(path))
+        cdxLine = getCDXLine(surt(path), ipwbConfig.getIPWBReplayIndexPath())
     except:
         print sys.exc_info()[0]
         respString = ('{0} not found :(' +
@@ -216,6 +217,9 @@ def getIndexFileContents(cdxjFilePath=INDEX_FILE):
 def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
     indexFilePath = '/{0}'.format(cdxjFilePath).replace('ipwb.replay', 'ipwb')
 
+    if os.path.isfile(cdxjFilePath):
+        return cdxjFilePath
+
     indexFileName = pkg_resources.resource_filename(__name__, indexFilePath)
     return indexFileName
 
@@ -253,6 +257,7 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
 
 def getCDXLine(surtURI, cdxjFilePath=INDEX_FILE):
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
+
     with open(fullFilePath, 'r') as cdxFile:
         print "looking for {0} in {1}".format(surtURI, fullFilePath)
         bsResp = iter_exact(cdxFile, surtURI)
@@ -270,6 +275,7 @@ def start(cdxjFilePath=INDEX_FILE):
     ipwbConfig.firstRun()
     ipwbConfig.setIPWBReplayIndexPath(cdxjFilePath)
     app.cdxjFilePath = cdxjFilePath
+
     app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
 
 
