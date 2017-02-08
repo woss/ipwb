@@ -13,6 +13,7 @@ from pywb.utils.canonicalize import canonicalize as surt
 from flask import Flask
 from flask import Response
 from requests.exceptions import ConnectionError
+from ipfsapi.exceptions import StatusError as hashNotInIPFS
 
 import requests
 
@@ -184,8 +185,15 @@ def fetchRemoteCDXJFile(path):
     if '://' not in path:  # isAIPFSHash
         # TODO: Check if a valid IPFS hash
         print 'No scheme in path, assuming IPFS hash and fetching...'
-
-        dataFromIPFS = IPFS_API.cat(path)
+        try:
+            print "Trying to ipfs.cat('{0}')".format(path)
+            dataFromIPFS = IPFS_API.cat(path)
+        except hashNotInIPFS:
+            return ''
+        except:
+            print "An error occurred with ipfs.cat"
+            print sys.exc_info()[0]
+            sys.exit()
         print 'Data successfully obtained from IPFS'
         return dataFromIPFS
     else:  # http://, ftp://, smb://, file://
