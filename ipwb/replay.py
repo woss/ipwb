@@ -97,6 +97,8 @@ def getRequestedSetting(requestedSetting):
 def show_uri(path):
     global IPFS_API
 
+    print "REQUESTING PATH: {0}".format(path)
+
     if len(path) == 0:
         return showWebUI('index.html')
         sys.exit()
@@ -285,13 +287,13 @@ def getCDXLine(surtURI, cdxjFilePath=INDEX_FILE):
                 print line
                 break
             else:
-                print "{0} not found in {1}".format(surtURI,surtInCDXJ)
+                print "{0} not found in {1}".format(surtURI, surtInCDXJ)
         # bsResp = iter_exact(cdxjFile, surtURI)
-        
+
         if not found:
             return None
         print "CDXJline: {0}".format(cdxjLine)
-        #cdxjLine = bsResp.next()
+        # cdxjLine = bsResp.next()
 
         return cdxjLine
 
