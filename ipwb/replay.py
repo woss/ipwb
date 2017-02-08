@@ -112,6 +112,7 @@ def show_uri(path):
     # show the user profile for that user
     cdxLine = ''
 
+    print "Path to find: {0}".format(path)
     try:
         cdxLine = getCDXLine(surt(path), ipwbConfig.getIPWBReplayIndexPath())
     except:
@@ -120,6 +121,9 @@ def show_uri(path):
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
+    if cdxLine is None:  # Resource not found in archives
+        return Response(status=404)
+
     cdxParts = cdxLine.split(" ", 2)
 
     jObj = json.loads(cdxParts[2])
@@ -264,14 +268,32 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
 
 
 def getCDXLine(surtURI, cdxjFilePath=INDEX_FILE):
+    # Our implementation of pywb's binsearch is not properly done here
+    #  reverting to linear for correctness over efficiency
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
 
-    with open(fullFilePath, 'r') as cdxFile:
+    with open(fullFilePath, 'r') as cdxjFile:
         print "looking for {0} in {1}".format(surtURI, fullFilePath)
-        bsResp = iter_exact(cdxFile, surtURI)
-        cdxLine = bsResp.next()
 
-        return cdxLine
+        found = False
+        for line in cdxjFile:
+            cdxjLine = line
+            surtInCDXJ = cdxjLine.split(' ')[0]
+            if surtInCDXJ == surtURI:
+                found = True
+                print 'found line!'
+                print line
+                break
+            else:
+                print "{0} not found in {1}".format(surtURI,surtInCDXJ)
+        # bsResp = iter_exact(cdxjFile, surtURI)
+        
+        if not found:
+            return None
+        print "CDXJline: {0}".format(cdxjLine)
+        #cdxjLine = bsResp.next()
+
+        return cdxjLine
 
 
 def start(cdxjFilePath=INDEX_FILE):
