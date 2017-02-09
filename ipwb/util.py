@@ -48,15 +48,6 @@ def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
     return True
 
 
-def getURIsInCDXJ(cdxjFile=INDEX_FILE):
-    with open(cdxjFile) as indexFile:
-        uris = []
-        for i, l in enumerate(indexFile):
-            uris.append(unsurt(l.split(' ')[0]))
-            pass
-        return json.dumps(uris)
-
-
 def retrieveMemCount():
     with open(INDEX_FILE, 'r') as cdxFile:
         for i, l in enumerate(cdxFile):

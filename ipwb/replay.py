@@ -52,7 +52,7 @@ def showWebUI(path):
 
         content = content.replace(
             'var uris = []',
-            'var uris = {0}'.format(getURIsInCDXJ(iFile)))
+            'var uris = {0}'.format(getURIsAndDatetimesInCDXJ(iFile)))
         content = content.replace('INDEXSRC', iFile)
 
     return Response(content)
@@ -238,7 +238,7 @@ def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
     return indexFileName
 
 
-def getURIsInCDXJ(cdxjFilePath=INDEX_FILE):
+def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
     indexFileContents = getIndexFileContents(cdxjFilePath)
 
     if not indexFileContents:
@@ -246,9 +246,15 @@ def getURIsInCDXJ(cdxjFilePath=INDEX_FILE):
 
     lines = indexFileContents.strip().split('\n')
 
-    uris = []
+    uris = {}
     for i, l in enumerate(lines):
-        uris.append(unsurt(l.split(' ')[0]))
+        cdxjFields = l.split(' ')
+        uri = unsurt(cdxjFields[0])
+        datetime = cdxjFields[1]
+        if uri not in uris:
+            uris[uri] = []
+        uris[uri].append(datetime)
+
         pass
     return json.dumps(uris)
 

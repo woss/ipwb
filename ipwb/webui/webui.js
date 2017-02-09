@@ -9,14 +9,18 @@ function showURIs () {
     return // Prevent multiple adds of the URI list to the DOM
   }
 
-  for (var i = 0; i < uris.length; i++) {
-    var li = document.createElement('li')
-    var a = document.createElement('a')
-    a.href = uris[i]
-    a.appendChild(document.createTextNode(uris[i]))
-
-    li.appendChild(a)
-    ul.appendChild(li)
+  for (var uri in uris) {
+    uris[uri].forEach(function (datetime) {
+      var li = document.createElement('li')
+      var a = document.createElement('a')
+      a.href = uri
+      a.appendChild(document.createTextNode(uri))
+      dt = document.createTextNode(' (' + datetime + ')')
+      
+      li.appendChild(a)
+      li.appendChild(dt)
+      ul.appendChild(li)
+    })
   }
   document.getElementById('memCountListLink').classList = ['activated']
   document.getElementById('uris').classList.remove('hidden')
