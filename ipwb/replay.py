@@ -25,6 +25,8 @@ from requests import ReadTimeout
 from Crypto.Cipher import XOR
 import base64
 
+from werkzeug.routing import BaseConverter
+
 app = Flask(__name__)
 app.debug = False
 
@@ -76,6 +78,36 @@ def commandDaemon(cmd):
         print 'ERROR, bad command sent to daemon API!'
         print cmd
         return Response('bad command!')
+
+
+class RegexConverter(BaseConverter):
+    def __init__(self, url_map, *items):
+        super(RegexConverter, self).__init__(url_map)
+        self.regex = items[0]
+app.url_map.converters['regex'] = RegexConverter
+
+
+@app.route('/memento/<path:urir>')
+def showMemento(urir):
+    print("NOT IMPLEMENTED: showMemento()")
+    print(urir)
+    return Response('Requested memento ' + urir + ', NOTIMPLEMENTED')
+
+
+@app.route('/timemap/<path:urir>')
+def showTimeMap(urir):
+    print("NOT IMPLEMENTED: showTimeMap()")
+    print(urir)
+    return Response('Requested TimeMap ' + urir + ', NOTIMPLEMENTED')
+
+
+@app.route('/<regex("[0-9]{14}"):datetime>/<path:urir>')
+def showMementoAtDatetime(urir, datetime):
+    print("NOT IMPLEMENTED: getMementoAtDatetime()")
+    print(datetime)
+    print(urir)
+    resp = 'Requested' + urir + ' at ' + datetime + ', NOTIMPLEMENTED'
+    return Response(resp)
 
 
 @app.errorhandler(Exception)
