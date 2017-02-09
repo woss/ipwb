@@ -165,6 +165,10 @@ def indexFileAt(warcPaths, encryptionKey=None,
                     continue
 
                 # print(cdxjLine)
+
+    # De-dupe
+    cdxjLines = list(set(cdxjLines))
+
     if quiet:
         return cdxjLines
     print('\n'.join(cdxjLines))
