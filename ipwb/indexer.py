@@ -158,13 +158,13 @@ def indexFileAt(warcPaths, encryptionKey=None,
                 objJSON = json.dumps(obj)
 
                 cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
-                cdxjLines.append(cdxjLine) # + '\n'
+                cdxjLines.append(cdxjLine)  # + '\n'
 
                 if quiet:
-                    #cdxjLines.append(cdxjLine) # + '\n'
+                    # cdxjLines.append(cdxjLine) # + '\n'
                     continue
 
-                #print(cdxjLine)
+                # print(cdxjLine)
     if quiet:
         return cdxjLines
     print('\n'.join(cdxjLines))
