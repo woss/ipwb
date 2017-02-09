@@ -52,7 +52,8 @@ def test_push():
     """
     newWARCPath = ipwbTest.createUniqueWARC()
     # use ipwb indexer to push
-    cdxj = indexer.indexFileAt(newWARCPath, quiet=True)
+    cdxjList = indexer.indexFileAt(newWARCPath, quiet=True)
+    cdxj = '\n'.join(cdxjList)
 
     assert countCDXJEntries(cdxj) == 2
     firstEntry = cdxj.split('\n')[0]

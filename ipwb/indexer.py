@@ -84,7 +84,7 @@ def indexFileAt(warcPaths, encryptionKey=None,
       'cdxj': True,
       'include_all': False,
       'surt_ordered': False}
-    cdxLines = ''
+    cdxjLines = []
 
     if encryptionKey is not None and len(encryptionKey) == 0:
         encryptionKey = askUserForEncryptionKey()
@@ -158,15 +158,16 @@ def indexFileAt(warcPaths, encryptionKey=None,
                 objJSON = json.dumps(obj)
 
                 cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
+                cdxjLines.append(cdxjLine) # + '\n'
 
                 if quiet:
-                    cdxLines += cdxjLine + '\n'
+                    #cdxjLines.append(cdxjLine) # + '\n'
                     continue
-                cdxLines += cdxjLine
 
-                print(cdxjLine)
+                #print(cdxjLine)
     if quiet:
-        return cdxLines
+        return cdxjLines
+    print('\n'.join(cdxjLines))
 
 
 def askUserForEncryptionKey():
