@@ -8,10 +8,11 @@ import json
 import ipfsapi
 import argparse
 import zlib
+import surt
 
 from io import BytesIO
 from pywb.warc.archiveiterator import DefaultRecordParser
-from pywb.utils.canonicalize import canonicalize as surt
+# from pywb.utils.canonicalize import canonicalize as surt
 from requests.packages.urllib3.exceptions import NewConnectionError
 from ipfsapi.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
@@ -142,7 +143,8 @@ def indexFileAt(warcPaths, encryptionKey=None,
 
                 (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
 
-                uri = surt(entry.get('url'))
+                uri = surt.surt(entry.get('url'),
+                                path_strip_trailing_slash_unless_empty=False)
                 timestamp = entry.get('timestamp')
                 mime = entry.get('mime')
 

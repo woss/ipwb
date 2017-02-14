@@ -7,9 +7,10 @@ import ipfsapi
 import json
 import subprocess
 import pkg_resources
+import surt
 from pywb.utils.binsearch import iter_exact
 from pywb.utils.canonicalize import unsurt
-from pywb.utils.canonicalize import canonicalize as surt
+# from pywb.utils.canonicalize import canonicalize as surt
 from flask import Flask
 from flask import Response
 from requests.exceptions import ConnectionError
@@ -148,7 +149,8 @@ def show_uri(path):
 
     print "Path to find: {0}".format(path)
     try:
-        cdxLine = getCDXLine(surt(path), ipwbConfig.getIPWBReplayIndexPath())
+        s = surt.surt(path, path_strip_trailing_slash_unless_empty=False)
+        cdxLine = getCDXLine(s, ipwbConfig.getIPWBReplayIndexPath())
     except:
         print sys.exc_info()[0]
         respString = ('{0} not found :(' +
