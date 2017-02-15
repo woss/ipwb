@@ -34,7 +34,12 @@ def checkCDXJFields(cdxjEntry):
 
 
 def countCDXJEntries(cdxjData):
-    return len(cdxjData.strip().split('\n'))
+    urimCount = 0
+    lines = cdxjData.strip().split('\n')
+    for line in lines:
+        if line[0] != '!':  # Exclude metadata from count
+            urimCount += 1
+    return urimCount
 
 
 def checkIPWBJSONFieldPresesence(jsonStr):
@@ -57,6 +62,12 @@ def test_push():
 
     assert countCDXJEntries(cdxj) == 2
     firstEntry = cdxj.split('\n')[0]
-    assert checkCDXJFields(firstEntry)
-    firstEntryLastField = firstEntry.split(' ', 2)[2]
+    firstNonMetadataEntry = ''
+    for line in cdxj.split('\n'):
+        if line[0] != '!':
+            firstNonMetadataEntry = line
+            break
+
+    assert checkCDXJFields(firstNonMetadataEntry)
+    firstEntryLastField = firstNonMetadataEntry.split(' ', 2)[2]
     assert checkIPWBJSONFieldPresesence(firstEntryLastField)
