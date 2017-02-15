@@ -49,8 +49,8 @@ def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
 
 
 def retrieveMemCount():
-    with open(INDEX_FILE, 'r') as cdxFile:
-        for i, l in enumerate(cdxFile):
+    with open(INDEX_FILE, 'r') as cdxjFile:
+        for i, l in enumerate(cdxjFile):
             pass
         return i+1
 
@@ -67,11 +67,11 @@ def fetchRemoteFile(path):
     return None
 
 
-def getCDXLine(surtURI):
-    with open(INDEX_FILE, 'r') as cdxFile:
-        bsResp = iter_exact(cdxFile, surtURI)
-        cdxLine = bsResp.next()
-        return cdxLine
+def getCDXJLine(surtURI):
+    with open(INDEX_FILE, 'r') as cdxjFile:
+        bsResp = iter_exact(cdxjFile, surtURI)
+        cdxjLine = bsResp.next()
+        return cdxjLine
 
 
 # IPFS Config manipulation from here on out.

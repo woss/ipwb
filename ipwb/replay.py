@@ -15,6 +15,7 @@ from flask import Flask
 from flask import Response
 from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import StatusError as hashNotInIPFS
+from bisect import bisect_left
 
 import requests
 
@@ -145,24 +146,24 @@ def show_uri(path):
         return Response(errStr)
 
     # show the user profile for that user
-    cdxLine = ''
+    cdxjLine = ''
 
     print "Path to find: {0}".format(path)
     try:
         s = surt.surt(path, path_strip_trailing_slash_unless_empty=False)
-        cdxLine = getCDXLine(s, ipwbConfig.getIPWBReplayIndexPath())
+        cdxjLine = getCDXJLine(s, ipwbConfig.getIPWBReplayIndexPath())
     except:
         print sys.exc_info()[0]
         respString = ('{0} not found :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
-    if cdxLine is None:  # Resource not found in archives
+    if cdxjLine is None:  # Resource not found in archives
         return Response(status=404)
 
-    cdxParts = cdxLine.split(" ", 2)
+    cdxjParts = cdxjLine.split(" ", 2)
 
-    jObj = json.loads(cdxParts[2])
+    jObj = json.loads(cdxjParts[2])
 
     digests = jObj['locator'].split('/')
 
@@ -170,7 +171,7 @@ def show_uri(path):
         payload = IPFS_API.cat(digests[-1], timeout=1)
         header = IPFS_API.cat(digests[-2])
     except ipfsapi.exceptions.TimeoutError:
-        print "{0} not found at {1}".format(cdxParts[0], digests[-1])
+        print "{0} not found at {1}".format(cdxjParts[0], digests[-1])
         respString = ('{0} not found in IPFS :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
@@ -313,7 +314,7 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
     return mementoCount
 
 
-def getCDXLine(surtURI, cdxjFilePath=INDEX_FILE):
+def getCDXJLine(surtURI, cdxjFilePath=INDEX_FILE):
     # Our implementation of pywb's binsearch is not properly done here
     #  reverting to linear for correctness over efficiency
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
