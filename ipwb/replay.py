@@ -151,7 +151,7 @@ def show_uri(path):
     print "Path to find: {0}".format(path)
     try:
         s = surt.surt(path, path_strip_trailing_slash_unless_empty=False)
-        cdxjLine = getCDXJLine(s, ipwbConfig.getIPWBReplayIndexPath())
+        cdxjLine = getCDXJLine_binarySearch(s, ipwbConfig.getIPWBReplayIndexPath())
     except:
         print sys.exc_info()[0]
         respString = ('{0} not found :(' +
@@ -314,13 +314,29 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
     return mementoCount
 
 
-def getCDXJLine(surtURI, cdxjFilePath=INDEX_FILE):
-    # Our implementation of pywb's binsearch is not properly done here
-    #  reverting to linear for correctness over efficiency
+
+def binary_search(haystack, needle, lBound=0, uBound=None):
+    if uBound is not None:
+        uBound = uBound
+    else:
+        uBound = len(haystack)
+    
+    pos = bisect_left(haystack, needle, lBound, uBound)
+    if pos != uBound and haystack[pos] == needle:
+      return pos
+    else:
+      return -1
+
+
+def getCDXJLine_binarySearch(surtURI, cdxjFilePath=INDEX_FILE):
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
 
     with open(fullFilePath, 'r') as cdxjFile:
         print "looking for {0} in {1}".format(surtURI, fullFilePath)
+        lines = cdxjFile.read().split('\n')
+
+        print binary_search(surtURI, lines)
+        return
 
         found = False
         for line in cdxjFile:
@@ -333,12 +349,10 @@ def getCDXJLine(surtURI, cdxjFilePath=INDEX_FILE):
                 break
             else:
                 print "{0} not found in {1}".format(surtURI, surtInCDXJ)
-        # bsResp = iter_exact(cdxjFile, surtURI)
 
         if not found:
             return None
         print "CDXJline: {0}".format(cdxjLine)
-        # cdxjLine = bsResp.next()
 
         return cdxjLine
 
