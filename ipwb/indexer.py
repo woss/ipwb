@@ -163,12 +163,6 @@ def indexFileAt(warcPaths, encryptionKey=None,
                 cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
                 cdxjLines.append(cdxjLine)  # + '\n'
 
-                if quiet:
-                    # cdxjLines.append(cdxjLine) # + '\n'
-                    continue
-
-                # print(cdxjLine)
-
     # De-dupe
     cdxjLines = list(set(cdxjLines))
 
