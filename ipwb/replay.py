@@ -282,6 +282,8 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
     uris = {}
     for i, l in enumerate(lines):
+        if l[0] == '!':  # Metadata field
+            continue
         cdxjFields = l.split(' ')
         uri = unsurt(cdxjFields[0])
         datetime = cdxjFields[1]
@@ -304,9 +306,11 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
     if not lines:
         print "Index file not found"
         return 0
+    mementoCount = 0
     for i, l in enumerate(lines):
-        pass
-    return i + 1
+        if l[0] != '!':  # Metadata field
+            mementoCount += 1
+    return mementoCount
 
 
 def getCDXLine(surtURI, cdxjFilePath=INDEX_FILE):

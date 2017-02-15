@@ -17,6 +17,7 @@ from requests.packages.urllib3.exceptions import NewConnectionError
 from ipfsapi.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 import requests
+import datetime
 
 from Crypto.Cipher import XOR
 import base64
@@ -171,9 +172,25 @@ def indexFileAt(warcPaths, encryptionKey=None,
     # De-dupe
     cdxjLines = list(set(cdxjLines))
 
+    # Prepend metadata
+    cdxjMetadataLines = generateCDXJMetadata(cdxjLines)
+    cdxjLines = cdxjMetadataLines + cdxjLines
+
     if quiet:
         return cdxjLines
     print('\n'.join(cdxjLines))
+
+
+def generateCDXJMetadata(cdxjLines=None):
+    metadata = ['!context ["http://oduwsdl.github.io/contexts/cdxj"]']
+    metaVals = {
+        'generator': "InterPlanetary Wayback v.{0}".format(ipwbVersion),
+        'created_at': '{0}'.format(datetime.datetime.now().isoformat())
+    }
+    metaVals = '!meta {0}'.format(json.dumps(metaVals))
+    metadata.append(metaVals)
+
+    return metadata
 
 
 def askUserForEncryptionKey():
