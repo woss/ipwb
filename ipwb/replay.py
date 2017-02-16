@@ -316,15 +316,44 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
 
 
 def binary_search(haystack, needle, lBound=0, uBound=None):
+    surtURIs = []
+    for line in haystack:
+        if len(line.strip()) == 0:
+            break
+        print('WWW')
+        print(line)
+        if line[0] != '!':
+            print('inif')
+            print(line.split(' ')[0])
+            surtURIs.append(line.split(' ')[0])
+    print('done with loop')
     if uBound is not None:
         uBound = uBound
     else:
-        uBound = len(haystack)
+        uBound = len(surtURIs)
+
+    print('sending to bisect left')
+    print(surtURIs)
+    print('looking for ', needle)
+    pos = bisect_left(surtURIs, needle, lBound, uBound)
+
+    print('len of surtURIs[]')
+    print(len(surtURIs))
+    print('pos')
+    print(pos)
+    print('haystack')
+    print(surtURIs[pos])
+    print('needle')
+    print(needle)
+
     
-    pos = bisect_left(haystack, needle, lBound, uBound)
-    if pos != uBound and haystack[pos] == needle:
+    print('ubound', uBound)
+
+    if pos != uBound and surtURIs[pos].split(' ')[0] == needle:
+      print('radon')
       return pos
     else:
+      print('dukes!')
       return -1
 
 
@@ -335,7 +364,7 @@ def getCDXJLine_binarySearch(surtURI, cdxjFilePath=INDEX_FILE):
         print "looking for {0} in {1}".format(surtURI, fullFilePath)
         lines = cdxjFile.read().split('\n')
 
-        print binary_search(surtURI, lines)
+        print binary_search(lines, surtURI)
         return
 
         found = False
