@@ -131,8 +131,6 @@ def getRequestedSetting(requestedSetting):
 def show_uri(path):
     global IPFS_API
 
-    print "REQUESTING PATH: {0}".format(path)
-
     if len(path) == 0:
         return showWebUI('index.html')
         sys.exit()
@@ -148,10 +146,10 @@ def show_uri(path):
     # show the user profile for that user
     cdxjLine = ''
 
-    print "Path to find: {0}".format(path)
     try:
         s = surt.surt(path, path_strip_trailing_slash_unless_empty=False)
-        cdxjLine = getCDXJLine_binarySearch(s, ipwbConfig.getIPWBReplayIndexPath())
+        indexPath = ipwbConfig.getIPWBReplayIndexPath()
+        cdxjLine = getCDXJLine_binarySearch(s, indexPath)
     except:
         print sys.exc_info()[0]
         respString = ('{0} not found :(' +
@@ -314,76 +312,38 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
     return mementoCount
 
 
-
 def binary_search(haystack, needle, lBound=0, uBound=None):
     surtURIs = []
+    metaLineCount = 0
     for line in haystack:
         if len(line.strip()) == 0:
             break
-        print('WWW')
-        print(line)
         if line[0] != '!':
-            print('inif')
-            print(line.split(' ')[0])
             surtURIs.append(line.split(' ')[0])
-    print('done with loop')
+        else:
+            metaLineCount += 1
+
     if uBound is not None:
         uBound = uBound
     else:
         uBound = len(surtURIs)
 
-    print('sending to bisect left')
-    print(surtURIs)
-    print('looking for ', needle)
     pos = bisect_left(surtURIs, needle, lBound, uBound)
 
-    print('len of surtURIs[]')
-    print(len(surtURIs))
-    print('pos')
-    print(pos)
-    print('haystack')
-    print(surtURIs[pos])
-    print('needle')
-    print(needle)
-
-    
-    print('ubound', uBound)
-
     if pos != uBound and surtURIs[pos].split(' ')[0] == needle:
-      print('radon')
-      return pos
+        return haystack[pos + metaLineCount]
     else:
-      print('dukes!')
-      return -1
+        return None
 
 
 def getCDXJLine_binarySearch(surtURI, cdxjFilePath=INDEX_FILE):
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
 
     with open(fullFilePath, 'r') as cdxjFile:
-        print "looking for {0} in {1}".format(surtURI, fullFilePath)
         lines = cdxjFile.read().split('\n')
 
-        print binary_search(lines, surtURI)
-        return
-
-        found = False
-        for line in cdxjFile:
-            cdxjLine = line
-            surtInCDXJ = cdxjLine.split(' ')[0]
-            if surtInCDXJ == surtURI:
-                found = True
-                print 'found line!'
-                print line
-                break
-            else:
-                print "{0} not found in {1}".format(surtURI, surtInCDXJ)
-
-        if not found:
-            return None
-        print "CDXJline: {0}".format(cdxjLine)
-
-        return cdxjLine
+        lineFound = binary_search(lines, surtURI)
+        return lineFound
 
 
 def start(cdxjFilePath=INDEX_FILE):

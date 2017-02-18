@@ -67,14 +67,6 @@ def fetchRemoteFile(path):
     return None
 
 
-# UNUSED? Redundant of replay
-#def getCDXJLine(surtURI):
-#    with open(INDEX_FILE, 'r') as cdxjFile:
-#        bsResp = iter_exact(cdxjFile, surtURI)
-#        cdxjLine = bsResp.next()
-#        return cdxjLine
-
-
 # IPFS Config manipulation from here on out.
 def readIPFSConfig():
     try:
