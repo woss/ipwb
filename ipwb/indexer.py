@@ -166,6 +166,9 @@ def indexFileAt(warcPaths, encryptionKey=None,
     # De-dupe
     cdxjLines = list(set(cdxjLines))
 
+    # Sort
+    cdxjLines.sort()
+
     # Prepend metadata
     cdxjMetadataLines = generateCDXJMetadata(cdxjLines)
     cdxjLines = cdxjMetadataLines + cdxjLines
