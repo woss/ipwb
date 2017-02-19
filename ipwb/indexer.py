@@ -45,7 +45,9 @@ def pushToIPFS(hstr, payload):
             print('Run "ipfs daemon" in another terminal session.')
             sys.exit()
         except:
-            logError('IPFS failed on ' + entry.get('url'))
+            attemptCount = '{0}/{1}'.format(retryCount + 1, ipfsRetryCount)
+            logError('IPFS failed to add,' +
+                     'retrying attempt {0}'.format(attemptCount))
             # print(sys.exc_info())
             retryCount += 1
 
