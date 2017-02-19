@@ -140,7 +140,7 @@ def indexFileAt(warcPaths, encryptionKey=None,
                     if encryptionKey is not None:
                         (hstr, payload) = encrypt(hstr, payload, encryptionKey)
 
-                print('Adding {0} to IPFS'.format(entry.get('url')))
+                # print('Adding {0} to IPFS'.format(entry.get('url')))
                 ipfsHashes = pushToIPFS(hstr, payload)
 
                 if ipfsHashes is None:
