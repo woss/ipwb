@@ -107,9 +107,9 @@ def showTimeMap(urir):
     cdxjLines = []
     cdxjLinesWithURIR = []
     with open(indexPath, 'r') as f:
-      cdxjLines = f.read().split('\n')
-      baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
-      cdxjLinesWithURIR.append(baseCDXJLine)
+        cdxjLines = f.read().split('\n')
+        baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
+        cdxjLinesWithURIR.append(baseCDXJLine)
 
     # Get lines before pivot that match surt
     sI = cdxjLineIndex - 1
@@ -123,7 +123,7 @@ def showTimeMap(urir):
         if cdxjLines[sI].split(' ')[0] == s:
             cdxjLinesWithURIR.append(cdxjLines[sI])
         sI += 1
-    
+
     tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, request.url)
 
     return Response(tm)
@@ -131,9 +131,12 @@ def showTimeMap(urir):
 
 def generateTimeMapFromCDXJLines(cdxjLines, original, tmself):
     tmData = '<{0}>; rel="original",\n'.format(unsurt(original))
-    tmData += '<{0}>; rel="self"; type="application/link-format",\n'.format(tmself)
+
+    tmData += '<{0}>; rel="self"; '.format(tmself)
+    tmData += 'type="application/link-format",\n'
+
     hostAndPort = tmself[0:tmself.index('timemap/')]
-    
+
     for line in cdxjLines:
         (surtURI, datetime, json) = line.split(' ', 2)
         dtRFC1123 = ipwbConfig.datetimeToRFC1123(datetime)
