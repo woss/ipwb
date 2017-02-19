@@ -39,6 +39,9 @@ def pushToIPFS(hstr, payload):
         try:
             httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
             payloadIPFSHash = pushBytesToIPFS(bytes(payload))
+            if retryCount > 0:
+                m = 'Retrying succeeded after {0} attempts'.format(retryCount)
+                print(m)
             return [httpHeaderIPFSHash, payloadIPFSHash]
         except NewConnectionError as e:
             print('IPFS daemon is likely not running.')
@@ -46,7 +49,7 @@ def pushToIPFS(hstr, payload):
             sys.exit()
         except:
             attemptCount = '{0}/{1}'.format(retryCount + 1, ipfsRetryCount)
-            logError('IPFS failed to add,' +
+            logError('IPFS failed to add, ' +
                      'retrying attempt {0}'.format(attemptCount))
             # print(sys.exc_info())
             retryCount += 1
@@ -137,6 +140,7 @@ def indexFileAt(warcPaths, encryptionKey=None,
                     if encryptionKey is not None:
                         (hstr, payload) = encrypt(hstr, payload, encryptionKey)
 
+                print('Adding {0} to IPFS'.format(entry.get('url')))
                 ipfsHashes = pushToIPFS(hstr, payload)
 
                 if ipfsHashes is None:
