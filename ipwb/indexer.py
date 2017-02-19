@@ -51,7 +51,7 @@ def pushToIPFS(hstr, payload):
             attemptCount = '{0}/{1}'.format(retryCount + 1, ipfsRetryCount)
             logError('IPFS failed to add, ' +
                      'retrying attempt {0}'.format(attemptCount))
-            # print(sys.exc_info())
+            print(sys.exc_info())
             retryCount += 1
 
     return None  # Process of adding to IPFS failed
