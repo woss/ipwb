@@ -13,6 +13,7 @@ from pywb.utils.canonicalize import unsurt
 # from pywb.utils.canonicalize import canonicalize as surt
 from flask import Flask
 from flask import Response
+from flask import request
 from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
@@ -98,18 +99,56 @@ def showMemento(urir):
 
 @app.route('/timemap/<path:urir>')
 def showTimeMap(urir):
-    print("NOT IMPLEMENTED: showTimeMap()")
-    print(urir)
-    return Response('Requested TimeMap ' + urir + ', NOTIMPLEMENTED')
+    s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+
+    cdxjLineIndex = getCDXJLine_binarySearch(s, indexPath, True)  # get i
+
+    cdxjLines = []
+    cdxjLinesWithURIR = []
+    with open(indexPath, 'r') as f:
+        cdxjLines = f.read().split('\n')
+        baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
+        cdxjLinesWithURIR.append(baseCDXJLine)
+
+    # Get lines before pivot that match surt
+    sI = cdxjLineIndex - 1
+    while sI >= 0:
+        if cdxjLines[sI].split(' ')[0] == s:
+            cdxjLinesWithURIR.append(cdxjLines[sI])
+        sI -= 1
+    # Get lines after pivot that match surt
+    sI = cdxjLineIndex + 1
+    while sI < len(cdxjLines):
+        if cdxjLines[sI].split(' ')[0] == s:
+            cdxjLinesWithURIR.append(cdxjLines[sI])
+        sI += 1
+
+    tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, request.url)
+
+    return Response(tm)
+
+
+def generateTimeMapFromCDXJLines(cdxjLines, original, tmself):
+    tmData = '<{0}>; rel="original",\n'.format(unsurt(original))
+
+    tmData += '<{0}>; rel="self"; '.format(tmself)
+    tmData += 'type="application/link-format",\n'
+
+    hostAndPort = tmself[0:tmself.index('timemap/')]
+
+    for line in cdxjLines:
+        (surtURI, datetime, json) = line.split(' ', 2)
+        dtRFC1123 = ipwbConfig.datetimeToRFC1123(datetime)
+        tmData += '<{0}{1}/{2}>; rel="memento"; datetime="{3}",\n'.format(
+                hostAndPort, datetime, unsurt(surtURI), dtRFC1123)
+    tmData = tmData[0:-2]  # Trim final , and LF
+    return tmData
 
 
 @app.route('/<regex("[0-9]{14}"):datetime>/<path:urir>')
 def showMementoAtDatetime(urir, datetime):
-    print("NOT IMPLEMENTED: getMementoAtDatetime()")
-    print(datetime)
-    print(urir)
-    resp = 'Requested' + urir + ' at ' + datetime + ', NOTIMPLEMENTED'
-    return Response(resp)
+    return show_uri(urir, datetime)
 
 
 @app.errorhandler(Exception)
@@ -128,7 +167,7 @@ def getRequestedSetting(requestedSetting):
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-def show_uri(path):
+def show_uri(path, datetime=None):
     global IPFS_API
 
     if len(path) == 0:
@@ -143,13 +182,13 @@ def show_uri(path):
                   'IPWB replay homepage</a>.')
         return Response(errStr)
 
-    # show the user profile for that user
     cdxjLine = ''
-
     try:
-        s = surt.surt(path, path_strip_trailing_slash_unless_empty=False)
+        surtedURI = surt.surt(  # Good ol' pep8 line length
+                     path, path_strip_trailing_slash_unless_empty=False)
         indexPath = ipwbConfig.getIPWBReplayIndexPath()
-        cdxjLine = getCDXJLine_binarySearch(s, indexPath)
+        searchString = surtedURI + ' ' + datetime
+        cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
     except:
         print sys.exc_info()[0]
         respString = ('{0} not found :(' +
@@ -312,37 +351,41 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
     return mementoCount
 
 
-def binary_search(haystack, needle, lBound=0, uBound=None):
-    surtURIs = []
+def binary_search(haystack, needle, lBound=0, uBound=None, returnIndex=False):
+    surtURIsAndDatetimes = []
     metaLineCount = 0
     for line in haystack:
         if len(line.strip()) == 0:
             break
         if line[0] != '!':
-            surtURIs.append(line.split(' ')[0])
+            (surt, datetime, theRest) = line.split(' ', 2)
+            searchString = "{0} {1}".format(surt, datetime)
+            surtURIsAndDatetimes.append(searchString)
         else:
             metaLineCount += 1
 
     if uBound is not None:
         uBound = uBound
     else:
-        uBound = len(surtURIs)
+        uBound = len(surtURIsAndDatetimes)
 
-    pos = bisect_left(surtURIs, needle, lBound, uBound)
+    pos = bisect_left(surtURIsAndDatetimes, needle, lBound, uBound)
 
-    if pos != uBound and surtURIs[pos].split(' ')[0] == needle:
+    if pos != uBound and surtURIsAndDatetimes[pos] == needle:
+        if returnIndex:  # Index useful for adjacent line searching
+            return pos + metaLineCount
         return haystack[pos + metaLineCount]
     else:
         return None
 
 
-def getCDXJLine_binarySearch(surtURI, cdxjFilePath=INDEX_FILE):
+def getCDXJLine_binarySearch(surtURI, cdxjFilePath=INDEX_FILE, retIndex=False):
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
 
     with open(fullFilePath, 'r') as cdxjFile:
         lines = cdxjFile.read().split('\n')
 
-        lineFound = binary_search(lines, surtURI)
+        lineFound = binary_search(lines, surtURI, 0, None, retIndex)
         return lineFound
 
 

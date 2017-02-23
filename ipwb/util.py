@@ -8,6 +8,10 @@ import ipfsapi
 import exceptions
 import subprocess
 import site
+# Datetime conversion to rfc1123
+import locale
+import datetime
+
 # from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import ConnectionError
 
@@ -53,6 +57,12 @@ def retrieveMemCount():
         for i, l in enumerate(cdxjFile):
             pass
         return i+1
+
+
+def datetimeToRFC1123(digits14):
+    locale.setlocale(locale.LC_TIME, 'en_US')
+    d = datetime.datetime.strptime(digits14, '%Y%m%d%H%M%S')
+    return d.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
 
 def fetchRemoteFile(path):

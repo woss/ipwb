@@ -13,7 +13,7 @@ function showURIs () {
     uris[uri].forEach(function (datetime) {
       var li = document.createElement('li')
       var a = document.createElement('a')
-      a.href = uri
+      a.href = datetime + '/' + uri
       a.appendChild(document.createTextNode(uri))
       dt = document.createTextNode(' (' + datetime + ')')
       
