@@ -97,18 +97,20 @@ def showMemento(urir):
     return Response('Requested memento ' + urir + ', NOTIMPLEMENTED')
 
 
-@app.route('/timemap/<path:urir>')
-def showTimeMap(urir):
+def getCDXJLinesWithURIR(urir, indexPath=ipwbConfig.getIPWBReplayIndexPath()):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
-    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+    cdxjLinesWithURIR = []
 
-    cdxjLineIndex = getCDXJLine_binarySearch(s, indexPath, True)  # get i
+    cdxjLineIndex = getCDXJLine_binarySearch(s, indexPath, True, True)  # get i
+
+    if cdxjLineIndex is None:
+        return []
 
     cdxjLines = []
-    cdxjLinesWithURIR = []
     with open(indexPath, 'r') as f:
         cdxjLines = f.read().split('\n')
         baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
+
         cdxjLinesWithURIR.append(baseCDXJLine)
 
     # Get lines before pivot that match surt
@@ -123,6 +125,16 @@ def showTimeMap(urir):
         if cdxjLines[sI].split(' ')[0] == s:
             cdxjLinesWithURIR.append(cdxjLines[sI])
         sI += 1
+    return cdxjLinesWithURIR
+
+
+@app.route('/timemap/<path:urir>')
+def showTimeMap(urir):
+    s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+    print 'stl'
+    cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
+    print 'pqr'
 
     tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, request.url)
 
@@ -196,7 +208,19 @@ def show_uri(path, datetime=None):
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
     if cdxjLine is None:  # Resource not found in archives
-        return Response(status=404)
+        msg = '<h1>ERROR 404</h1>'
+        msg += 'No capture found for {0} at {1}.'.format(path, datetime)
+        linesWithSameURIR = getCDXJLinesWithURIR(path)
+
+        if linesWithSameURIR:
+            msg += '<p>{0} capture(s) available:</p><ul>'.format(
+                  len(linesWithSameURIR))
+            for line in linesWithSameURIR:
+                fields = line.split(' ', 2)
+                msg += ('<li><a href="/{1}/{0}">{0} at {1}</a></li>'
+                        .format(unsurt(fields[0]), fields[1]))
+            msg += '</ul>'
+        return Response(msg, status=404)
 
     cdxjParts = cdxjLine.split(" ", 2)
 
@@ -351,18 +375,32 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
     return mementoCount
 
 
-def binary_search(haystack, needle, lBound=0, uBound=None, returnIndex=False):
-    surtURIsAndDatetimes = []
-    metaLineCount = 0
-    for line in haystack:
+def objectifyCDXJData(lines, onlyURI):
+    cdxjData = {'metadata': [], 'data': []}
+    for line in lines:
         if len(line.strip()) == 0:
             break
         if line[0] != '!':
             (surt, datetime, theRest) = line.split(' ', 2)
             searchString = "{0} {1}".format(surt, datetime)
-            surtURIsAndDatetimes.append(searchString)
+            if onlyURI:
+                searchString = surt
+            cdxjData['data'].append(searchString)
         else:
-            metaLineCount += 1
+            cdxjData['metadata'].append(line)
+    return cdxjData
+
+
+def binary_search(haystack, needle, returnIndex=False, onlyURI=False):
+    lBound = 0
+    uBound = None
+
+    surtURIsAndDatetimes = []
+
+    cdxjObj = objectifyCDXJData(haystack, onlyURI)
+    surtURIsAndDatetimes = cdxjObj['data']
+
+    metaLineCount = len(cdxjObj['metadata'])
 
     if uBound is not None:
         uBound = uBound
@@ -379,13 +417,15 @@ def binary_search(haystack, needle, lBound=0, uBound=None, returnIndex=False):
         return None
 
 
-def getCDXJLine_binarySearch(surtURI, cdxjFilePath=INDEX_FILE, retIndex=False):
+def getCDXJLine_binarySearch(
+         surtURI, cdxjFilePath=INDEX_FILE, retIndex=False, onlyURI=False):
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
+    print 'looking for {0} in {1}'.format(surtURI, cdxjFilePath)
 
     with open(fullFilePath, 'r') as cdxjFile:
         lines = cdxjFile.read().split('\n')
 
-        lineFound = binary_search(lines, surtURI, 0, None, retIndex)
+        lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
         return lineFound
 
 
