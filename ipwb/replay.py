@@ -255,11 +255,31 @@ def show_uri(path, datetime=None):
 
     for idx, hLine in enumerate(hLines):
         k, v = hLine.split(': ', 1)
+
+        if k.lower() == 'transfer-encoding' and v.lower() == 'chunked':
+            resp.set_data(extractResponseFromChunkedData(payload))
         if k.lower() != "content-type":
             k = "X-Archive-Orig-" + k
+
         resp.headers[k] = v
 
     return resp
+
+
+def extractResponseFromChunkedData(data):
+    chunkDescriptor = -1
+    retStr = ''
+
+    (chunkDescriptor, rest) = data.split('\n', 1)
+    while chunkDescriptor.strip() != '0':
+        chunkDecFromHex = int(chunkDescriptor, 16)  # Get dec for slice
+        retStr += rest[:chunkDecFromHex]  # Add to payload
+        rest = rest[chunkDecFromHex:]  # Trim from the next chunk onward
+        (CRLF, chunkDescriptor, rest) = rest.split('\n', 2)
+
+        if len(chunkDescriptor.strip()) == 0:
+            break
+    return retStr
 
 
 def generateDaemonStatusButton():
