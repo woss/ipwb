@@ -271,11 +271,14 @@ def extractResponseFromChunkedData(data):
     retStr = ''
 
     (chunkDescriptor, rest) = data.split('\n', 1)
-    while chunkDescriptor.strip() != '0':
+    chunkDescriptor = chunkDescriptor.split(';')[0].strip()
+
+    while chunkDescriptor != '0':
         chunkDecFromHex = int(chunkDescriptor, 16)  # Get dec for slice
         retStr += rest[:chunkDecFromHex]  # Add to payload
         rest = rest[chunkDecFromHex:]  # Trim from the next chunk onward
         (CRLF, chunkDescriptor, rest) = rest.split('\n', 2)
+        chunkDescriptor = chunkDescriptor.split(';')[0].strip()
 
         if len(chunkDescriptor.strip()) == 0:
             break
