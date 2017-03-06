@@ -52,6 +52,12 @@ def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
     return True
 
 
+def setupIPWBInIPFSConfig():
+    hostPort = ipwbConfig.getIPWBReplayConfig()
+    if not hostPort:
+        setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
+
+
 def retrieveMemCount():
     with open(INDEX_FILE, 'r') as cdxjFile:
         for i, l in enumerate(cdxjFile):
@@ -144,6 +150,10 @@ def setIPWBReplayIndexPath(cdxj):
 
 def getIPWBReplayIndexPath():
     ipfsJSON = readIPFSConfig()
+    if 'Ipwb' not in ipfsJSON:
+        setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
+    ipfsJSON = readIPFSConfig()
+
     if 'Index' in ipfsJSON['Ipwb']['Replay']:
         return ipfsJSON['Ipwb']['Replay']['Index']
     else:
