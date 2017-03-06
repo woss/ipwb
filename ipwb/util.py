@@ -1,5 +1,7 @@
 from os.path import expanduser
 from os.path import basename
+
+import os
 from os import devnull
 import json
 import sys
@@ -164,5 +166,6 @@ def firstRun():
     import indexer
     # Ensure the sample WARC is in IPFS
     print 'Executing first-run procedure on provided sample data.'
-    indexer.indexFileAt(site.getsitepackages()[0] + '/ipwb/' + SAMPLE_WARC,
+
+    indexer.indexFileAt(os.path.dirname(__file__) + '/' + SAMPLE_WARC,
                                                     'radon', quiet=True)
