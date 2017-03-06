@@ -132,9 +132,8 @@ def getCDXJLinesWithURIR(urir, indexPath=ipwbConfig.getIPWBReplayIndexPath()):
 def showTimeMap(urir):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
-    print 'stl'
+
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
-    print 'pqr'
 
     tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, request.url)
 
