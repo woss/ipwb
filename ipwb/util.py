@@ -152,7 +152,7 @@ def getIPWBReplayIndexPath():
     ipfsJSON = readIPFSConfig()
     if 'Ipwb' not in ipfsJSON:
         setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
-    ipfsJSON = readIPFSConfig()
+        ipfsJSON = readIPFSConfig()
 
     if 'Index' in ipfsJSON['Ipwb']['Replay']:
         return ipfsJSON['Ipwb']['Replay']['Index']
