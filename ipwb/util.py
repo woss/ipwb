@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from os.path import expanduser
 from os.path import basename
 
@@ -39,14 +41,19 @@ def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
         client.id()
         return True
     except ConnectionError:
-        print "Daemon is not running at http://" + hostAndPort
+        logError("Daemon is not running at http://" + hostAndPort)
         return False
     except OSError:
-        print "IPFS is likely not installed. See https://ipfs.io/docs/install/"
+        logError("IPFS is likely not installed. "
+                 "See https://ipfs.io/docs/install/")
         sys.exit()
     except:
-        print 'Unknown error in retrieving daemon status'
-        print sys.exc_info()[0]
+        logError('Unknown error in retrieving daemon status')
+        logError(sys.exc_info()[0])
+
+
+def logError(errIn):
+    print(errIn, file=sys.stderr)
 
 
 def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
@@ -78,10 +85,10 @@ def fetchRemoteFile(path):
         r = requests.get(path)
         return r.text
     except ConnectionError:
-        print 'File at {0} is unavailable.'.format(path)
+        logError('File at {0} is unavailable.'.format(path))
     except:
-        print 'An unknown error occurred trying to fetch {0}'.format(path)
-        print sys.exc_info()[0]
+        logError('An unknown error occurred trying to fetch {0}'.format(path))
+        logError(sys.exc_info()[0])
     return None
 
 
@@ -91,8 +98,8 @@ def readIPFSConfig():
         with open(expanduser("~") + '/.ipfs/config', 'r') as f:
             return json.load(f)
     except IOError:
-        print "IPFS config not found."
-        print "Have you installed ipfs and run ipfs init?"
+        logError("IPFS config not found.")
+        logError("Have you installed ipfs and run ipfs init?")
         sys.exit()
 
 
@@ -165,7 +172,7 @@ def getIPWBReplayIndexPath():
 def firstRun():
     import indexer
     # Ensure the sample WARC is in IPFS
-    print 'Executing first-run procedure on provided sample data.'
+    print('Executing first-run procedure on provided sample data.')
 
     indexer.indexFileAt(os.path.dirname(__file__) + '/' + SAMPLE_WARC,
                                                     'radon', quiet=True)
