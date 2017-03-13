@@ -41,7 +41,7 @@ setup(
             'samples/warcs/*.*'
           ]
     },
-    keywords='http web archives ipfs distributed odu wayback',
+    keywords='http web archives ipfs distributed odu wayback memento',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
 
