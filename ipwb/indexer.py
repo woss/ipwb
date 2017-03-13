@@ -222,7 +222,7 @@ def verifyDaemonIsAlive(hostAndPort):
 def verifyFileExists(warcPath):
     if os.path.isfile(warcPath):
         return
-    print('File at ' + warcPath + ' does not exist!')
+    logError('File at ' + warcPath + ' does not exist!')
     sys.exit()
 
 
