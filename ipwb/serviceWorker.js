@@ -11,7 +11,10 @@ self.addEventListener('activate', function(event) {
 self.addEventListener('fetch', function(event) {
   console.log('Fetch event triggered.')
   console.log(event.request)
-  var request = reroute(event.request)
+  var request = event.request
+  if (event.request.mode != 'navigate') {
+     request = reroute(event.request) // Only embedded resources
+  }
   event.respondWith(
     fetch(request).then(serverFetch, serverFailure).catch(serverFailure)
   )
@@ -34,6 +37,6 @@ self.addEventListener('fetch', function(event) {
   }
 
   function reroute(request) {
-    return new Request(request.url.replace('css/style.css', 'css/alt-style.css'));
+    return new Request('http://localhost:5000/memento/'+request.url)
   }
 })
