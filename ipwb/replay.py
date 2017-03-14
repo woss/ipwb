@@ -60,7 +60,6 @@ def showWebUI(path):
             'var uris = {0}'.format(getURIsAndDatetimesInCDXJ(iFile)))
         content = content.replace('INDEXSRC', iFile)
 
-
     fileExtension = os.path.splitext(path)[1]
 
     mimeType = 'text/html'
@@ -71,7 +70,6 @@ def showWebUI(path):
         mimeType = 'text/css'
 
     resp = Response(content, mimetype=mimeType)
-    #if path == "serviceWorker.js":
     resp.headers['Service-Worker-Allowed'] = '/'
 
     return resp
@@ -83,6 +81,7 @@ def getServiceWorker(path):
     resp = Response(content, mimetype='application/javascript')
     resp.headers['Service-Worker-Allowed'] = '/'
     return resp
+
 
 @app.route('/daemon/<cmd>')
 def commandDaemon(cmd):
