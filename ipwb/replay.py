@@ -60,6 +60,7 @@ def showWebUI(path):
             'var uris = {0}'.format(getURIsAndDatetimesInCDXJ(iFile)))
         content = content.replace('INDEXSRC', iFile)
 
+
     fileExtension = os.path.splitext(path)[1]
 
     mimeType = 'text/html'
@@ -70,9 +71,18 @@ def showWebUI(path):
         mimeType = 'text/css'
 
     resp = Response(content, mimetype=mimeType)
+    #if path == "serviceWorker.js":
     resp.headers['Service-Worker-Allowed'] = '/'
+
     return resp
 
+
+def getServiceWorker(path):
+    path = ('/' + path).replace('ipwb.replay', 'ipwb')
+    content = pkg_resources.resource_string(__name__, path)
+    resp = Response(content, mimetype='application/javascript')
+    resp.headers['Service-Worker-Allowed'] = '/'
+    return resp
 
 @app.route('/daemon/<cmd>')
 def commandDaemon(cmd):
@@ -194,6 +204,10 @@ def show_uri(path, datetime=None):
 
     if len(path) == 0:
         return showWebUI('index.html')
+        sys.exit()
+
+    if path == 'serviceWorker.js':
+        return getServiceWorker(path)
         sys.exit()
 
     daemonAddress = '{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT)
