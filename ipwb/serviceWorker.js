@@ -12,9 +12,12 @@ self.addEventListener('fetch', function(event) {
   console.log('Fetch event triggered.')
   console.log(event.request)
   var request = event.request
-  if (event.request.mode != 'navigate') {
-     request = reroute(event.request) // Only embedded resources
+  if (event.request.mode != 'navigate' && 
+      event.request.url.indexOf('/webui/' === -1)) // Do not rewrite webui embedded resources
+  {
+       request = reroute(event.request) // Only embedded resources
   }
+
   event.respondWith(
     fetch(request).then(serverFetch, serverFailure).catch(serverFailure)
   )
@@ -37,6 +40,6 @@ self.addEventListener('fetch', function(event) {
   }
 
   function reroute(request) {
-    return new Request('http://localhost:5000/memento/'+request.url)
+    return new Request('http://127.0.0.1:5000/memento/'+request.url) // TODO: Rm hard-code for server
   }
 })
