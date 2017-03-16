@@ -13,8 +13,10 @@ self.addEventListener('fetch', function(event) {
   console.log(event.request)
   var request = event.request
   if (event.request.mode != 'navigate' && 
-      event.request.url.indexOf('/webui/' === -1)) // Do not rewrite webui embedded resources
+      event.request.url.indexOf('/webui/') === -1) // Do not rewrite webui embedded resources
   {
+       console.log('REROUTING request for ' + event.request.url)
+
        request = reroute(event.request) // Only embedded resources
   }
 

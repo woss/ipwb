@@ -110,8 +110,20 @@ class RegexConverter(BaseConverter):
 app.url_map.converters['regex'] = RegexConverter
 
 
-@app.route('/memento/<path:urir>')
-def showMemento(urir):
+@app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
+def showMemento(urir, datetime):
+    s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+
+    cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
+
+    print('Resolving request for {0} at {1}'.format(urir, datetime))
+    print('Found {0} cdxj entrie(s) for '.format(len(cdxjLinesWithURIR)))
+    print('MEMENTOS:')
+    print(cdxjLinesWithURIR)
+
+    #tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, request.url)
+    
     print("NOT IMPLEMENTED: showMemento()")
     print(urir)
     return Response('Requested memento ' + urir + ', NOTIMPLEMENTED')
@@ -148,8 +160,8 @@ def getCDXJLinesWithURIR(urir, indexPath=ipwbConfig.getIPWBReplayIndexPath()):
     return cdxjLinesWithURIR
 
 
-@app.route('/timemap/<path:urir>')
-def showTimeMap(urir):
+@app.route('/timemap/<regex("link"):format>/<path:urir>') #TOADD CDXJ supp
+def showTimeMap(urir, format):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
 
