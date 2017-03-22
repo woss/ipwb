@@ -2,13 +2,13 @@ import sys
 import argparse
 import string  # For generating a temp file for stdin
 import random  # For generating a temp file for stdin
-from __init__ import __version__ as ipwbVersion
-from util import INDEX_FILE
+from .__init__ import __version__ as ipwbVersion
+from .util import INDEX_FILE
 
 # ipwb modules
-import replay
-import indexer
-import util
+from . import replay
+from . import indexer
+from . import util
 
 IP = '127.0.0.1'
 PORT = '5001'

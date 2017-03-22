@@ -26,7 +26,7 @@ import datetime
 from Crypto.Cipher import XOR
 import base64
 
-from __init__ import __version__ as ipwbVersion
+from .__init__ import __version__ as ipwbVersion
 
 IP = '127.0.0.1'
 PORT = '5001'

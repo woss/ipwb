@@ -3,13 +3,13 @@ from __future__ import print_function
 from os.path import expanduser
 from os.path import basename
 
+import six
 import os
 from os import devnull
 import json
 import sys
 import requests
 import ipfsapi
-import exceptions
 import subprocess
 import site
 # Datetime conversion to rfc1123
@@ -18,6 +18,9 @@ import datetime
 
 # from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import ConnectionError
+
+if six.PY2:
+    import exceptions
 
 
 IPFSAPI_IP = '127.0.0.1'
@@ -170,7 +173,7 @@ def getIPWBReplayIndexPath():
 
 
 def firstRun():
-    import indexer
+    from . import indexer
     # Ensure the sample WARC is in IPFS
     print('Executing first-run procedure on provided sample data.')
 

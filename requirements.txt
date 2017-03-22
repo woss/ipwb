@@ -3,3 +3,4 @@ ipfsapi
 flask
 pycrypto
 pytest>=3.0
+six
