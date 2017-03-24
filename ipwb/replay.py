@@ -122,11 +122,29 @@ def showMemento(urir, datetime):
     print('MEMENTOS:')
     print(cdxjLinesWithURIR)
 
-    #tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, request.url)
-    
-    print("NOT IMPLEMENTED: showMemento()")
-    print(urir)
-    return Response('Requested memento ' + urir + ', NOTIMPLEMENTED')
+    closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
+    print "best line: "+closestLine
+    if closestLine is None:
+        msg = '<h1>ERROR 404</h1>'
+        msg += 'No capture found for {0} at {1}.'.format(path, datetime)
+        return Response(msg, status=404)
+
+    uri = unsurt(closestLine.split(' ')[0])
+
+    return show_uri(uri, datetime)
+
+
+def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
+    smallestDiff = float('inf')  # math.inf is only py3
+    bestLine = None
+    datetimeTarget = int(datetimeTarget)
+    for cdxjLine in cdxjLines:
+        dt = int(cdxjLine.split(' ')[1])
+        diff = abs(dt - datetimeTarget)
+        if diff < smallestDiff:
+            smallestDiff = diff
+            bestLine = cdxjLine
+    return bestLine
 
 
 def getCDXJLinesWithURIR(urir, indexPath=ipwbConfig.getIPWBReplayIndexPath()):
@@ -160,7 +178,7 @@ def getCDXJLinesWithURIR(urir, indexPath=ipwbConfig.getIPWBReplayIndexPath()):
     return cdxjLinesWithURIR
 
 
-@app.route('/timemap/<regex("link"):format>/<path:urir>') #TOADD CDXJ supp
+@app.route('/timemap/<regex("link"):format>/<path:urir>')
 def showTimeMap(urir, format):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
@@ -228,13 +246,16 @@ def show_uri(path, datetime=None):
                   ' or from the <a href="/">'
                   'IPWB replay homepage</a>.')
         return Response(errStr)
-
     cdxjLine = ''
     try:
         surtedURI = surt.surt(  # Good ol' pep8 line length
                      path, path_strip_trailing_slash_unless_empty=False)
         indexPath = ipwbConfig.getIPWBReplayIndexPath()
-        searchString = surtedURI + ' ' + datetime
+
+        searchString = surtedURI
+        if datetime is not None:
+            searchString = surtedURI + ' ' + datetime
+
         cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
     except:
         print sys.exc_info()[0]

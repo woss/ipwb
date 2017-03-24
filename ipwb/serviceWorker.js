@@ -1,5 +1,7 @@
 console.log('Loading ServiceWorker.')
 
+var baseDatetime = ''
+
 self.addEventListener('install', function(event) {
   console.log('Installing ServiceWorker.')
 })
@@ -15,8 +17,14 @@ self.addEventListener('fetch', function(event) {
   if (event.request.mode != 'navigate' && 
       event.request.url.indexOf('/webui/') === -1) // Do not rewrite webui embedded resources
   {
+       request = reroute(event.request, basedatetime) // Only embedded resources
        console.log('REROUTING request for ' + event.request.url + ' to ' + request.url)
-       request = reroute(event.request) // Only embedded resources
+
+  } else if (event.request.mode === 'navigate') {
+      // We need to preserve memento-datetime for use in requesting 
+      //  embedded resources. Possibly use SW caches instead? TODO
+      var datetime = event.request.url.match(/\/([0-9]{14})\//)[1]
+      basedatetime = datetime
   }
 
   event.respondWith(
@@ -40,7 +48,7 @@ self.addEventListener('fetch', function(event) {
     })
   }
 
-  function reroute(request) {
-    return new Request('http://127.0.0.1:5000/memento/'+request.url) // TODO: Rm hard-code for server
+  function reroute(request, datetime) {
+    return new Request(`http://127.0.0.1:5000/memento/${datetime}/${request.url}`) // TODO: Rm hard-code for server
   }
 })
