@@ -260,6 +260,7 @@ def show_uri(path, datetime=None):
     cdxjParts = cdxjLine.split(" ", 2)
 
     jObj = json.loads(cdxjParts[2])
+    datetime = cdxjParts[1]
 
     digests = jObj['locator'].split('/')
 
@@ -297,6 +298,8 @@ def show_uri(path, datetime=None):
             k = "X-Archive-Orig-" + k
 
         resp.headers[k] = v
+
+    resp.headers['Memento-Datetime'] = ipwbConfig.datetimeToRFC1123(datetime)
 
     return resp
 
