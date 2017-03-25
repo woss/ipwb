@@ -71,6 +71,15 @@ def showWebUI(path):
 
     resp = Response(content, mimetype=mimeType)
     resp.headers['Service-Worker-Allowed'] = '/'
+
+    return resp
+
+
+def getServiceWorker(path):
+    path = ('/' + path).replace('ipwb.replay', 'ipwb')
+    content = pkg_resources.resource_string(__name__, path)
+    resp = Response(content, mimetype='application/javascript')
+    resp.headers['Service-Worker-Allowed'] = '/'
     return resp
 
 
@@ -101,11 +110,41 @@ class RegexConverter(BaseConverter):
 app.url_map.converters['regex'] = RegexConverter
 
 
-@app.route('/memento/<path:urir>')
-def showMemento(urir):
-    print("NOT IMPLEMENTED: showMemento()")
-    print(urir)
-    return Response('Requested memento ' + urir + ', NOTIMPLEMENTED')
+@app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
+def showMemento(urir, datetime):
+    s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+
+    cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
+
+    print('Resolving request for {0} at {1}'.format(urir, datetime))
+    print('Found {0} cdxj entrie(s) for '.format(len(cdxjLinesWithURIR)))
+    print('MEMENTOS:')
+    print(cdxjLinesWithURIR)
+
+    closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
+    print "best line: "+closestLine
+    if closestLine is None:
+        msg = '<h1>ERROR 404</h1>'
+        msg += 'No capture found for {0} at {1}.'.format(path, datetime)
+        return Response(msg, status=404)
+
+    uri = unsurt(closestLine.split(' ')[0])
+
+    return show_uri(uri, datetime)
+
+
+def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
+    smallestDiff = float('inf')  # math.inf is only py3
+    bestLine = None
+    datetimeTarget = int(datetimeTarget)
+    for cdxjLine in cdxjLines:
+        dt = int(cdxjLine.split(' ')[1])
+        diff = abs(dt - datetimeTarget)
+        if diff < smallestDiff:
+            smallestDiff = diff
+            bestLine = cdxjLine
+    return bestLine
 
 
 def getCDXJLinesWithURIR(urir, indexPath=ipwbConfig.getIPWBReplayIndexPath()):
@@ -139,8 +178,8 @@ def getCDXJLinesWithURIR(urir, indexPath=ipwbConfig.getIPWBReplayIndexPath()):
     return cdxjLinesWithURIR
 
 
-@app.route('/timemap/<path:urir>')
-def showTimeMap(urir):
+@app.route('/timemap/<regex("link"):format>/<path:urir>')
+def showTimeMap(urir, format):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
 
@@ -196,6 +235,10 @@ def show_uri(path, datetime=None):
         return showWebUI('index.html')
         sys.exit()
 
+    if path == 'serviceWorker.js':
+        return getServiceWorker(path)
+        sys.exit()
+
     daemonAddress = '{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT)
     if not ipwbConfig.isDaemonAlive(daemonAddress):
         errStr = ('IPFS daemon not running. '
@@ -203,13 +246,16 @@ def show_uri(path, datetime=None):
                   ' or from the <a href="/">'
                   'IPWB replay homepage</a>.')
         return Response(errStr)
-
     cdxjLine = ''
     try:
         surtedURI = surt.surt(  # Good ol' pep8 line length
                      path, path_strip_trailing_slash_unless_empty=False)
         indexPath = ipwbConfig.getIPWBReplayIndexPath()
-        searchString = surtedURI + ' ' + datetime
+
+        searchString = surtedURI
+        if datetime is not None:
+            searchString = surtedURI + ' ' + datetime
+
         cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
     except:
         print sys.exc_info()[0]
@@ -235,6 +281,7 @@ def show_uri(path, datetime=None):
     cdxjParts = cdxjLine.split(" ", 2)
 
     jObj = json.loads(cdxjParts[2])
+    datetime = cdxjParts[1]
 
     digests = jObj['locator'].split('/')
 
@@ -272,6 +319,8 @@ def show_uri(path, datetime=None):
             k = "X-Archive-Orig-" + k
 
         resp.headers[k] = v
+
+    resp.headers['Memento-Datetime'] = ipwbConfig.datetimeToRFC1123(datetime)
 
     return resp
 
