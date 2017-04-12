@@ -53,8 +53,9 @@ def pushToIPFS(hstr, payload):
             sys.exit()
         except:
             attemptCount = '{0}/{1}'.format(retryCount + 1, ipfsRetryCount)
+            supressNewLine = ((retryCount + 1) < ipfsRetryCount)
             logError('IPFS failed to add, ' +
-                     'retrying attempt {0}'.format(attemptCount))
+                     'retrying attempt {0}'.format(attemptCount), supressNewLine)
             # print(sys.exc_info())
             retryCount += 1
 
@@ -250,8 +251,11 @@ def verifyFileExists(warcPath):
     sys.exit()
 
 
-def logError(errIn):
-    print(errIn, file=sys.stderr)
+def logError(errIn, supressNewLine=False):
+    lineTerminator = '\n'
+    if supressNewLine:
+        lineTerminator = '\r'  # Allow for line rewriting
+    print(errIn, file=sys.stderr, end=lineTerminator)
 
 
 def pullFromIPFS(hash):

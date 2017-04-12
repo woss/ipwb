@@ -19,6 +19,7 @@ from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 
 import requests
+import traceback
 
 import util as ipwbConfig
 from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
@@ -51,6 +52,9 @@ def showWebUI(path):
             iFileAbs = pkg_resources.resource_filename(__name__, iFile)
             if os.path.exists(iFileAbs):
                 iFile = iFileAbs  # Local file
+
+        print 'getting memento count for ifile:'
+        print iFile
 
         content = content.replace(
             'MEMCOUNT', str(retrieveMemCount(iFile)))
@@ -297,6 +301,7 @@ def show_uri(path, datetime=None):
     except:
         print sys.exc_info()[0]
         print "general error"
+        traceback.print_exc()
         sys.exit()
 
     if 'encryption_method' in jObj:
@@ -396,13 +401,17 @@ def getIndexFileContents(cdxjFilePath=INDEX_FILE):
                                                                  cdxjFilePath)
         return fetchRemoteCDXJFile(cdxjFilePath) or ''
 
+    print 'path before '+cdxjFilePath
     indexFilePath = '/{0}'.format(cdxjFilePath).replace('ipwb.replay', 'ipwb')
     print 'getting index file at {0}'.format(indexFilePath)
 
     indexFileContent = ''
+    print 'radon'
     with open(cdxjFilePath, 'r') as f:
         indexFileContent = f.read()
-
+    print 'dukes'
+    print indexFileContent
+    print 'rrr'
     return indexFileContent
 
 
@@ -418,12 +427,13 @@ def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
 
 def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
     indexFileContents = getIndexFileContents(cdxjFilePath)
-
+    print 'foo'
     if not indexFileContents:
         return 0
 
     lines = indexFileContents.strip().split('\n')
-
+    
+    
     uris = {}
     for i, l in enumerate(lines):
         if l[0] == '!':  # Metadata field
@@ -436,16 +446,22 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
         uris[uri].append(datetime)
 
         pass
+    print('baz')
     return json.dumps(uris)
 
 
 def retrieveMemCount(cdxjFilePath=INDEX_FILE):
     print "Retrieving URI-Ms from {0}".format(cdxjFilePath)
     indexFileContents = getIndexFileContents(cdxjFilePath)
-
+    
+    print 'ifc'
+    print indexFileContents
+    print 'ppp'
+    
     if not indexFileContents:
+        print 'returning 0'
         return 0
-
+    print 'not returning 0'
     lines = indexFileContents.strip().split('\n')
     if not lines:
         print "Index file not found"
@@ -455,7 +471,7 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
         if l[0] != '!':  # Metadata field
             mementoCount += 1
     return mementoCount
-
+ 
 
 def objectifyCDXJData(lines, onlyURI):
     cdxjData = {'metadata': [], 'data': []}

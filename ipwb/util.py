@@ -31,7 +31,8 @@ SAMPLE_WARC = 'samples/warcs/salam-home.warc'
 
 def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    client = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
+    ipfsDaemonPortPerConfig = getIPFSDaemonPortFromConfig()
+    client = ipfsapi.Client(IPFSAPI_IP, ipfsDaemonPortPerConfig)
 
     try:
         # OSError if ipfs not installed
@@ -169,10 +170,24 @@ def getIPWBReplayIndexPath():
         return ''
 
 
+def getIPFSDaemonPortFromConfig():
+    ipfsJSON = readIPFSConfig()
+    if not ipfsJSON:
+        ipfsJSON = readIPFSConfig()
+    if ('Addresses' in ipfsJSON and 'API' in ipfsJSON['Addresses']):
+        return int(os.path.basename(ipfsJSON['Addresses']['API']))
+    else:
+        return None
+
 def firstRun():
     import indexer
     # Ensure the sample WARC is in IPFS
     print('Executing first-run procedure on provided sample data.')
+    # Check if custom ipfs daemon host and port are passed
+    # ..if not, read ~/.ipwb/config values and overwrite globals in this file.
+    ipwbPortPerConfig = getIPFSDaemonPortFromConfig()
+    if ipwbPortPerConfig:
+        IPFSAPI_PORT = ipwbPortPerConfig
 
     indexer.indexFileAt(os.path.dirname(__file__) + '/' + SAMPLE_WARC,
                                                     'radon', quiet=True)
