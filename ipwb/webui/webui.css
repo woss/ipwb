@@ -5,7 +5,7 @@ h1 {font-size: 72px; margin-bottom: 0.5em; font-family: sans-serif;}
 h1 img {height: 2.0em;}
 abbr:hover {cursor: help;}
 .hidden {display: none;}
-#uriList {list-style-type: none; text-align: left; width: 40%; margin: auto;}
+#uriList {list-style-type: none; text-align: left; margin: auto;}
 a#memCountListLink {border-bottom: 1px dotted black;}
 a#memCountListLink.activated {border-bottom: 2px solid #009900;}
 a#memCountListLink.activated:hover {cursor: default;}
@@ -22,3 +22,9 @@ html.status body {margin: 0 0 0 2px; padding: 0;}
 html#statusStart {color: red;}
 html#statusStop {color: green;}
 html.status button {display: inline-block; margin-left: 5px;}
+ul#uriList li {display: none; width: 100%; margin-bottom: 0.5em;}
+ul#uriList li[data-mime="text/html"] {background-color: white; display: block;}
+ul#uriList.forceDisplay li {display: block;}
+
+h3#urisHeader {margin-bottom: 0;}
+h4#htmlCountHeader {margin-top: 0; margin-bottom: 1.0em; font-size: 0.8em; font-weight: normal;}

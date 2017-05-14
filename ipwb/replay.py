@@ -428,12 +428,16 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
     for i, l in enumerate(lines):
         if l[0] == '!':  # Metadata field
             continue
-        cdxjFields = l.split(' ')
+        cdxjFields = l.split(' ', 2)
         uri = unsurt(cdxjFields[0])
         datetime = cdxjFields[1]
+        jsonFields = json.loads(cdxjFields[2])
+
         if uri not in uris:
-            uris[uri] = []
-        uris[uri].append(datetime)
+            uris[uri] = {}
+            uris[uri]['datetimes'] = []
+        uris[uri]['datetimes'].append(datetime)
+        uris[uri]['mime'] = jsonFields['mime_type']
 
         pass
     return json.dumps(uris)
