@@ -13,7 +13,7 @@ function showURIs () {
   for (var uri in uris) {
     for (var datetimesI = 0; datetimesI < uris[uri]['datetimes'].length; datetimesI++) {
       var datetime = uris[uri]['datetimes'][datetimesI]
-      
+
       var li = document.createElement('li')
       var a = document.createElement('a')
       a.href = datetime + '/' + uri
@@ -30,24 +30,39 @@ function showURIs () {
   document.getElementById('htmlPages').innerHTML = htmlPages
   document.getElementById('memCountListLink').classList = ['activated']
   document.getElementById('uris').classList.remove('hidden')
+  setPlurality()
+  setShowAllButtonStatus()
 }
 
 function addEventListeners () {
   var target = document.getElementById('memCountListLink')
   target.addEventListener('click', showURIs, false)
-  
+
   var showAllInListingButton = document.getElementById('showEmbeddedURI')
   showAllInListingButton.onclick = function showAllURIs () {
     document.getElementById('uriList').classList.add('forceDisplay')
   }
-  
+
   getIPFSWebUIAddress()
 }
 
 function setPlurality () {
-  var count = document.getElementById('memCountInt').innerHTML
-  if (count === "1") {
+  var urimCount = document.getElementById('memCountInt').innerHTML
+  var htmlFilesPlurality = document.getElementById('htmlPages').innerHTML
+
+  if (urimCount === '1') {
     document.getElementById('plural').classList.add('hidden')
+  }
+  if (htmlFilesPlurality === '1') {
+    document.getElementById('htmlPagesPlurality').classList.add('hidden')
+  }
+}
+
+function setShowAllButtonStatus () {
+  var urimCount = document.getElementById('memCountInt').innerHTML
+  var htmlFilesPlurality = document.getElementById('htmlPages').innerHTML
+  if (urimCount === htmlFilesPlurality) {
+    document.getElementById('showEmbeddedURI').setAttribute('disabled','disabled')
   }
 }
 
@@ -96,7 +111,7 @@ function sendCommandToIPFSDaemon (cmd) {
 }
 
 function makeAnAJAXRequest (address, successFunction, failFunction, errorFunction) {
- var xmlhttp = new XMLHttpRequest()
+  var xmlhttp = new XMLHttpRequest()
 
   xmlhttp.onreadystatechange = function () {
     if (xmlhttp.readyState === XMLHttpRequest.DONE) {
@@ -112,5 +127,4 @@ function makeAnAJAXRequest (address, successFunction, failFunction, errorFunctio
 
   xmlhttp.open('GET', address, true)
   xmlhttp.send()
-
 }
