@@ -19,7 +19,8 @@ self.addEventListener('fetch', function (event) {
 
   // TODO: consult the referrer header on each request instead of using a global var
   if (event.request.mode !== 'navigate' &&
-      event.request.url.indexOf('/webui/') === -1) { // Do not rewrite webui embedded resources
+      event.request.url.indexOf('/webui/') === -1 &&
+      event.request.url.indexOf('/daemon/') === -1) { // Do not rewrite webui embedded resources or daemon
        // TODO: use a 3XX redirect to better guide the browser
        //  if hostname == refferrer, check to ensure serviceworker does not run infinitely on each embedded resource
     request = reroute(event.request, baseDatetime) // Only embedded resources
