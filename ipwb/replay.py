@@ -320,6 +320,12 @@ def show_uri(path, datetime=None):
 
         resp.headers[k] = v
 
+    # Add ipwb header for additional SW logic
+    preInjectionPayload = resp.get_data()
+    ipwbjavascriptinject = '<script src="/webui/webui.js"></script><script>injectIPWBHeader()</script>'
+    preInjectionPayload = preInjectionPayload.replace('</html>', ipwbjavascriptinject + '</html>')
+    resp.set_data(preInjectionPayload)
+
     resp.headers['Memento-Datetime'] = ipwbConfig.datetimeToRFC1123(datetime)
 
     return resp

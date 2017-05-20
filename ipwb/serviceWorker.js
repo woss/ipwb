@@ -22,7 +22,7 @@ self.addEventListener('fetch', function (event) {
       event.request.url.indexOf('/webui/') === -1 &&
       event.request.url.indexOf('/daemon/') === -1) { // Do not rewrite webui embedded resources or daemon
        // TODO: use a 3XX redirect to better guide the browser
-       //  if hostname == refferrer, check to ensure serviceworker does not run infinitely on each embedded resource
+       //  if hostname == referrer, check to ensure serviceworker does not run infinitely on each embedded resource
     request = reroute(event.request, baseDatetime) // Only embedded resources
     console.log('REROUTING request for ' + event.request.url + ' to ' + request.url)
     console.log(event.request)

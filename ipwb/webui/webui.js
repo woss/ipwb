@@ -128,3 +128,20 @@ function makeAnAJAXRequest (address, successFunction, failFunction, errorFunctio
   xmlhttp.open('GET', address, true)
   xmlhttp.send()
 }
+
+function injectIPWBHeader () {
+  console.log('called injectIPWBHeader()')
+  //TODO add logic to check if SW is installed or needs updating
+}
+
+function serviceWorkerInstalled () {
+
+}
+
+function serviceWorkerUpToDate () {
+
+}
+
+function updateServiceWorker () {
+  
+}
