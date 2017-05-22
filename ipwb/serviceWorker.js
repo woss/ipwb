@@ -1,7 +1,5 @@
 /* eslint-env serviceworker */
 
-console.log('Loading ServiceWorker.')
-
 var baseDatetime = ''
 
 self.addEventListener('install', function (event) {
@@ -13,8 +11,6 @@ self.addEventListener('activate', function (event) {
 })
 
 self.addEventListener('fetch', function (event) {
-  console.log('Fetch event triggered.')
-  console.log(event.request)
   var request = event.request
 
   // TODO: consult the referrer header on each request instead of using a global var
@@ -25,7 +21,6 @@ self.addEventListener('fetch', function (event) {
        //  if hostname == referrer, check to ensure serviceworker does not run infinitely on each embedded resource
     request = reroute(event.request, baseDatetime) // Only embedded resources
     console.log('REROUTING request for ' + event.request.url + ' to ' + request.url)
-    console.log(event.request)
   } else if (event.request.mode === 'navigate') {
     // We need to preserve memento-datetime for use in requesting
     //  embedded resources. Possibly use SW caches instead? TODO
@@ -39,7 +34,6 @@ self.addEventListener('fetch', function (event) {
 
   function serverFetch (response) {
     console.log('Fetching from server.')
-    console.log(response)
     return response
   }
 

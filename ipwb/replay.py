@@ -322,7 +322,7 @@ def show_uri(path, datetime=None):
 
     # Add ipwb header for additional SW logic
     preInjectionPayload = resp.get_data()
-    ipwbjavascriptinject = '<script src="/webui/webui.js"></script><script>injectIPWBHeader()</script>'
+    ipwbjavascriptinject = '<script src="/webui/webui.js"></script><script>injectIPWBJS()</script>'
     preInjectionPayload = preInjectionPayload.replace('</html>', ipwbjavascriptinject + '</html>')
     resp.set_data(preInjectionPayload)
 
