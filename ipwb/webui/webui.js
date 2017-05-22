@@ -128,3 +128,51 @@ function makeAnAJAXRequest (address, successFunction, failFunction, errorFunctio
   xmlhttp.open('GET', address, true)
   xmlhttp.send()
 }
+
+function injectIPWBJS () {
+  registerServiceWorker()
+  // TODO: Add ipwb replay banner
+}
+
+
+
+function registerServiceWorker () {
+  if ('serviceWorker' in navigator) {
+    var newInstallation = false
+
+    if (navigator.serviceWorker.controller === null) { // Ideally we would use serviceWorker.getRegistration
+      newInstallation = true
+    }
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/serviceWorker.js').then(function(registration) {
+        // Registration was successful
+        console.log('ServiceWorker registration successful with scope: ', registration.scope)
+      }).catch(function(err) {
+        // registration failed :(
+        console.log('ServiceWorker registration failed: ', err);
+      }).then(function(rr){
+        var dt = document.location.href.split('/')[3]
+        var viewingMemento = dt.length === 14 && parseInt(dt, 10) + '' === dt
+
+        // Reload the page with processing by the newly installed Service Worker
+        if (newInstallation && viewingMemento) {
+          document.location.reload()
+        }
+      })
+    })
+  } else {
+    console.log('Browser does not support Service Worker.')
+  }
+}
+
+function serviceWorkerUpToDate () {
+
+}
+
+function updateServiceWorker () {
+
+}
+
+function reloadPageFromServiceWorker () {
+  console.log('reloading page from serviceWorker!')
+}
