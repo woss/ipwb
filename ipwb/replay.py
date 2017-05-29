@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys
 import os
 import ipfsapi
@@ -98,8 +99,8 @@ def commandDaemon(cmd):
         subprocess.call(['killall', 'ipfs'])
         return Response('IPFS daemon stopping...')
     else:
-        print 'ERROR, bad command sent to daemon API!'
-        print cmd
+        print('ERROR, bad command sent to daemon API!')
+        print(cmd)
         return Response('bad command!')
 
 
@@ -123,7 +124,7 @@ def showMemento(urir, datetime):
     print(cdxjLinesWithURIR)
 
     closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
-    print "best line: "+closestLine
+    print("best line: " + closestLine)
     if closestLine is None:
         msg = '<h1>ERROR 404</h1>'
         msg += 'No capture found for {0} at {1}.'.format(path, datetime)
@@ -214,7 +215,7 @@ def showMementoAtDatetime(urir, datetime):
 
 @app.errorhandler(Exception)
 def all_exception_handler(error):
-    print error
+    print(error)
     return 'Error', 500
 
 
@@ -258,7 +259,7 @@ def show_uri(path, datetime=None):
 
         cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
     except:
-        print sys.exc_info()[0]
+        print(sys.exc_info()[0])
         respString = ('{0} not found :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
@@ -289,14 +290,14 @@ def show_uri(path, datetime=None):
         payload = IPFS_API.cat(digests[-1], timeout=1)
         header = IPFS_API.cat(digests[-2])
     except ipfsapi.exceptions.TimeoutError:
-        print "{0} not found at {1}".format(cdxjParts[0], digests[-1])
+        print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
         respString = ('{0} not found in IPFS :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
     except:
-        print sys.exc_info()[0]
-        print "general error"
+        print(sys.exc_info()[0])
+        print("general error")
         sys.exit()
 
     if 'encryption_method' in jObj:
@@ -375,20 +376,20 @@ def fetchRemoteCDXJFile(path):
 
     if '://' not in path:  # isAIPFSHash
         # TODO: Check if a valid IPFS hash
-        print 'No scheme in path, assuming IPFS hash and fetching...'
+        print('No scheme in path, assuming IPFS hash and fetching...')
         try:
-            print "Trying to ipfs.cat('{0}')".format(path)
+            print("Trying to ipfs.cat('{0}')".format(path))
             dataFromIPFS = IPFS_API.cat(path)
         except hashNotInIPFS:
             return ''
         except:
-            print "An error occurred with ipfs.cat"
-            print sys.exc_info()[0]
+            print("An error occurred with ipfs.cat")
+            print(sys.exc_info()[0])
             sys.exit()
-        print 'Data successfully obtained from IPFS'
+        print('Data successfully obtained from IPFS')
         return dataFromIPFS
     else:  # http://, ftp://, smb://, file://
-        print 'Path contains a scheme, fetching remote file...'
+        print('Path contains a scheme, fetching remote file...')
         fileContents = ipwbConfig.fetchRemoteFile(path)
         return fileContents
 
@@ -399,12 +400,12 @@ def fetchRemoteCDXJFile(path):
 
 def getIndexFileContents(cdxjFilePath=INDEX_FILE):
     if not os.path.exists(cdxjFilePath):
-        print 'File {0} does not exist locally, fetching remote'.format(
-                                                                 cdxjFilePath)
+        print('File {0} does not exist locally, fetching remote'.format(
+                                                                 cdxjFilePath))
         return fetchRemoteCDXJFile(cdxjFilePath) or ''
 
     indexFilePath = '/{0}'.format(cdxjFilePath).replace('ipwb.replay', 'ipwb')
-    print 'getting index file at {0}'.format(indexFilePath)
+    print('getting index file at {0}'.format(indexFilePath))
 
     indexFileContent = ''
     with open(cdxjFilePath, 'r') as f:
@@ -451,7 +452,7 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
 
 def retrieveMemCount(cdxjFilePath=INDEX_FILE):
-    print "Retrieving URI-Ms from {0}".format(cdxjFilePath)
+    print("Retrieving URI-Ms from {0}".format(cdxjFilePath))
     indexFileContents = getIndexFileContents(cdxjFilePath)
 
     if not indexFileContents:
@@ -459,7 +460,7 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
 
     lines = indexFileContents.strip().split('\n')
     if not lines:
-        print "Index file not found"
+        print("Index file not found")
         return 0
     mementoCount = 0
     for i, l in enumerate(lines):
@@ -513,7 +514,7 @@ def binary_search(haystack, needle, returnIndex=False, onlyURI=False):
 def getCDXJLine_binarySearch(
          surtURI, cdxjFilePath=INDEX_FILE, retIndex=False, onlyURI=False):
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
-    print 'looking for {0} in {1}'.format(surtURI, cdxjFilePath)
+    print('looking for {0} in {1}'.format(surtURI, cdxjFilePath))
 
     with open(fullFilePath, 'r') as cdxjFile:
         lines = cdxjFile.read().split('\n')
