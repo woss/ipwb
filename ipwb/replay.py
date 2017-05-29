@@ -300,10 +300,27 @@ def show_uri(path, datetime=None):
         print("general error")
         sys.exit()
 
+    # TODO (add as ticket): Account for different encryption keys/methods per line in a CDXJ
+    # TODO (add as ticket): Allow encryption method and key to be speicifed in the cdxj metadata record/line
+    # TODO (add as ticket): Add ability to specify key file / string from replay web ui interface
+    # TODO: Research way to send JS/HTTP request in the browser for a decryption key
+    # TODO: Research other encryption methods than simple XOR, add here
     if 'encryption_method' in jObj:
-        pKey = XOR.new(jObj['encryption_key'])
+        keyString = None
+        while keyString is None:
+          if 'encryption_key' in jObj:
+            keyString = jObj['encryption_key']
+          else:
+            askForKey = 'Enter a path for file containing decryption key: \n> '
+            keyString = raw_input(askForKey)
+
+        encryptionMethod = None
+        if jObj['encryption_method'] == 'xor':
+            encryptionMethod = XOR
+
+        pKey = encryptionMethod.new(keyString)
         payload = pKey.decrypt(base64.b64decode(payload))
-        hKey = XOR.new(jObj['encryption_key'])
+        hKey = encryptionMethod.new(keyString)
         header = hKey.decrypt(base64.b64decode(header))
 
     hLines = header.split('\n')

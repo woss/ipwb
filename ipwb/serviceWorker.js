@@ -25,8 +25,7 @@ self.addEventListener('fetch', function (event) {
   } else if (event.request.mode === 'navigate') {
     // We need to preserve memento-datetime for use in requesting
     //  embedded resources. Possibly use SW caches instead? TODO
-    var datetime = event.request.url.match(/\/([0-9]{14})\//)[1]
-    baseDatetime = datetime
+    baseDatetime = event.request.url.match(/\/([0-9]{14})\//)[1]
   }
 
   event.respondWith(
