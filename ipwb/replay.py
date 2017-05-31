@@ -287,6 +287,8 @@ def show_uri(path, datetime=None):
     digests = jObj['locator'].split('/')
 
     try:
+        print(digests)
+        print(IPFS_API.cat)
         payload = IPFS_API.cat(digests[-1], timeout=1)
         header = IPFS_API.cat(digests[-2])
     except ipfsapi.exceptions.TimeoutError:
@@ -300,19 +302,15 @@ def show_uri(path, datetime=None):
         print("general error")
         sys.exit()
 
-    # TODO (add as ticket): Account for different encryption keys/methods per line in a CDXJ
-    # TODO (add as ticket): Allow encryption method and key to be speicifed in the cdxj metadata record/line
-    # TODO (add as ticket): Add ability to specify key file / string from replay web ui interface
-    # TODO: Research way to send JS/HTTP request in the browser for a decryption key
-    # TODO: Research other encryption methods than simple XOR, add here
     if 'encryption_method' in jObj:
         keyString = None
         while keyString is None:
-          if 'encryption_key' in jObj:
-            keyString = jObj['encryption_key']
-          else:
-            askForKey = 'Enter a path for file containing decryption key: \n> '
-            keyString = raw_input(askForKey)
+            if 'encryption_key' in jObj:
+                keyString = jObj['encryption_key']
+            else:
+                askForKey = ('Enter a path for file',
+                             ' containing decryption key: \n> ')
+                keyString = raw_input(askForKey)
 
         encryptionMethod = None
         if jObj['encryption_method'] == 'xor':
