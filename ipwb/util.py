@@ -16,6 +16,10 @@ import site
 import locale
 import datetime
 
+import urllib2
+import json
+from __init__ import __version__ as ipwbVersion
+
 # from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import ConnectionError
 
@@ -169,8 +173,23 @@ def getIPWBReplayIndexPath():
         return ''
 
 
+def runningLatestIPWB():
+    try:
+        resp = urllib2.urlopen('https://pypi.python.org/pypi/ipwb/json')
+        jResp = json.loads(resp.read())
+        latestVersion = jResp['info']['version']
+        currentVersion = ipwbVersion.replace('.0', '.')
+        return latestVersion == currentVersion
+    except:
+        return None
+
+
 def firstRun():
     import indexer
+    if runningLatestIPWB() is False:
+        print('This version of ipwb is outdated.'
+              ' Please run pip install --upgrade ipwb.')
+
     # Ensure the sample WARC is in IPFS
     print('Executing first-run procedure on provided sample data.')
 
