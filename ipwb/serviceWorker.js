@@ -14,6 +14,7 @@ self.addEventListener('fetch', function (event) {
   var request = event.request
 
   // TODO: consult the referrer header on each request instead of using a global var
+  //if ( event.request.url.split('/')[2] !== document.location.host) {
   if (event.request.mode !== 'navigate' &&
       event.request.url.indexOf('/webui/') === -1 &&
       event.request.url.indexOf('/daemon/') === -1) { // Do not rewrite webui embedded resources or daemon
@@ -24,8 +25,7 @@ self.addEventListener('fetch', function (event) {
   } else if (event.request.mode === 'navigate') {
     // We need to preserve memento-datetime for use in requesting
     //  embedded resources. Possibly use SW caches instead? TODO
-    var datetime = event.request.url.match(/\/([0-9]{14})\//)[1]
-    baseDatetime = datetime
+    baseDatetime = event.request.url.match(/\/([0-9]{14})\//)[1]
   }
 
   event.respondWith(

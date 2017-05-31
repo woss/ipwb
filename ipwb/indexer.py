@@ -95,6 +95,9 @@ def indexFileAt(warcPaths, encryptionKey=None,
 
     if encryptionKey is not None and len(encryptionKey) == 0:
         encryptionKey = askUserForEncryptionKey()
+        if encryptionKey == '':
+            encryptionKey = None
+            logError('Blank key entered, encryption disabled')
 
     encryptionAndCompressionSetting = {
       'encryptTHENCompress': encryptTHENCompress,
@@ -231,6 +234,7 @@ def askUserForEncryptionKey():
         print(promptString, file=sys.stderr)
 
     key = raw_input(promptString)
+
     return key
 
 

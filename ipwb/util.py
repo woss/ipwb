@@ -37,10 +37,10 @@ def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
         # OSError if ipfs not installed
         subprocess.call(['ipfs', '--version'], stdout=open(devnull, 'wb'))
 
-        # ConnectionError if IPFS daemon not running
+        # ConnectionError/AttributeError if IPFS daemon not running
         client.id()
         return True
-    except ConnectionError:
+    except (ConnectionError, exceptions.AttributeError):
         logError("Daemon is not running at http://" + hostAndPort)
         return False
     except OSError:
