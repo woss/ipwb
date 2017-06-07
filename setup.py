@@ -44,7 +44,7 @@ setup(
     },
     keywords='http web archives ipfs distributed odu wayback memento',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
 
         'Environment :: Web Environment',
 
@@ -64,4 +64,4 @@ setup(
     ]
 )
 
-# Publish to pypi: python setup.py sdist upload -r pypi
+# Publish to pypi: rm -rf dist; python setup.py sdist bdist_wheel; twine upload dist/*
