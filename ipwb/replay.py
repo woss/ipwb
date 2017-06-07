@@ -30,11 +30,18 @@ from Crypto.Cipher import XOR
 import base64
 
 from werkzeug.routing import BaseConverter
+from __init__ import __version__ as ipwbVersion
 
 app = Flask(__name__)
 app.debug = False
 
 IPFS_API = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
+
+
+@app.after_request
+def setServerHeader(response):
+    response.headers['Server'] = 'InterPlanetary Wayback Replay/' + ipwbVersion
+    return response
 
 
 @app.route('/webui/<path:path>')
