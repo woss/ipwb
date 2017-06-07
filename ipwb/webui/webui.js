@@ -2,15 +2,21 @@ function handleSubmit () {
   document.location += document.getElementById('url').value
 }
 
+function shortestFirst(a, b) {
+  if (a.length < b.length) {return -1}
+  if (a.length > b.length) {return 1}
+  return 0
+}
+
 function showURIs () {
   var ul = document.getElementById('uriList')
-
   if (ul.childNodes.length > 0) {
     return // Prevent multiple adds of the URI list to the DOM
   }
 
   var htmlPages = 0
-  for (var uri in uris) {
+  var uriKeys = Object.keys(uris).sort(shortestFirst)
+  for (var uri of uriKeys) {
     for (var datetimesI = 0; datetimesI < uris[uri]['datetimes'].length; datetimesI++) {
       var datetime = uris[uri]['datetimes'][datetimesI]
 
@@ -149,7 +155,7 @@ function registerServiceWorker () {
         console.log('ServiceWorker registration successful with scope: ', registration.scope)
       }).catch(function(err) {
         // registration failed :(
-        console.log('ServiceWorker registration failed: ', err);
+        console.log('ServiceWorker registration failed: ', err)
       }).then(function(rr){
         var dt = document.location.href.split('/')[3]
         var viewingMemento = dt.length === 14 && parseInt(dt, 10) + '' === dt
