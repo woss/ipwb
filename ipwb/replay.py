@@ -37,10 +37,12 @@ app.debug = False
 
 IPFS_API = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
 
+
 @app.after_request
 def setServerHeader(response):
     response.headers['Server'] = 'InterPlanetary Wayback Replay/' + ipwbVersion
     return response
+
 
 @app.route('/webui/<path:path>')
 def showWebUI(path):
