@@ -294,9 +294,7 @@ def show_uri(path, datetime=None):
     digests = jObj['locator'].split('/')
 
     try:
-        print(digests)
-        print(IPFS_API.cat)
-        payload = IPFS_API.cat(digests[-1], timeout=1)
+        payload = IPFS_API.cat(digests[-1])  # Was ', timeout=1)'
         header = IPFS_API.cat(digests[-2])
     except ipfsapi.exceptions.TimeoutError:
         print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
@@ -337,7 +335,12 @@ def show_uri(path, datetime=None):
         k, v = hLine.split(': ', 1)
 
         if k.lower() == 'transfer-encoding' and v.lower() == 'chunked':
-            resp.set_data(extractResponseFromChunkedData(payload))
+            try:
+                unchunkedPayload = extractResponseFromChunkedData(payload)
+            except:
+                continue  # Data may have no actually been chunked
+            resp.set_data(unchunkedPayload)
+
         if k.lower() != "content-type":
             k = "X-Archive-Orig-" + k
 
@@ -363,6 +366,7 @@ def extractResponseFromChunkedData(data):
     chunkDescriptor = chunkDescriptor.split(';')[0].strip()
 
     while chunkDescriptor != '0':
+        # On fail, exception, delta in header vs. payload chunkedness
         chunkDecFromHex = int(chunkDescriptor, 16)  # Get dec for slice
         retStr += rest[:chunkDecFromHex]  # Add to payload
         rest = rest[chunkDecFromHex:]  # Trim from the next chunk onward
@@ -542,6 +546,7 @@ def getCDXJLine_binarySearch(
         lines = cdxjFile.read().split('\n')
 
         lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
+
         return lineFound
 
 
