@@ -13,16 +13,24 @@ self.addEventListener('activate', function (event) {
 self.addEventListener('fetch', function (event) {
   var request = event.request
 
+  var url = new URL(event.request.url)
+  var isNavigation = event.request.mode === 'navigate'
+  var isWebUI = event.request.url.indexOf('/webui/') !== -1
+  var isDaemon = event.request.url.indexOf('/daemon/') !== -1
+  var isReplayRoot = (url.pathname === '/' || url.pathname === '')
+
+  if (isNavigation || isReplayRoot || isDaemon) {
+    return // Internal asset, no SW needed
+  }
+
   // TODO: consult the referrer header on each request instead of using a global var
   //if ( event.request.url.split('/')[2] !== document.location.host) {
-  if (event.request.mode !== 'navigate' &&
-      event.request.url.indexOf('/webui/') === -1 &&
-      event.request.url.indexOf('/daemon/') === -1) { // Do not rewrite webui embedded resources or daemon
+  if (!isNavigation && !isWebUI && !isDaemon) { // Do not rewrite webui embedded resources or daemon
        // TODO: use a 3XX redirect to better guide the browser
        //  if hostname == referrer, check to ensure serviceworker does not run infinitely on each embedded resource
     request = reroute(event.request, baseDatetime) // Only embedded resources
     console.log('REROUTING request for ' + event.request.url + ' to ' + request.url)
-  } else if (event.request.mode === 'navigate') {
+  } else if (isNavigation) {
     // We need to preserve memento-datetime for use in requesting
     //  embedded resources. Possibly use SW caches instead? TODO
     baseDatetime = event.request.url.match(/\/([0-9]{14})\//)[1]
