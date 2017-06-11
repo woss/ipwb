@@ -65,7 +65,7 @@ In a separate terminal session (or the same if you started the daemon in the bac
 
 .. code-block:: bash
 
-      $ ipwb index ipwb/samples/warcs/sample-1.warc.gz
+      $ ipwb index ipwb/samples/warcs/salam-home.warc
 
 
 `indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g., 
