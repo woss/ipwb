@@ -19,7 +19,10 @@ self.addEventListener('fetch', function (event) {
   var isDaemon = event.request.url.indexOf('/daemon/') !== -1
   var isReplayRoot = (url.pathname === '/' || url.pathname === '')
 
-  var referrerDatetime = event.request.referrer.match(/\/([0-9]{14})\//)[1]
+  var referrerDatetime = event.request.referrer.match(/\/([0-9]{14})\//)
+  if (referrerDatetime !== null) {
+    referrerDatetime = referrerDatetime[1]
+  }
 
   if (isNavigation || isReplayRoot || isDaemon) {
     return // Internal asset, no SW needed
