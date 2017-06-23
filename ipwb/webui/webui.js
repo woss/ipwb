@@ -100,7 +100,7 @@ function getIPFSWebUIAddress () {
   }
   var fail = function () { console.log('fail') }
   var err = function () { console.log('err') }
-  makeAnAJAXRequest('/config/openEndedPlaceHolder', setIPFSWebUILink, fail, err)
+  // makeAnAJAXRequest('/config/openEndedPlaceHolder', setIPFSWebUILink, fail, err)
 }
 
 function updateIPFSDaemonButtonUI () {
