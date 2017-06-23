@@ -172,11 +172,13 @@ The ipwb indexing and replay system can also be run from source using a virtuale
 
 Project History
 ---------------
-This repo contains the code for integrating `WARC`_\ s and `IPFS`_ as developed at the `Archives Unleashed Hackathon`_ in Toronto, Canada in March 2016. The project was also presented at:
+This repo contains the code for integrating `WARC`_\ s and `IPFS`_ as developed at the `Archives Unleashed\: Web Archive Hackathon`_ in Toronto, Canada in March 2016. The project was also presented at:
 
 * The `Joint Conference on Digital Libraries 2016`_ in Newark, NJ in June 2016.
 * The `Web Archiving and Digital Libraries (WADL) 2016 workshop`_ in Newark, NJ in June 2016.
 * The `Theory and Practice on Digital Libraries (TPDL) 2016`_ in Hannover, Germany in September 2016.
+* The `Archives Unleashed 4.0\: Web Archive Datathon`_ in London, England in June 2017.
+* The `International Internet Preservation Consortium (IIPC) Web Archiving Conference (WAC) 2017`_ in London, England in June 2017.
 
 License
 ---------
@@ -185,9 +187,11 @@ MIT
 .. _Contributor Friendly: https://github.com/ipfs/ipfs
 .. _WARC: http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717
 .. _Joint Conference on Digital Libraries 2016: http://www.jcdl2016.org/
-.. _Archives Unleashed Hackathon: http://archivesunleashed.ca
+.. _Archives Unleashed\: Web Archive Hackathon: http://archivesunleashed.ca
 .. _Theory and Practice on Digital Libraries (TPDL) 2016: http://www.tpdl2016.org/
 .. _Web Archiving and Digital Libraries (WADL) 2016 workshop: http://fox.cs.vt.edu/wadl2016.html
+.. _Archives Unleashed 4.0\: Web Archive Datathon: http://archivesunleashed.com/au4-0-british-invasion/
+.. _International Internet Preservation Consortium (IIPC) Web Archiving Conference (WAC) 2017: http://netpreserve.org/wac2017/
 .. _CDXJ index: https://github.com/oduwsdl/ORS/wiki/CDXJ
 .. _CDXJ: https://github.com/oduwsdl/ORS/wiki/CDXJ
 .. _IPFS: https://ipfs.io/
