@@ -2,6 +2,13 @@
 
 var baseDatetime = ''
 
+function getMyVersion () {
+     fetch(self.location.href)
+     .then(function (resp) {
+       console.log('Running ServiceWorker version ' + resp.headers.get('Server'))
+     })
+  }
+
 self.addEventListener('install', function (event) {
   console.log('Installing ServiceWorker.')
 })
@@ -18,6 +25,7 @@ self.addEventListener('fetch', function (event) {
   var isWebUI = event.request.url.indexOf('/webui/') !== -1
   var isDaemon = event.request.url.indexOf('/daemon/') !== -1
   var isReplayRoot = (url.pathname === '/' || url.pathname === '')
+  var isRootMemento = event.request.url === event.request.referrer
 
   var referrerDatetime = event.request.referrer.match(/\/([0-9]{14})\//)
   if (referrerDatetime !== null) {
@@ -30,7 +38,7 @@ self.addEventListener('fetch', function (event) {
 
   // TODO: consult the referrer header on each request instead of using a global var
   //if ( event.request.url.split('/')[2] !== document.location.host) {
-  if (!isNavigation && !isWebUI && !isDaemon) { // Do not rewrite webui embedded resources or daemon
+  if (!isNavigation && !isWebUI && !isDaemon && !isRootMemento) { // Do not rewrite webui embedded resources or daemon
        // TODO: use a 3XX redirect to better guide the browser
        //  if hostname == referrer, check to ensure serviceworker does not run infinitely on each embedded resource
     request = reroute(event.request, referrerDatetime) // Only embedded resources
@@ -43,6 +51,7 @@ self.addEventListener('fetch', function (event) {
 
   function serverFetch (response) {
     console.log('Fetching from server.')
+    getMyVersion()
     return response
   }
 
