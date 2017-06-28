@@ -24,6 +24,7 @@ self.addEventListener('fetch', function (event) {
   var isNavigation = event.request.mode === 'navigate'
   var isWebUI = event.request.url.indexOf('/webui/') !== -1
   var isDaemon = event.request.url.indexOf('/daemon/') !== -1
+  var isConfig = event.request.url.indexOf('/config/') !== -1
   var isReplayRoot = (url.pathname === '/' || url.pathname === '')
   var isRootMemento = event.request.url === event.request.referrer
 
@@ -32,13 +33,13 @@ self.addEventListener('fetch', function (event) {
     referrerDatetime = referrerDatetime[1]
   }
 
-  if (isNavigation || isReplayRoot || isDaemon) {
+  if (isNavigation || isReplayRoot || isDaemon || isConfig) {
     return // Internal asset, no SW needed
   }
 
   // TODO: consult the referrer header on each request instead of using a global var
   //if ( event.request.url.split('/')[2] !== document.location.host) {
-  if (!isNavigation && !isWebUI && !isDaemon && !isRootMemento) { // Do not rewrite webui embedded resources or daemon
+  if (!isNavigation && !isWebUI && !isDaemon && !isRootMemento && !isConfig) { // Do not rewrite webui embedded resources or daemon
        // TODO: use a 3XX redirect to better guide the browser
        //  if hostname == referrer, check to ensure serviceworker does not run infinitely on each embedded resource
     request = reroute(event.request, referrerDatetime) // Only embedded resources
