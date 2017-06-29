@@ -16,5 +16,6 @@ script:
   - pep8
   - ipfs init
   - ipfs daemon & sleep 10; pytest
-  - codecov
   - py.test --cov=./
+after_success:
+  - codecov
