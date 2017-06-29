@@ -198,5 +198,8 @@ MIT
 .. _pywb: https://github.com/ikreymer/pywb
 .. _Install IPFS: https://ipfs.io/docs/install/
 .. |travis| image:: https://api.travis-ci.org/oduwsdl/ipwb.png?branch=master
+  :target: https://travis-ci.org/oduwsdl/ipwb
 .. |pypi| image:: https://img.shields.io/pypi/v/ipwb.svg
+  :target: https://pypi.python.org/pypi/ipwb
 .. |codecov| image:: https://codecov.io/gh/oduwsdl/ipwb/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/oduwsdl/ipwb
