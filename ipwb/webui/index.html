@@ -26,15 +26,20 @@ var uris = []
   </div>
   <footer>
   <p id="memCount"><a id="memCountListLink"><span id="memCountInt">MEMCOUNT</span></a> Memento<span id="plural">s</span> available</p>
-  <div id="iframeWrapper"><p>IPFS Daemon: </p><iframe src="daemon/status" id="daemonStatus"></iframe></div>
-  <div id="uris" class="hidden">
+  <details>
+    <summary>Options and Details...</summary>
+      <div id="iframeWrapper"><label id="daemonStatusLabel">IPFS Daemon: </label><iframe src="daemon/status" id="daemonStatus"></iframe></div>
+      <p><label>Archive Index(es): </label>INDEXSRC</p>
+      <p><label>Service Worker: </label><span id="serviceWorkerVersion">checking...</span><button id="reinstallServiceWorker">Reinstall Service Worker</button></p>
+      <p id="ipfsuilink"><a id="webui" target="_blank">IPFS WebUI</a></p>
+  </details>
+  </footer>
+    <div id="uris" class="hidden">
     <h3 id="urisHeader"><abbr title="Uniform Resource Identifiers">URIs</abbr> locally available</h3>
     <h4 id="htmlCountHeader"><span id="htmlPages">0</span> HTML page<span id="htmlPagesPlurality">s</span> listed <button id="showEmbeddedURI">Show all</button></h4>
     <ul id="uriList"></ul>
   </div>
-  <p>Archive Index(es): INDEXSRC</p>
-  </footer>
-  <a id="webui">IPFS WebUI</a>
+
 </div>
 
 <script>

@@ -3,11 +3,11 @@
 var baseDatetime = ''
 
 function getMyVersion () {
-     fetch(self.location.href)
-     .then(function (resp) {
-       console.log('Running ServiceWorker version ' + resp.headers.get('Server'))
-     })
-  }
+  fetch(self.location.href)
+  .then(function (resp) {
+    console.log('Running ServiceWorker version ' + resp.headers.get('Server'))
+  })
+}
 
 self.addEventListener('install', function (event) {
   console.log('Installing ServiceWorker.')
