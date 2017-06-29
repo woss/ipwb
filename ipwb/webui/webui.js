@@ -50,6 +50,10 @@ function addEventListeners () {
   }
 
   getIPFSWebUIAddress()
+  updateServiceWorkerVersionUI()
+
+  var reinstallServiceWorkerButton = document.getElementById('reinstallServiceWorker')
+  reinstallServiceWorkerButton.onclick = reinstallServiceWorker
 }
 
 function setPlurality () {
@@ -140,32 +144,64 @@ function injectIPWBJS () {
   // TODO: Add ipwb replay banner
 }
 
+function getServiceWorkerVersion () {
+  return fetch(self.location.href)
+  .then(function (resp) {
+    return Promise.resolve(resp.headers.get('Server').split('/')[1])
+  })
+}
+
+
+function reinstallServiceWorker () {
+  console.log('Deleting old serviceWorker')
+  deleteServiceWorker()
+  document.getElementById('serviceWorkerVersion').innerHTML = 'Updating...'
+  installServiceWorker()
+  updateServiceWorkerVersionUI()
+}
+
+function deleteServiceWorker () {
+  navigator.serviceWorker.getRegistrations().then(function (registrations) {
+    for (let registration of registrations) {
+      registration.unregister()
+    }
+  })
+}
+
+function updateServiceWorkerVersionUI () {
+  getServiceWorkerVersion().then(function (resp) {
+    console.log('updating to ...' + resp)
+    document.getElementById('serviceWorkerVersion').innerHTML = 'ver. ' + resp
+  })
+}
+
+function installServiceWorker () {
+  var newInstallation = false
+
+  if (navigator.serviceWorker.controller === null) { // Ideally we would use serviceWorker.getRegistration
+    newInstallation = true
+  }
+
+  navigator.serviceWorker.register('/serviceWorker.js').then(function(registration) {
+    console.log('ServiceWorker registration successful with scope: ', registration.scope)
+  }).catch(function(err) {
+    console.log('ServiceWorker registration failed: ', err)
+  }).then(function(rr){
+    var dt = document.location.href.split('/')[3]
+    var viewingMemento = dt.length === 14 && parseInt(dt, 10) + '' === dt
+
+    // Reload the page with processing by the newly installed Service Worker
+    if (newInstallation && viewingMemento) {
+      document.location.reload()
+    }
+  })
+}
+
 
 
 function registerServiceWorker () {
   if ('serviceWorker' in navigator) {
-    var newInstallation = false
-
-    if (navigator.serviceWorker.controller === null) { // Ideally we would use serviceWorker.getRegistration
-      newInstallation = true
-    }
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/serviceWorker.js').then(function(registration) {
-        // Registration was successful
-        console.log('ServiceWorker registration successful with scope: ', registration.scope)
-      }).catch(function(err) {
-        // registration failed :(
-        console.log('ServiceWorker registration failed: ', err)
-      }).then(function(rr){
-        var dt = document.location.href.split('/')[3]
-        var viewingMemento = dt.length === 14 && parseInt(dt, 10) + '' === dt
-
-        // Reload the page with processing by the newly installed Service Worker
-        if (newInstallation && viewingMemento) {
-          document.location.reload()
-        }
-      })
-    })
+    window.addEventListener('load', installServiceWorker)
   } else {
     console.log('Browser does not support Service Worker.')
   }
