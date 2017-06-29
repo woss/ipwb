@@ -10,9 +10,10 @@ a#memCountListLink {border-bottom: 1px dotted black;}
 a#memCountListLink.activated {border-bottom: 2px solid #009900;}
 a#memCountListLink.activated:hover {cursor: default;}
 a#memCountListLink:hover {cursor: pointer;}
-p#ipfsuilink {text-align: center; margin-top: 1.0em;}
+p.centered {text-align: center;}
+p.topSpace {margin-top: 1.0em;}
 
-#uris {width: 50%; border-bottom: 3px double #ccc; border-top: 1px solid #ccc; padding-bottom: 5px; width: 100%;}
+#uris {border-bottom: 3px double #ccc; border-top: 1px solid #ccc; padding-bottom: 5px; width: 100%;}
 
 div#iframeWrapper {text-overflow: hidden; color: #8f1d27; height: 1.0em;}
 div#iframeWrapper p {}
