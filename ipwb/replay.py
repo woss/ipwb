@@ -465,7 +465,10 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
         cdxjFields = l.split(' ', 2)
         uri = unsurt(cdxjFields[0])
         datetime = cdxjFields[1]
-        jsonFields = json.loads(cdxjFields[2])
+        try:
+            jsonFields = json.loads(cdxjFields[2])
+        except:  # Skip lines w/o JSON block
+            continue
 
         if uri not in uris:
             uris[uri] = {}
