@@ -15,6 +15,7 @@ from pywb.utils.canonicalize import unsurt
 from flask import Flask
 from flask import Response
 from flask import request
+from flask import redirect
 from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
@@ -120,26 +121,24 @@ app.url_map.converters['regex'] = RegexConverter
 
 @app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
 def showMemento(urir, datetime):
+    if 'localhost' in urir:
+        urir = urir.split('/', 4)[4]
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
 
+    print('Getting CDXJ Lines with the URI-R {0} from {1}'
+          .format(urir, indexPath))
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
-    print('Resolving request for {0} at {1}'.format(urir, datetime))
-    print('Found {0} cdxj entrie(s) for '.format(len(cdxjLinesWithURIR)))
-    print('MEMENTOS:')
-    print(cdxjLinesWithURIR)
-
     closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
-    print("best line: " + closestLine)
     if closestLine is None:
         msg = '<h1>ERROR 404</h1>'
-        msg += 'No capture found for {0} at {1}.'.format(path, datetime)
+        msg += 'No capture found for {0} at {1}.'.format(urir, datetime)
         return Response(msg, status=404)
 
     uri = unsurt(closestLine.split(' ')[0])
-
-    return show_uri(uri, datetime)
+    newDatetime = closestLine.split(' ')[1]
+    return show_uri(uri, newDatetime)
 
 
 def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
@@ -156,6 +155,7 @@ def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
 
 
 def getCDXJLinesWithURIR(urir, indexPath=ipwbConfig.getIPWBReplayIndexPath()):
+    print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     cdxjLinesWithURIR = []
 
@@ -265,6 +265,8 @@ def show_uri(path, datetime=None):
             searchString = surtedURI + ' ' + datetime
 
         cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
+        print('CDXJ Line: {0}'.format(cdxjLine))
+
     except:
         print(sys.exc_info()[0])
         respString = ('{0} not found :(' +
@@ -275,6 +277,15 @@ def show_uri(path, datetime=None):
         msg = '<h1>ERROR 404</h1>'
         msg += 'No capture found for {0} at {1}.'.format(path, datetime)
         linesWithSameURIR = getCDXJLinesWithURIR(path)
+        print('CDXJ lines with URI-R at {0}'.format(path))
+        print(linesWithSameURIR)
+
+        # TODO: Use closest instead of conditioning on single entry
+        #  temporary fix for core functionality in #225
+        if len(linesWithSameURIR) == 1:
+            fields = linesWithSameURIR[0].split(' ', 2)
+            redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
+            return redirect(redirectURI, code=302)
 
         if linesWithSameURIR:
             msg += '<p>{0} capture(s) available:</p><ul>'.format(
@@ -287,7 +298,6 @@ def show_uri(path, datetime=None):
         return Response(msg, status=404)
 
     cdxjParts = cdxjLine.split(" ", 2)
-
     jObj = json.loads(cdxjParts[2])
     datetime = cdxjParts[1]
 
@@ -549,6 +559,8 @@ def getCDXJLine_binarySearch(
         lines = cdxjFile.read().split('\n')
 
         lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
+        if lineFound is None:
+            print("Could not {0} in CDXJ at {1}".format(surtURI, cdxjFilePath))
 
         return lineFound
 

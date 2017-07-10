@@ -27,6 +27,10 @@ self.addEventListener('fetch', function (event) {
   var isConfig = event.request.url.indexOf('/config/') !== -1
   var isReplayRoot = (url.pathname === '/' || url.pathname === '')
   var isRootMemento = event.request.url === event.request.referrer
+  //var isAMemento = event.request.url.indexOf('/memento/') !== -1 || event.request.url.match('\/[0-9]{14}\/') !== null
+  var isAMemento = event.request.url.match('\/[0-9]{14}\/') !== null
+
+  console.log('isAMemento: '+isAMemento)
 
   var referrerDatetime = event.request.referrer.match(/\/([0-9]{14})\//)
   if (referrerDatetime !== null) {
@@ -39,7 +43,7 @@ self.addEventListener('fetch', function (event) {
 
   // TODO: consult the referrer header on each request instead of using a global var
   //if ( event.request.url.split('/')[2] !== document.location.host) {
-  if (!isNavigation && !isWebUI && !isDaemon && !isRootMemento && !isConfig) { // Do not rewrite webui embedded resources or daemon
+  if (!isNavigation && !isWebUI && !isDaemon && !isRootMemento && !isConfig && !isAMemento) { // Do not rewrite webui embedded resources or daemon
        // TODO: use a 3XX redirect to better guide the browser
        //  if hostname == referrer, check to ensure serviceworker does not run infinitely on each embedded resource
     request = reroute(event.request, referrerDatetime) // Only embedded resources
