@@ -11,6 +11,7 @@ import requests
 import ipfsapi
 import exceptions
 import subprocess
+import re
 import site
 # Datetime conversion to rfc1123
 import locale
@@ -178,7 +179,7 @@ def runningLatestIPWB():
         resp = urllib2.urlopen('https://pypi.python.org/pypi/ipwb/json')
         jResp = json.loads(resp.read())
         latestVersion = jResp['info']['version']
-        currentVersion = ipwbVersion.replace('.0', '.')
+        currentVersion = re.sub(r'\.0+', '.', ipwbVersion)
         return latestVersion == currentVersion
     except:
         return None
