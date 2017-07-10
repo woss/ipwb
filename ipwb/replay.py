@@ -313,8 +313,6 @@ def show_uri(path, datetime=None):
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
     except:
-        print(sys.exc_info()[0])
-        print("general error")
         sys.exit()
 
     if 'encryption_method' in jObj:

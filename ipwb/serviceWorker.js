@@ -30,8 +30,6 @@ self.addEventListener('fetch', function (event) {
   //var isAMemento = event.request.url.indexOf('/memento/') !== -1 || event.request.url.match('\/[0-9]{14}\/') !== null
   var isAMemento = event.request.url.match('\/[0-9]{14}\/') !== null
 
-  console.log('isAMemento: '+isAMemento)
-
   var referrerDatetime = event.request.referrer.match(/\/([0-9]{14})\//)
   if (referrerDatetime !== null) {
     referrerDatetime = referrerDatetime[1]
