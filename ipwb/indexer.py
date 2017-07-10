@@ -9,6 +9,7 @@ import ipfsapi
 import argparse
 import zlib
 import surt
+import ntpath
 
 from io import BytesIO
 from pywb.warc.archiveiterator import DefaultRecordParser
@@ -108,12 +109,11 @@ def indexFileAt(warcPaths, encryptionKey=None,
     for warcPath in warcPaths:
         warcFileFullPath = warcPath
 
-        with open(warcFileFullPath, 'rb') as warc:
-            try:
-                cdxjLines += getCDXJLinesFromFile(
-                                 warc, **encryptionAndCompressionSetting)
-            except ArchiveLoadFailed:
-                logError(warcPath + ' is not a valid WARC file.')
+        try:
+            cdxjLines += getCDXJLinesFromFile(
+                warcFileFullPath, **encryptionAndCompressionSetting)
+        except ArchiveLoadFailed:
+            logError(warcPath + ' is not a valid WARC file.')
 
     # De-dupe and sort, needed for CDXJ adherence
     cdxjLines = list(set(cdxjLines))
@@ -128,87 +128,98 @@ def indexFileAt(warcPaths, encryptionKey=None,
     print('\n'.join(cdxjLines))
 
 
-def getCDXJLinesFromFile(fh, **encCompOpts):
+def getCDXJLinesFromFile(warcPath, **encCompOpts):
     textRecordParserOptions = {
       'cdxj': True,
       'include_all': False,
       'surt_ordered': False}
     iter = TextRecordParser(**textRecordParserOptions)
 
-    cdxjLines = []
-    # Throws pywb.warc.recordloader.ArchiveLoadFailed if not a warc
-    for entry in iter(fh):
-        # Only consider WARC resps records from reqs for web resources
-        ''' TODO: Change conditional to return on non-HTTP responses
-                  to reduce branch depth'''
-        if entry.record.rec_type != 'response' or \
-           entry.get('mime') in ('text/dns', 'text/whois'):
-            continue
+    recordCount = 0
+    with open(warcPath, 'rb') as fhForCounting:
+        iterForCounting = TextRecordParser(**textRecordParserOptions)
+        recordCount = sum(1 for _ in iterForCounting(fhForCounting))
 
-        hdrs = entry.record.status_headers
-        hstr = hdrs.protocol + ' ' + hdrs.statusline
-        for h in hdrs.headers:
-            hstr += "\n" + ': '.join(h)
+    with open(warcPath, 'rb') as fh:
 
-        statusCode = hdrs.statusline.split()[0]
+        cdxjLines = []
+        recordsProcessed = 0
+        # Throws pywb.warc.recordloader.ArchiveLoadFailed if not a warc
+        for entry in iter(fh):
+            msg = 'Processing WARC records in ' + ntpath.basename(warcPath)
+            showProgress(msg, recordsProcessed, recordCount)
 
-        if not entry.buffer:
-            return
+            recordsProcessed += 1
+            # Only consider WARC resps records from reqs for web resources
+            ''' TODO: Change conditional to return on non-HTTP responses
+                      to reduce branch depth'''
+            if entry.record.rec_type != 'response' or \
+               entry.get('mime') in ('text/dns', 'text/whois'):
+                continue
 
-        entry.buffer.seek(0)
-        payload = entry.buffer.read()
+            hdrs = entry.record.status_headers
+            hstr = hdrs.protocol + ' ' + hdrs.statusline
+            for h in hdrs.headers:
+                hstr += "\n" + ': '.join(h)
 
-        httpHeaderIPFSHash = ''
-        payloadIPFSHash = ''
-        retryCount = 0
+            statusCode = hdrs.statusline.split()[0]
 
-        if encCompOpts.get('encryptTHENCompress'):
+            if not entry.buffer:
+                return
+
+            entry.buffer.seek(0)
+            payload = entry.buffer.read()
+
+            httpHeaderIPFSHash = ''
+            payloadIPFSHash = ''
+            retryCount = 0
+
+            if encCompOpts.get('encryptTHENCompress'):
+                if encCompOpts.get('encryptionKey') is not None:
+                    key = encCompOpts.get('encryptionKey')
+                    (hstr, payload) = encrypt(hstr, payload, key)
+                if encCompOpts.get('compressionLevel') is not None:
+                    compressionLevel = encCompOpts.get('compressionLevel')
+                    hstr = zlib.compress(hstr, compressionLevel)
+                    payload = zlib.compress(payload, compressionLevel)
+            else:
+                if encCompOpts.get('compressionLevel') is not None:
+                    compressionLevel = encCompOpts.get('compressionLevel')
+                    hstr = zlib.compress(hstr, compressionLevel)
+                    payload = zlib.compress(payload, compressionLevel)
+                if encCompOpts.get('encryptionKey') is not None:
+                    encryptionKey = encCompOpts.get('encryptionKey')
+                    (hstr, payload) = encrypt(hstr, payload, encryptionKey)
+
+            # print('Adding {0} to IPFS'.format(entry.get('url')))
+            ipfsHashes = pushToIPFS(hstr, payload)
+
+            if ipfsHashes is None:
+                logError('Skipping ' + entry.get('url'))
+
+                continue
+
+            (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
+
+            uri = surt.surt(entry.get('url'),
+                            path_strip_trailing_slash_unless_empty=False)
+            timestamp = entry.get('timestamp')
+            mime = entry.get('mime')
+
+            obj = {
+                'locator': 'urn:ipfs/{0}/{1}'.format(
+                  httpHeaderIPFSHash, payloadIPFSHash),
+                'status_code': statusCode,
+                'mime_type': mime
+                }
             if encCompOpts.get('encryptionKey') is not None:
-                (hstr, payload) = encrypt(hstr, payload,
-                                          encCompOpts.get('encryptionKey'))
-            if encCompOpts.get('compressionLevel') is not None:
-                hstr = zlib.compress(hstr, encCompOpts.get('compressionLevel'))
-                payload = zlib.compress(payload,
-                                        encCompOpts.get('compressionLevel'))
-        else:
-            if encCompOpts.get('compressionLevel') is not None:
-                hstr = zlib.compress(hstr,
-                                     encCompOpts.get('compressionLevel'))
-                payload = zlib.compress(payload,
-                                        encCompOpts.get('compressionLevel'))
-            if encCompOpts.get('encryptionKey') is not None:
-                (hstr, payload) = encrypt(hstr, payload,
-                                          encCompOpts.get('encryptionKey'))
+                obj['encryption_key'] = encCompOpts.get('encryptionKey')
+                obj['encryption_method'] = 'xor'
+            objJSON = json.dumps(obj)
 
-        # print('Adding {0} to IPFS'.format(entry.get('url')))
-        ipfsHashes = pushToIPFS(hstr, payload)
-
-        if ipfsHashes is None:
-            logError('Skipping ' + entry.get('url'))
-
-            continue
-
-        (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
-
-        uri = surt.surt(entry.get('url'),
-                        path_strip_trailing_slash_unless_empty=False)
-        timestamp = entry.get('timestamp')
-        mime = entry.get('mime')
-
-        obj = {
-            'locator': 'urn:ipfs/{0}/{1}'.format(
-              httpHeaderIPFSHash, payloadIPFSHash),
-            'status_code': statusCode,
-            'mime_type': mime
-            }
-        if encCompOpts.get('encryptionKey') is not None:
-            obj['encryption_key'] = encCompOpts.get('encryptionKey')
-            obj['encryption_method'] = 'xor'
-        objJSON = json.dumps(obj)
-
-        cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
-        cdxjLines.append(cdxjLine)  # + '\n'
-    return cdxjLines
+            cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
+            cdxjLines.append(cdxjLine)  # + '\n'
+        return cdxjLines
 
 
 def generateCDXJMetadata(cdxjLines=None):
@@ -252,6 +263,17 @@ def verifyFileExists(warcPath):
         return
     logError('File at ' + warcPath + ' does not exist!')
     sys.exit()
+
+
+def showProgress(msg, i, n):
+    line = '{0}: {1}/{2}'.format(msg, i, n)
+    print(line, file=sys.stderr, end='\r')
+    # Clear status line, show complete msg
+    if i == n-1:
+        finalMsg = msg + ' complete'
+        spaceDelta = len(finalMsg) - len(msg)
+        spaces = '' * spaceDelta if spaceDelta > 0 else ''
+        print(finalMsg + spaces, file=sys.stderr, end='\r\n')
 
 
 def logError(errIn):
