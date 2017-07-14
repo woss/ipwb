@@ -165,10 +165,6 @@ Usage of sub-commands in ipwb can be accessed through providing the `-h` or `--h
       optional arguments:
         -h, --help  show this help message and exit
 
-Debugging
----------------
-The ipwb indexing and replay system can also be run from source using a virtualenv and calling the `indexer.py` and `replay.py` scripts in the module's ipwb directly from the project's root.
-
 Project History
 ---------------
 This repo contains the code for integrating `WARC`_\ s and `IPFS`_ as developed at the `Archives Unleashed\: Web Archive Hackathon`_ in Toronto, Canada in March 2016. The project was also presented at:
