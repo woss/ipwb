@@ -98,7 +98,7 @@ ipwb also supports using an IPFS hash or any HTTP location as the source of the 
       $ ipwb replay http://myDomain/files/myIndex.cdxj
       $ ipwb replay QmYwAPJzv5CZsnANOTaREALhashYgPpHdWEz79ojWnPbdG
 
-Once started, the replay system's web interface can be accessed through a web browser, e.g., `http://127.0.0.1:5000/http://www.cs.odu.edu/~salam/` with the sample CDXJ file.
+Once started, the replay system's web interface can be accessed through a web browser, e.g., `http://localhost:5000/http://www.cs.odu.edu/~salam/` with the sample CDXJ file.
 
 .. (TODO: provide instructions on specifying a CDXJ file/directory to be read from the CDXJ replay system)
 
