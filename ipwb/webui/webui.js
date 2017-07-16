@@ -196,8 +196,6 @@ function installServiceWorker () {
   })
 }
 
-
-
 function registerServiceWorker () {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', installServiceWorker)
