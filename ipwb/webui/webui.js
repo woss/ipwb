@@ -1,5 +1,5 @@
 function handleSubmit () {
-  document.location += document.getElementById('url').value
+  document.location += 'memento/*/' + document.getElementById('url').value
 }
 
 function shortestFirst(a, b) {

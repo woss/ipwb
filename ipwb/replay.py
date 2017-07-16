@@ -112,6 +112,36 @@ def commandDaemon(cmd):
         return Response('bad command!')
 
 
+@app.route('/memento/*/<path:urir>')
+def showMementosForURIRs(urir):
+    if 'localhost' in urir:
+        urir = urir.split('/', 4)[4]
+    s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+
+    print('Getting CDXJ Lines with the URI-R {0} from {1}'
+          .format(urir, indexPath))
+    cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
+
+    if len(cdxjLinesWithURIR) == 1:
+        fields = linesWithSameURIR[0].split(' ', 2)
+        redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
+        return redirect(redirectURI, code=302)
+
+    msg = ''
+    if cdxjLinesWithURIR:
+        msg += '<p>{0} capture(s) available:</p><ul>'.format(
+            len(cdxjLinesWithURIR))
+        for line in cdxjLinesWithURIR:
+            fields = line.split(' ', 2)
+            dt14 = fields[1]
+            dtrfc1123 = ipwbConfig.datetimeToRFC1123(fields[1])
+            msg += ('<li><a href="/{1}/{0}">{0} at {2}</a></li>'
+                    .format(unsurt(fields[0]), dt14, dtrfc1123))
+        msg += '</ul>'
+    return Response(msg)
+
+
 class RegexConverter(BaseConverter):
     def __init__(self, url_map, *items):
         super(RegexConverter, self).__init__(url_map)
