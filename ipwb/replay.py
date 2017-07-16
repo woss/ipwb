@@ -468,11 +468,16 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
     uris = {}
     for i, l in enumerate(lines):
-        if l[0] == '!':  # Metadata field
+        if not ipwbConfig.isValidCDXJLine(l):
             continue
+
+        if ipwbConfig.isCDXJMetadataRecord(l):
+            continue
+
         cdxjFields = l.split(' ', 2)
         uri = unsurt(cdxjFields[0])
         datetime = cdxjFields[1]
+
         try:
             jsonFields = json.loads(cdxjFields[2])
         except:  # Skip lines w/o JSON block
@@ -494,15 +499,18 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
 
     if not indexFileContents:
         return 0
-
     lines = indexFileContents.strip().split('\n')
+
     if not lines:
-        print("Index file not found")
         return 0
     mementoCount = 0
+
     for i, l in enumerate(lines):
-        if l[0] != '!':  # Metadata field
+        validCDXJLine = ipwbConfig.isValidCDXJLine(l)
+        metadataRecord = ipwbConfig.isCDXJMetadataRecord(l)
+        if validCDXJLine and not metadataRecord:
             mementoCount += 1
+
     return mementoCount
 
 
