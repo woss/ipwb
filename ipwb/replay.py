@@ -397,8 +397,11 @@ def generateDaemonStatusButton():
     statusPageHTML += ('<head><base href="/webui/" /><link rel="stylesheet" '
                        'type="text/css" href="webui.css" />'
                        '<script src="webui.js"></script>'
+                       '<script src="daemonController.js"></script>'
                        '</head><body>')
-    buttonHTML = '{0}<button>{1}</button>'.format(text, buttonText)
+    buttonHTML = '<span id="status">{0}</span>'.format(text)
+    buttonHTML += '<button id="daeAction">{0}</button>'.format(buttonText)
+
     footer = '<script>assignStatusButtonHandlers()</script></body></html>'
     return Response('{0}{1}{2}'.format(statusPageHTML, buttonHTML, footer))
 
