@@ -1,5 +1,10 @@
 import pytest
 
+import testUtil as ipwbTest
+from ipwb import replay
+from time import sleep
+import urllib2
+
 # Successful retrieval
 # Accurate retrieval
 # Comprehensive retrieval of sub-resources
@@ -68,6 +73,17 @@ def test_exclusionInWebpage_selectIrrelevantResources():
 @pytest.mark.skip(reason='not implemented')
 def test_fileImport_nonCDXJ():  # Fail w/ friendly message when non-cdxj
     pass
+
+@pytest.mark.ipfsDaemonStart
+def test_unit_commandDaemon():
+    replay.commandDaemon('start')
+    sleep(10)
+    try:
+        urllib2.urlopen('http://localhost:5001')
+    except urllib2.HTTPError, e:
+        assert e.code == 404
+    except:
+        assert False
 
 
 # TODO: Have unit tests for each function in replay.py

@@ -33,15 +33,6 @@ def checkCDXJFields(cdxjEntry):
     return validSURT and validDT and validJSON
 
 
-def countCDXJEntries(cdxjData):
-    urimCount = 0
-    lines = cdxjData.strip().split('\n')
-    for line in lines:
-        if line[0] != '!':  # Exclude metadata from count
-            urimCount += 1
-    return urimCount
-
-
 def checkIPWBJSONFieldPresesence(jsonStr):
     keys = json.loads(jsonStr)
     return 'locator' in keys and 'mime_type' in keys and 'status_code' in keys
@@ -60,7 +51,6 @@ def test_push():
     cdxjList = indexer.indexFileAt(newWARCPath, quiet=True)
     cdxj = '\n'.join(cdxjList)
 
-    assert countCDXJEntries(cdxj) == 2
     firstEntry = cdxj.split('\n')[0]
     firstNonMetadataEntry = ''
     for line in cdxj.split('\n'):
