@@ -74,6 +74,7 @@ def test_exclusionInWebpage_selectIrrelevantResources():
 def test_fileImport_nonCDXJ():  # Fail w/ friendly message when non-cdxj
     pass
 
+
 @pytest.mark.ipfsDaemonStart
 def test_unit_commandDaemon():
     replay.commandDaemon('start')
