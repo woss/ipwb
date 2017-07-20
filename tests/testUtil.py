@@ -28,3 +28,12 @@ def createUniqueWARC():
 def getRandomString(n):
     return ''.join(random.SystemRandom().choice(
                    string.ascii_lowercase + string.digits) for _ in range(n))
+
+
+def countCDXJEntries(cdxjData):
+    urimCount = 0
+    lines = cdxjData.strip().split('\n')
+    for line in lines:
+        if line[0] != '!':  # Exclude metadata from count
+            urimCount += 1
+    return urimCount

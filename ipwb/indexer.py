@@ -138,10 +138,15 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
     recordCount = 0
     with open(warcPath, 'rb') as fhForCounting:
         iterForCounting = TextRecordParser(**textRecordParserOptions)
-        recordCount = sum(1 for _ in iterForCounting(fhForCounting))
+        recordCount = 0
+        try:
+            for i in iterForCounting(fhForCounting):
+                recordCount += 1
+                # recordCount = sum(1 for _ in iterForCounting(fhForCounting))
+        except ArchiveLoadFailed:
+            print('Encountered a bad WARC record.', file=sys.stderr)
 
     with open(warcPath, 'rb') as fh:
-
         cdxjLines = []
         recordsProcessed = 0
         # Throws pywb.warc.recordloader.ArchiveLoadFailed if not a warc
@@ -161,8 +166,10 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             hstr = hdrs.protocol + ' ' + hdrs.statusline
             for h in hdrs.headers:
                 hstr += "\n" + ': '.join(h)
-
-            statusCode = hdrs.statusline.split()[0]
+            try:
+                statusCode = hdrs.statusline.split()[0]
+            except:
+                break
 
             if not entry.buffer:
                 return
@@ -205,7 +212,6 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                             path_strip_trailing_slash_unless_empty=False)
             timestamp = entry.get('timestamp')
             mime = entry.get('mime')
-
             obj = {
                 'locator': 'urn:ipfs/{0}/{1}'.format(
                   httpHeaderIPFSHash, payloadIPFSHash),
@@ -311,6 +317,9 @@ class TextRecordParser(DefaultRecordParser):
     def create_payload_buffer(self, entry):
         return BytesIO()
 
+    def create_record_iter(self, raw_iter):
+        raw_iter.INC_RECORD = ''
+        return super(TextRecordParser, self).create_record_iter(raw_iter)
 
 if __name__ == '__main__':
     checkArgs(sys.argv)
