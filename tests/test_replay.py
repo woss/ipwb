@@ -4,6 +4,7 @@ import testUtil as ipwbTest
 from ipwb import replay
 from time import sleep
 import urllib2
+import subprocess
 import commands
 
 # Successful retrieval
@@ -90,6 +91,9 @@ def test_unit_commandDaemon():
 
 @pytest.mark.replay_commandDaemon_stop
 def test_replace_commandDaemon_stop():
+    subprocess.call(['killall', 'ipfs']) # The only way to be sure
+    sleep(5)
+
     replay.commandDaemon('start')
     sleep(10)
 
