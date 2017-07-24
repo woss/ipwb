@@ -114,7 +114,7 @@ def commandDaemon(cmd):
 
 @app.route('/memento/*/<path:urir>')
 def showMementosForURIRs(urir):
-    if 'localhost' in urir:
+    if ipwbConfig.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
@@ -151,7 +151,7 @@ app.url_map.converters['regex'] = RegexConverter
 
 @app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
 def showMemento(urir, datetime):
-    if 'localhost' in urir:
+    if ipwbConfig.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
