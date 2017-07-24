@@ -4,6 +4,7 @@ import testUtil as ipwbTest
 from ipwb import replay
 from time import sleep
 import urllib2
+import commands
 
 # Successful retrieval
 # Accurate retrieval
@@ -86,5 +87,19 @@ def test_unit_commandDaemon():
     except:
         assert False
 
+
+@pytest.mark.replay_commandDaemon_stop
+def test_replace_commandDaemon_stop():
+    replay.commandDaemon('start')
+    sleep(10)
+
+    pid = commands.getoutput('pgrep ipfs')
+    assert pid != ''
+
+    replay.commandDaemon('stop')
+    sleep(10)
+
+    pid = commands.getoutput('pgrep ipfs')
+    assert pid == ''
 
 # TODO: Have unit tests for each function in replay.py
