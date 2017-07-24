@@ -7,6 +7,7 @@ import os
 import ipfsapi
 import json
 import subprocess
+from subprocess import check_output
 import pkg_resources
 import surt
 from pywb.utils.binsearch import iter_exact
@@ -104,7 +105,11 @@ def commandDaemon(cmd):
         return Response('IPFS daemon starting...')
 
     elif cmd == 'stop':
-        subprocess.call(['killall', 'ipfs'])
+        try:
+            check_output(['ipfs', 'shutdown'])
+        except subprocess.CalledProcessError as e:
+            # go-ipfs < 0.4.10
+            subprocess.call(['killall', 'ipfs'])
         return Response('IPFS daemon stopping...')
     else:
         print('ERROR, bad command sent to daemon API!')
