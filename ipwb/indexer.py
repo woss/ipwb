@@ -19,6 +19,8 @@ from pywb.warc.recordloader import ArchiveLoadFailed
 from ipfsapi.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 
+from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
+
 # from warcio.archiveiterator import ArchiveIterator
 
 import requests
@@ -29,11 +31,9 @@ import base64
 
 from __init__ import __version__ as ipwbVersion
 
-IP = '127.0.0.1'
-PORT = '5001'
 DEBUG = False
 
-IPFS_API = ipfsapi.Client(IP, PORT)
+IPFS_API = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
 
 
 # TODO: put this method definition below indexFileAt()

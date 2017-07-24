@@ -102,8 +102,18 @@ def isCDXJMetadataRecord(cdxjLine):
     return False
 
 
+def isLocalHosty(uri):
+    # TODO: check for these SW conditions
+    # (*, localhost, *); (*, 127/8, *); (*, ::1/128, *)
+    localhosts = ['localhost', '127.0.0.1']
+    for lh in localhosts:
+        if lh in uri:
+            return True
+    return False
+
+
 def setupIPWBInIPFSConfig():
-    hostPort = ipwbConfig.getIPWBReplayConfig()
+    hostPort = getIPWBReplayConfig()
     if not hostPort:
         setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
 

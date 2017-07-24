@@ -10,8 +10,7 @@ import replay
 import indexer
 import util
 
-IP = '127.0.0.1'
-PORT = '5001'
+from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
 
 
 def main():
@@ -107,7 +106,8 @@ def checkArgs(argsIn):
     parser.add_argument(
         '-d', '--daemon',
         help='Location of ipfs daemon (default 127.0.0.1:5001)',
-        default=IP+':'+PORT, dest='daemon_address')
+        default='{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT),
+        dest='daemon_address')
     parser.add_argument(
         '-o', '--outfile',
         help='Filename of newly created CDXJ index file')
