@@ -15,7 +15,7 @@ install:
 script:
   - pep8
   - ipfs init
-  - ipfs daemon & sleep 10; pytest
+  - ipfs daemon & sleep 10; pytest; sleep 20
   - py.test --cov=./
 after_success:
   - codecov
