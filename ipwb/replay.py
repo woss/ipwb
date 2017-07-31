@@ -189,7 +189,10 @@ def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
     return bestLine
 
 
-def getCDXJLinesWithURIR(urir, indexPath=ipwbConfig.getIPWBReplayIndexPath()):
+def getCDXJLinesWithURIR(urir, indexPath):
+    if not indexPath:
+        indexPath = ipwbConfig.getIPWBReplayIndexPath()
+
     print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     cdxjLinesWithURIR = []
