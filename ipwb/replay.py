@@ -93,6 +93,10 @@ def getServiceWorker(path):
     return resp
 
 
+class UnsupportedIPFSVersions(Exception):
+    pass
+
+
 @app.route('/daemon/<cmd>')
 def commandDaemon(cmd):
     global IPFS_API
@@ -107,8 +111,11 @@ def commandDaemon(cmd):
 
     elif cmd == 'stop':
         try:
+            installedIPFSVersion = IPFS_API.version()['Version']
+            if ipwbConfig.compareVersions(installedIPFSVersion, '0.4.10') < 0:
+                raise UnsupportedIPFSVersions()
             IPFS_API.shutdown()
-        except subprocess.CalledProcessError as e:
+        except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as e:
             # go-ipfs < 0.4.10
             subprocess.call(['killall', 'ipfs'])
         return Response('IPFS daemon stopping...')
