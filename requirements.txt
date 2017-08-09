@@ -1,5 +1,5 @@
 pywb
-ipfsapi
+ipfsapi>=0.4.2
 flask
 pycrypto
 pytest>=3.0

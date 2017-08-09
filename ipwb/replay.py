@@ -95,6 +95,7 @@ def getServiceWorker(path):
 
 @app.route('/daemon/<cmd>')
 def commandDaemon(cmd):
+    global IPFS_API
     if cmd == 'status':
         return generateDaemonStatusButton()
     elif cmd == 'start':
@@ -106,7 +107,7 @@ def commandDaemon(cmd):
 
     elif cmd == 'stop':
         try:
-            check_output(['ipfs', 'shutdown'])
+            IPFS_API.shutdown()
         except subprocess.CalledProcessError as e:
             # go-ipfs < 0.4.10
             subprocess.call(['killall', 'ipfs'])
