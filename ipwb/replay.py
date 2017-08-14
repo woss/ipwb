@@ -322,7 +322,7 @@ def show_uri(path, datetime=None):
     if cdxjLine is None:  # Resource not found in archives
         msg = '<h1>ERROR 404</h1>'
         msg += 'No capture found for {0} at {1}.'.format(path, datetime)
-        linesWithSameURIR = getCDXJLinesWithURIR(path)
+        linesWithSameURIR = getCDXJLinesWithURIR(path, None)
         print('CDXJ lines with URI-R at {0}'.format(path))
         print(linesWithSameURIR)
 
