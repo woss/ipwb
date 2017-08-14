@@ -133,7 +133,10 @@ def retrieveMemCount():
 
 
 def datetimeToRFC1123(digits14):
-    locale.setlocale(locale.LC_TIME, 'en_US')
+    try:
+        locale.setlocale(locale.LC_TIME, 'en_US')
+    except locale.Error as e:
+        locale.setlocale(locale.LC_TIME, 'en_US.utf8')
     d = datetime.datetime.strptime(digits14, '%Y%m%d%H%M%S')
     return d.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
