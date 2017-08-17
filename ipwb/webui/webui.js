@@ -34,11 +34,47 @@ function showURIs () {
     uris[uri]['mime'] === 'text/html' ? ++htmlPages : ''
   }
   document.getElementById('htmlPages').innerHTML = htmlPages
-  document.getElementById('memCountListLink').classList = ['activated']
+  document.getElementById('memCountListLink').className = ['activated']
   document.getElementById('uris').classList.remove('hidden')
   setPlurality()
   setShowAllButtonStatus()
+
+  setUIExpandedState(uris)
+  // Maintain visible state of URI display for future retrieval
+  window.localStorage.setItem('showURIs', true)
 }
+
+function setUIExpandedState(urisObj) {
+  var urisHash  = calculateURIsHash(urisObj)
+  setURIsHash(urisHash)
+}
+
+function calculateURIsHash(urisObj) {
+  return JSON.stringify(urisObj).hashCode()
+}
+
+function getURIsHash() {
+  return window.localStorage.getItem('urisHash')
+}
+
+function setURIsHash(hashIn) {
+  return window.localStorage.setItem('urisHash', hashIn)
+}
+
+String.prototype.hashCode = function () {
+  var hash = 0
+  var i
+  var chr
+  if (this.length === 0) {
+    return hash
+  }
+  for (i = 0; i < this.length; i++) {
+    chr   = this.charCodeAt(i)
+    hash  = ((hash << 5) - hash) + chr
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash
+};
 
 function addEventListeners () {
   var target = document.getElementById('memCountListLink')
@@ -54,6 +90,17 @@ function addEventListeners () {
 
   var reinstallServiceWorkerButton = document.getElementById('reinstallServiceWorker')
   reinstallServiceWorkerButton.onclick = reinstallServiceWorker
+
+  setShowURIsVisibility()
+}
+
+function setShowURIsVisibility () {
+  var previousHash = getURIsHash() + ''
+  var newHash = calculateURIsHash(uris) + ''
+
+  if (window.localStorage.getItem('showURIs') && previousHash === newHash) {
+    showURIs()
+  }
 }
 
 function setPlurality () {
