@@ -255,15 +255,17 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
         hostAndPort[1], urir)
     tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI)
 
+    # Fix base TM relation when viewing abbrev version in Link resp
+    tm = tm.replace('rel="self"', 'rel="timemap"')
+
     # Only one memento in TimeMap
     if 'rel="first last memento"' in tm:
         return tm
 
-    print('pivot datetime: {0}'.format(pivotDatetime))
     tmLines = tm.split('\n')
     for idx, line in enumerate(tmLines):
         if len(re.findall('rel=.*memento"', line)) == 0:
-            continue # Not a memento
+            continue  # Not a memento
 
         if pivotDatetime in line:
             addBothNextAndPrev = False
@@ -271,21 +273,23 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
                 addBothNextAndPrev = True
 
             if addBothNextAndPrev or idx == 0:
-                tmLines[idx + 1] = tmLines[idx + 1].replace('memento"', 'next memento"')
+                tmLines[idx + 1] = \
+                    tmLines[idx + 1].replace('memento"', 'next memento"')
             if addBothNextAndPrev or idx == len(tmLines) - 1:
-                tmLines[idx - 1] = tmLines[idx - 1].replace('memento"', 'prev memento"')
+                tmLines[idx - 1] = \
+                    tmLines[idx - 1].replace('memento"', 'prev memento"')
             break
 
-    # Remove all mementos in abbrev TM that are not first, last, prev, next, or pivot
+    # Remove all mementos in abbrev TM that are not:
+    #   first, last, prev, next, or pivot
     for idx, line in enumerate(tmLines):
         if len(re.findall('rel=.*memento"', line)) == 0:
-            continue # Not a memento
+            continue  # Not a memento
         if pivotDatetime in line:
             continue
 
         if len(re.findall('rel=.*(next|prev|first|last)', line)) == 0:
             tmLines[idx] = ''
-
 
     tm = '\n'.join(tmLines)
 
@@ -298,11 +302,14 @@ def generateTimeMapFromCDXJLines(cdxjLines, original, tmself):
     tmData += 'type="application/link-format",\n'
     hostAndPort = tmself[0:tmself.index('timemap/')]
 
+    print('LLLLL')
+    print(cdxjLines)
+
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
         dtRFC1123 = ipwbConfig.datetimeToRFC1123(datetime)
         firstLastStr = ''
-        # TODO: find pivot
+
         if len(cdxjLines) > 1:
             if i == 0:
                 firstLastStr = 'first '
