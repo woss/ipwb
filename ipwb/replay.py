@@ -250,7 +250,8 @@ def getLinkHeaderAbbreviatedTimeMap(urir):
     hostAndPort = ipwbConfig.getIPWBReplayConfig()
 
     tmURI = 'http://{0}:{1}/timemap/link/{2}'.format(
-        hostAndPort[0], hostAndPort[1], urir)
+        'localhost', # hostAndPort[0],
+        hostAndPort[1], urir)
     tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI)
 
     return tm
