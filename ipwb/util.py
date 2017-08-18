@@ -27,7 +27,7 @@ from ipfsapi.exceptions import ConnectionError
 
 IPFSAPI_IP = '127.0.0.1'
 IPFSAPI_PORT = 5001
-IPWBREPLAY_IP = '127.0.0.1'
+IPWBREPLAY_IP = 'localhost'  # 127.0.0.1
 IPWBREPLAY_PORT = 5000
 
 INDEX_FILE = 'samples/indexes/sample-encrypted.cdxj'
@@ -68,7 +68,6 @@ def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
 
 def isValidCDXJLine(cdxjLine):
     try:
-
         (surtURI, datetime, jsonData) = cdxjLine.split(' ', 2)
 
         json.loads(jsonData)

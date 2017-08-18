@@ -19,7 +19,7 @@ self.addEventListener('activate', function (event) {
 
 self.addEventListener('fetch', function (event) {
   var request = event.request
-  
+
   var url = new URL(event.request.url)
   var isNavigation = event.request.mode === 'navigate'
   var isWebUI = event.request.url.indexOf('/webui/') !== -1
@@ -70,6 +70,7 @@ self.addEventListener('fetch', function (event) {
   }
 
   function reroute (request, datetime) {
-    return new Request(`http://127.0.0.1:5000/memento/${datetime}/${request.url}`) // TODO: Rm hard-code for server
+    // TODO: Use replay host/ip and host here instead
+    return new Request(`http://localhost:5000/memento/${datetime}/${request.url}`) // TODO: Rm hard-code for server
   }
 })
