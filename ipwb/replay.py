@@ -10,6 +10,7 @@ import subprocess
 from subprocess import check_output
 import pkg_resources
 import surt
+import re
 from pywb.utils.binsearch import iter_exact
 from pywb.utils.canonicalize import unsurt
 # from pywb.utils.canonicalize import canonicalize as surt
@@ -243,7 +244,7 @@ def showTimeMap(urir, format):
     return Response(tm)
 
 
-def getLinkHeaderAbbreviatedTimeMap(urir):
+def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
@@ -253,6 +254,40 @@ def getLinkHeaderAbbreviatedTimeMap(urir):
         'localhost',  # hostAndPort[0],
         hostAndPort[1], urir)
     tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI)
+
+    # Only one memento in TimeMap
+    if 'rel="first last memento"' in tm:
+        return tm
+
+    print('pivot datetime: {0}'.format(pivotDatetime))
+    tmLines = tm.split('\n')
+    for idx, line in enumerate(tmLines):
+        if len(re.findall('rel=.*memento"', line)) == 0:
+            continue # Not a memento
+
+        if pivotDatetime in line:
+            addBothNextAndPrev = False
+            if idx > 0 and idx < len(tmLines) - 1:
+                addBothNextAndPrev = True
+
+            if addBothNextAndPrev or idx == 0:
+                tmLines[idx + 1] = tmLines[idx + 1].replace('memento"', 'next memento"')
+            if addBothNextAndPrev or idx == len(tmLines) - 1:
+                tmLines[idx - 1] = tmLines[idx - 1].replace('memento"', 'prev memento"')
+            break
+
+    # Remove all mementos in abbrev TM that are not first, last, prev, next, or pivot
+    for idx, line in enumerate(tmLines):
+        if len(re.findall('rel=.*memento"', line)) == 0:
+            continue # Not a memento
+        if pivotDatetime in line:
+            continue
+
+        if len(re.findall('rel=.*(next|prev|first|last)', line)) == 0:
+            tmLines[idx] = ''
+
+
+    tm = '\n'.join(tmLines)
 
     return tm
 
@@ -432,9 +467,7 @@ def show_uri(path, datetime=None):
     resp.headers['Memento-Datetime'] = ipwbConfig.datetimeToRFC1123(datetime)
 
     # Get TimeMap for Link response header
-    respWithLinkHeader = getLinkHeaderAbbreviatedTimeMap(path)
-    print('radonb')
-    print(path)
+    respWithLinkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
     resp.headers['Link'] = respWithLinkHeader.replace('\n', ' ')
 
     return resp
