@@ -27,7 +27,7 @@ from ipfsapi.exceptions import ConnectionError
 
 IPFSAPI_IP = '127.0.0.1'
 IPFSAPI_PORT = 5001
-IPWBREPLAY_IP = 'localhost' # ''127.0.0.1'
+IPWBREPLAY_IP = 'localhost'  # 127.0.0.1
 IPWBREPLAY_PORT = 5000
 
 INDEX_FILE = 'samples/indexes/sample-encrypted.cdxj'
