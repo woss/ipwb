@@ -68,7 +68,6 @@ def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
 
 def isValidCDXJLine(cdxjLine):
     try:
-
         (surtURI, datetime, jsonData) = cdxjLine.split(' ', 2)
 
         json.loads(jsonData)

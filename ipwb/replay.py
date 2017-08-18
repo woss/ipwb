@@ -66,8 +66,8 @@ def showWebUI(path):
             'MEMCOUNT', str(retrieveMemCount(iFile)))
 
         content = content.replace(
-            'var uris = []',
-            'var uris = {0}'.format(getURIsAndDatetimesInCDXJ(iFile)))
+            'let uris = []',
+            'let uris = {0}'.format(getURIsAndDatetimesInCDXJ(iFile)))
         content = content.replace('INDEXSRC', iFile)
 
     fileExtension = os.path.splitext(path)[1]
@@ -238,25 +238,46 @@ def showTimeMap(urir, format):
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
 
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
-
     tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, request.url)
 
     return Response(tm)
 
 
+def getLinkHeaderAbbreviatedTimeMap(urir):
+    s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+    cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
+    hostAndPort = ipwbConfig.getIPWBReplayConfig()
+
+    tmURI = 'http://{0}:{1}/timemap/link/{2}'.format(
+        hostAndPort[0], hostAndPort[1], urir)
+    tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI)
+
+    return tm
+
+
 def generateTimeMapFromCDXJLines(cdxjLines, original, tmself):
     tmData = '<{0}>; rel="original",\n'.format(unsurt(original))
-
     tmData += '<{0}>; rel="self"; '.format(tmself)
     tmData += 'type="application/link-format",\n'
-
     hostAndPort = tmself[0:tmself.index('timemap/')]
 
-    for line in cdxjLines:
+    for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
         dtRFC1123 = ipwbConfig.datetimeToRFC1123(datetime)
-        tmData += '<{0}{1}/{2}>; rel="memento"; datetime="{3}",\n'.format(
-                hostAndPort, datetime, unsurt(surtURI), dtRFC1123)
+        firstLastStr = ''
+        # TODO: find pivot
+        if len(cdxjLines) > 1:
+            if i == 0:
+                firstLastStr = 'first '
+            elif i == len(cdxjLines) - 1:
+                firstLastStr = 'last '
+        elif len(cdxjLines) == 1:
+            firstLastStr = 'first last '
+
+        tmData += '<{0}{1}/{2}>; rel="{3}memento"; datetime="{4}",\n'.format(
+                hostAndPort, datetime, unsurt(surtURI),
+                firstLastStr, dtRFC1123)
     tmData = tmData[0:-2]  # Trim final , and LF
     return tmData
 
@@ -408,6 +429,12 @@ def show_uri(path, datetime=None):
     resp.set_data(newPayload)
 
     resp.headers['Memento-Datetime'] = ipwbConfig.datetimeToRFC1123(datetime)
+
+    # Get TimeMap for Link response header
+    respWithLinkHeader = getLinkHeaderAbbreviatedTimeMap(path)
+    print('radonb')
+    print(path)
+    resp.headers['Link'] = respWithLinkHeader.replace('\n', ' ')
 
     return resp
 

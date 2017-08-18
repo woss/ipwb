@@ -19,7 +19,7 @@ self.addEventListener('activate', function (event) {
 
 self.addEventListener('fetch', function (event) {
   var request = event.request
-  
+
   var url = new URL(event.request.url)
   var isNavigation = event.request.mode === 'navigate'
   var isWebUI = event.request.url.indexOf('/webui/') !== -1
