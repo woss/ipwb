@@ -93,18 +93,18 @@ def test_mementoRelations_two():
     cond_firstPrevMemento = False
     cond_lastMemento = False
     for relArrayForURIM in relsForURIMs:
+        relArrayForURIM = filter(lambda k: 'memento' in k, relArrayForURIM)
         for idx, rel in enumerate(relArrayForURIM):
-            if 'memento' in rel:
-                # Should probably check index, too
-                # ...maybe filer before conditions?
-                if 'first' in rel:
-                    cond_firstMemento = True
-                if 'last' in rel and 'next in rel':
-                    cond_lastNextMemento = True
-                if 'first' in rel and 'prev' in rel:
-                    cond_firstPrevMemento = True
-                if 'last' in rel:
-                    cond_lastMemento = True
+            # Should probably check index, too
+            # ...maybe filer before conditions?
+            if 'first' in rel:
+                cond_firstMemento = True
+            if 'last' in rel and 'next in rel':
+                cond_lastNextMemento = True
+            if 'first' in rel and 'prev' in rel:
+                cond_firstPrevMemento = True
+            if 'last' in rel:
+                cond_lastMemento = True
     assert cond_firstMemento and \
         cond_lastNextMemento and \
         cond_firstPrevMemento and \
