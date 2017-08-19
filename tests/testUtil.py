@@ -3,6 +3,7 @@ import random
 import string
 import re
 
+
 def createUniqueWARC():
     lines = []
     warcInFilename = 'frogTest.warc'

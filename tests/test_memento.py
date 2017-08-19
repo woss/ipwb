@@ -15,11 +15,13 @@ from multiprocessing import Process
 
 p = Process()
 
+
 def getURIMsFromTimeMapInWARC(warcFilename):
     global p
     startReplay(warcFilename)
 
-    tm = urllib2.urlopen('http://localhost:5000/timemap/link/memento.us/').read()
+    tmURI = 'http://localhost:5000/timemap/link/memento.us/'
+    tm = urllib2.urlopen(tmURI).read()
 
     urims = []
     for line in tm.split('\n'):
@@ -66,8 +68,8 @@ def getRelsFromURIMSinWARC(warc):
 
     relsForURIMs = []
     for linkHeader in linkHeaders:
-      relForURIM = ipwbTest.extractRelationEntriesFromLinkTimeMap(linkHeader)
-      relsForURIMs.append(relForURIM)
+        relForURIM = ipwbTest.extractRelationEntriesFromLinkTimeMap(linkHeader)
+        relsForURIMs.append(relForURIM)
 
     stopReplay()
     return relsForURIMs
@@ -104,9 +106,10 @@ def test_mementoRelations_two():
                 if 'last' in rel:
                     cond_lastMemento = True
     assert cond_firstMemento and \
-           cond_lastNextMemento and \
-           cond_firstPrevMemento and \
-           cond_lastMemento
+        cond_lastNextMemento and \
+        cond_firstPrevMemento and \
+        cond_lastMemento
+
 
 @pytest.mark.mementoRelationThreeCount
 def test_mementoRelations_three():
@@ -116,6 +119,7 @@ def test_mementoRelations_three():
 @pytest.mark.skip(reason='not implemented')
 def test_mementoRelations_four():
     pass
+
 
 @pytest.mark.skip(reason='not implemented')
 def test_mementoRelations_five():
