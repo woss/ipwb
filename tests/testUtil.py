@@ -1,7 +1,7 @@
 import os
 import random
 import string
-
+import re
 
 def createUniqueWARC():
     lines = []
@@ -37,3 +37,9 @@ def countCDXJEntries(cdxjData):
         if line[0] != '!':  # Exclude metadata from count
             urimCount += 1
     return urimCount
+
+
+def extractRelationEntriesFromLinkTimeMap(tm):
+    matches = re.findall('rel=".*?"', tm)
+    matches = map(lambda s: s[5:-1], matches)
+    return matches
