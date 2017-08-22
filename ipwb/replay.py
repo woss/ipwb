@@ -302,9 +302,6 @@ def generateTimeMapFromCDXJLines(cdxjLines, original, tmself):
     tmData += 'type="application/link-format",\n'
     hostAndPort = tmself[0:tmself.index('timemap/')]
 
-    print('LLLLL')
-    print(cdxjLines)
-
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
         dtRFC1123 = ipwbConfig.datetimeToRFC1123(datetime)
