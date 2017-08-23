@@ -77,10 +77,6 @@ def getRelsFromURIMSinWARC(warc):
 
 @pytest.mark.skip(reason='not implemented')
 def test_mementoRelations_one():
-    # ipwb replay ipwb/samples/warcs/2mementos.warc | ipwb replay
-    # curl -i localhost:5000/timemap/link/memento.us
-    # Parse two URI-Ms
-    # For
     pass
 
 
@@ -189,8 +185,6 @@ def test_mementoRelations_four():
     relsForURIMs3of4 = filter(lambda k: 'memento' in k, relsForURIMs[2])
     relsForURIMs4of4 = filter(lambda k: 'memento' in k, relsForURIMs[3])
 
-    print(relsForURIMs1of4)
-
     # mX_mY = URI-M requested, Y-th URIM-M in header
     m1_m1 = relsForURIMs1of4[0].split(' ')
     m1_m2 = relsForURIMs1of4[1].split(' ')
@@ -211,7 +205,7 @@ def test_mementoRelations_four():
 
     cond_m1m1_firstMemento = 'first' in m1_m1
     cond_m1m2_nextMemento = 'next' in m1_m2
-    # cond_m1m3 = len(m1_m3) == 0
+    # M3 not present
     cond_m1m4_lastMemento = 'last' in m1_m4
     cond_m2m1_firstPrevMemento = 'first' in m2_m1 and 'prev' in m2_m1
     cond_m2m2_memento = len(m2_m2) == 1
@@ -222,7 +216,7 @@ def test_mementoRelations_four():
     cond_m3m3_memento = len(m3_m3) == 1
     cond_m3m4_lastNextMemento = 'last' in m3_m4 and 'next' in m3_m4
     cond_m4m1_firstMemento = 'first' in m4_m1
-    # cond_m4m2 = len(m4_m2) == 0
+    # M2 not present
     cond_m4m3_prevMemento = 'prev' in m4_m3
     cond_m4m4_lastMemento = 'last' in m4_m4
 
@@ -242,3 +236,119 @@ def test_mementoRelations_four():
             # cond_m4m2 and
             cond_m4m3_prevMemento and
             cond_m4m4_lastMemento)
+
+
+@pytest.mark.mementoRelationFiveCount
+def test_mementoRelations_five():
+    relsForURIMs = getRelsFromURIMSinWARC('5mementos.warc')
+
+    cond_m1m1_firstMemento = False
+    cond_m1m2_nextMemento = False
+    cond_m1m3 = False
+    cond_m1m4 = False
+    cond_m1m5_lastMemento = False
+    cond_m2m1_firstPrevMemento = False
+    cond_m2m2_memento = False
+    cond_m2m3_nextMemento = False
+    cond_m2m4 = False
+    cond_m2m5_lastMemento = False
+    cond_m3m1_firstMemento = False
+    cond_m3m2_prevMemento = False
+    cond_m3m3_memento = False
+    cond_m3m4_nextMemento = False
+    cond_m3m5_lastMemento = False
+    cond_m4m1_firstMemento = False
+    cond_m4m2 = False
+    cond_m4m3_prevMemento = False
+    cond_m4m4_memento = False
+    cond_m4m5_lastNextMemento = False
+    cond_m5m1_firstMemento = False
+    cond_m5m2 = False
+    cond_m5m3 = False
+    cond_m5m4_prevMemento = False
+    cond_m5m5_lastMemento = False
+
+    relsForURIMs1of5 = filter(lambda k: 'memento' in k, relsForURIMs[0])
+    relsForURIMs2of5 = filter(lambda k: 'memento' in k, relsForURIMs[1])
+    relsForURIMs3of5 = filter(lambda k: 'memento' in k, relsForURIMs[2])
+    relsForURIMs4of5 = filter(lambda k: 'memento' in k, relsForURIMs[3])
+    relsForURIMs5of5 = filter(lambda k: 'memento' in k, relsForURIMs[4])
+
+    # mX_mY = URI-M requested, Y-th URIM-M in header
+    m1_m1 = relsForURIMs1of5[0].split(' ')
+    m1_m2 = relsForURIMs1of5[1].split(' ')
+    # M3 not present
+    # M4 not present
+    m1_m5 = relsForURIMs1of5[2].split(' ')
+    m2_m1 = relsForURIMs2of5[0].split(' ')
+    m2_m2 = relsForURIMs2of5[1].split(' ')
+    m2_m3 = relsForURIMs2of5[2].split(' ')
+    # M4 not present
+    m2_m5 = relsForURIMs2of5[3].split(' ')
+    m3_m1 = relsForURIMs3of5[0].split(' ')
+    m3_m2 = relsForURIMs3of5[1].split(' ')
+    m3_m3 = relsForURIMs3of5[2].split(' ')
+    m3_m4 = relsForURIMs3of5[3].split(' ')
+    m3_m5 = relsForURIMs3of5[4].split(' ')
+    m4_m1 = relsForURIMs4of5[0].split(' ')
+    # M2 not present
+    m4_m3 = relsForURIMs4of5[1].split(' ')
+    m4_m4 = relsForURIMs4of5[2].split(' ')
+    m4_m5 = relsForURIMs4of5[3].split(' ')
+    m5_m1 = relsForURIMs5of5[0].split(' ')
+    # M2 not present
+    # M3 not present
+    m5_m4 = relsForURIMs5of5[1].split(' ')
+    m5_m5 = relsForURIMs5of5[2].split(' ')
+
+    cond_m1m1_firstMemento = 'first' in m1_m1
+    cond_m1m2_nextMemento = 'next' in m1_m2
+    # M3 not present
+    # M4 not present
+    cond_m1m5_lastMemento = 'last' in m1_m5
+    cond_m2m1_firstPrevMemento = 'first' in m2_m1 and 'prev' in m2_m1
+    cond_m2m2_memento = len(m2_m2) == 1
+    cond_m2m3_nextMemento = 'next' in m2_m3
+    # M4 not present
+    cond_m2m5_lastMemento = 'last' in m1_m5
+    cond_m3m1_firstMemento = 'first' in m3_m1
+    cond_m3m2_prevMemento = 'prev' in m3_m2
+    cond_m3m3_memento = len(m3_m3) == 1
+    cond_m3m4_nextMemento = 'next' in m3_m4
+    cond_m3m5_lastMemento = 'last' in m3_m5
+    cond_m4m1_firstMemento = 'first' in m4_m1
+    # M2 not present
+    cond_m4m3_prevMemento = 'prev' in m4_m3
+    cond_m4m4_memento = len(m4_m4) == 1
+    cond_m4m5_lastNextMemento = 'last' in m4_m5 and 'next' in m4_m5
+    cond_m5m1_firstMemento = 'first' in m4_m1
+    # M2 not present
+    # M3 not present
+    cond_m5m4_prevMemento = 'prev' in m5_m4
+    cond_m5m5_lastMemento = 'last' in m5_m5
+
+    assert (cond_m1m1_firstMemento and
+            cond_m1m2_nextMemento and
+            # cond_m1m3 and
+            # cond_m1m4 and
+            cond_m1m5_lastMemento and
+            cond_m2m1_firstPrevMemento and
+            cond_m2m2_memento and
+            cond_m2m3_nextMemento and
+            # cond_m2m4 and
+            cond_m2m5_lastMemento and
+            cond_m3m1_firstMemento and
+            cond_m3m2_prevMemento and
+            cond_m3m3_memento and
+            cond_m3m4_nextMemento and
+            cond_m3m5_lastMemento and
+            cond_m4m1_firstMemento and
+            # cond_m4m2 and
+            cond_m4m3_prevMemento and
+            cond_m4m4_memento and
+            cond_m4m5_lastNextMemento and
+            cond_m5m1_firstMemento and
+            # cond_m5m2 and
+            # cond_m5m3 and
+            cond_m5m4_prevMemento and
+            cond_m5m5_lastMemento)
