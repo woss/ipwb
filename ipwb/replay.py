@@ -541,8 +541,7 @@ def fetchRemoteCDXJFile(path):
         fileContents = ipwbConfig.fetchRemoteFile(path)
         return fileContents
 
-    if not ipwbConfig.isValidCDXJ(fileContents):
-        return None
+    # TODO: Check if valid CDXJ here before returning
     return fileContents
 
 

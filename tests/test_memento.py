@@ -11,6 +11,7 @@ import urllib2
 import random
 import string
 import re
+import sys
 from multiprocessing import Process
 
 p = Process()
@@ -78,6 +79,23 @@ def getRelsFromURIMSinWARC(warc):
 @pytest.mark.skip(reason='not implemented')
 def test_mementoRelations_one():
     pass
+
+
+@pytest.mark.mementoRelationOneCount
+def test_mementoRelations_one():
+    relsForURIMs = getRelsFromURIMSinWARC('1memento.warc')
+
+    relsForURIMs = filter(lambda k: 'memento' in k, relsForURIMs[0])
+    m1_m1 = relsForURIMs[0].split(' ')
+
+    onlyOneMemento = len(relsForURIMs) == 1
+
+    cond_firstMemento = 'first' in m1_m1
+    cond_lastMemento = 'last' in m1_m1
+
+    assert onlyOneMemento and \
+        cond_firstMemento and \
+        cond_lastMemento
 
 
 @pytest.mark.mementoRelationTwoCount
