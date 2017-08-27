@@ -97,6 +97,7 @@ def test_mementoRelations_one():
         cond_firstMemento and \
         cond_lastMemento
 
+
 @pytest.mark.mementoRelationTwoCount
 def test_mementoRelations_two():
     relsForURIMs = getRelsFromURIMSinWARC('2mementos.warc')
