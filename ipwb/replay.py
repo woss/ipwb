@@ -11,6 +11,8 @@ from subprocess import check_output
 import pkg_resources
 import surt
 import re
+import traceback
+import signal
 from pywb.utils.binsearch import iter_exact
 from pywb.utils.canonicalize import unsurt
 # from pywb.utils.canonicalize import canonicalize as surt
@@ -410,16 +412,34 @@ def show_uri(path, datetime=None):
 
     digests = jObj['locator'].split('/')
 
+    class HashNotFoundError(Exception):
+        pass
+
     try:
-        payload = IPFS_API.cat(digests[-1])  # Was ', timeout=1)'
+        def handler(signum, frame):
+            raise HashNotFoundError()
+
+        signal.signal(signal.SIGALRM, handler)
+        signal.alarm(10)
+
+        payload = IPFS_API.cat(digests[-1])
         header = IPFS_API.cat(digests[-2])
+
     except ipfsapi.exceptions.TimeoutError:
         print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
         respString = ('{0} not found in IPFS :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
+    except TypeError:
+        print('A type error occurred')
+        print(traceback.format_exc())
+        print(sys.exec_info()[0])
+    except HashNotFoundError:
+        print("Hashes not found")
+        return '', 404
     except:
+        print('Unknown exception occurred while fetching from ipfs.')
         sys.exit()
 
     if 'encryption_method' in jObj:
