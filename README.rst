@@ -8,7 +8,7 @@ Peer-To-Peer Permanence of Web Archives
 
 |travis| |pypi| |codecov|
 
-InterPlanetary Wayback (ipwb) facilitates permanence and collaboration in web archives by disseminating the contents of WARC files into the IPFS network. `IPFS`_ is a peer-to-peer content-addressable file system that inherently allows deduplication and facilitates opt-in replication. ipwb splits the header and payload of WARC response records before disseminating into IPFS to leverage the deduplication, builds a `CDXJ index`_ with references to the IPFS hashes returns, and combines the header and payload from IPFS at the time of replay. 
+InterPlanetary Wayback (ipwb) facilitates permanence and collaboration in web archives by disseminating the contents of `WARC`_ files into the IPFS network. `IPFS`_ is a peer-to-peer content-addressable file system that inherently allows deduplication and facilitates opt-in replication. ipwb splits the header and payload of WARC response records before disseminating into IPFS to leverage the deduplication, builds a `CDXJ index`_ with references to the IPFS hashes returns, and combines the header and payload from IPFS at the time of replay. 
 
 InterPlanetary Wayback primarily consists of two scripts:
 
@@ -156,7 +156,7 @@ Usage of sub-commands in ipwb can be accessed through providing the `-h` or `--h
       optional arguments:
         -h, --help        show this help message and exit
         -e                Encrypt WARC content prior to disseminating to IPFS
-      Katja:ipwb machawk1$ ipwb replay -h
+      $ ipwb replay -h
       usage: ipwb replay [-h] [index]
       
       positional arguments:
