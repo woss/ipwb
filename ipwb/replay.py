@@ -622,6 +622,12 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
         uris[uri]['datetimes'].append(datetime)
         uris[uri]['mime'] = jsonFields['mime_type']
 
+        hashSlashIndex = jsonFields['locator'].index('/')
+        hashes = jsonFields['locator'][hashSlashIndex + 1:].split('/')
+        uris[uri]['hashes'] = {}
+        uris[uri]['hashes']['header'] = hashes[0]
+        uris[uri]['hashes']['payload'] = hashes[1]
+
         pass
     return json.dumps(uris)
 

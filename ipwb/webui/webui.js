@@ -24,11 +24,16 @@ function showURIs () {
       var a = document.createElement('a')
       a.href = datetime + '/' + uri
       a.appendChild(document.createTextNode(uri))
+      a.setAttribute('data-hash-header', uris[uri]['hashes']['header'])
+      a.setAttribute('data-hash-payload', uris[uri]['hashes']['payload'])
+      a.setAttribute('title', 'Payload hash: ' + uris[uri]['hashes']['payload'])
+
       dt = document.createTextNode(' (' + datetime + ')')
 
       li.appendChild(a)
       li.appendChild(dt)
       li.setAttribute('data-mime', uris[uri]['mime'])
+
       ul.appendChild(li)
     }
     uris[uri]['mime'] === 'text/html' ? ++htmlPages : ''
