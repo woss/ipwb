@@ -1,5 +1,5 @@
-pywb
+pywb==0.33.2
 ipfsapi>=0.4.2
-flask
-pycrypto
+Flask==0.12.2
+pycrypto==2.6.1
 pytest>=3.0
