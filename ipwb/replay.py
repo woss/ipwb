@@ -140,7 +140,7 @@ def showMementosForURIRs(urir):
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     if len(cdxjLinesWithURIR) == 1:
-        fields = linesWithSameURIR[0].split(' ', 2)
+        fields = cdxjLinesWithURIR[0].split(' ', 2)
         redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
         return redirect(redirectURI, code=302)
 
@@ -203,6 +203,7 @@ def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
 def getCDXJLinesWithURIR(urir, indexPath):
     if not indexPath:
         indexPath = ipwbConfig.getIPWBReplayIndexPath()
+    indexPath = getIndexFileFullPath(indexPath)
 
     print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
@@ -424,6 +425,8 @@ def show_uri(path, datetime=None):
 
         payload = IPFS_API.cat(digests[-1])
         header = IPFS_API.cat(digests[-2])
+
+        signal.alarm(0)
 
     except ipfsapi.exceptions.TimeoutError:
         print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
@@ -692,14 +695,13 @@ def binary_search(haystack, needle, returnIndex=False, onlyURI=False):
 def getCDXJLine_binarySearch(
          surtURI, cdxjFilePath=INDEX_FILE, retIndex=False, onlyURI=False):
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
-    print('looking for {0} in {1}'.format(surtURI, cdxjFilePath))
 
     with open(fullFilePath, 'r') as cdxjFile:
         lines = cdxjFile.read().split('\n')
 
         lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
         if lineFound is None:
-            print("Could not {0} in CDXJ at {1}".format(surtURI, cdxjFilePath))
+            print("Could not {0} in CDXJ at {1}".format(surtURI, fullFilePath))
 
         return lineFound
 
@@ -710,9 +712,13 @@ def start(cdxjFilePath=INDEX_FILE):
         ipwbConfig.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
         hostPort = ipwbConfig.getIPWBReplayConfig()
 
-    ipwbConfig.firstRun()
-    ipwbConfig.setIPWBReplayIndexPath(cdxjFilePath)
-    app.cdxjFilePath = cdxjFilePath
+    if ipwbConfig.isDaemonAlive():
+        ipwbConfig.firstRun()
+        ipwbConfig.setIPWBReplayIndexPath(cdxjFilePath)
+        app.cdxjFilePath = cdxjFilePath
+    else:
+        print('Sample data not pulled from IPFS.')
+        print('Check that the IPFS daemon is running.')
 
     app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
 
