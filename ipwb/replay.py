@@ -23,6 +23,7 @@ from flask import redirect
 from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
+from socket import gaierror
 
 import requests
 
@@ -720,7 +721,10 @@ def start(cdxjFilePath=INDEX_FILE):
         print('Sample data not pulled from IPFS.')
         print('Check that the IPFS daemon is running.')
 
-    app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
+    try:
+        app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
+    except gaierror:
+        print('Not connected to the Internet')
 
 
 if __name__ == "__main__":
