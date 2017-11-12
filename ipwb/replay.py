@@ -724,7 +724,9 @@ def start(cdxjFilePath=INDEX_FILE):
     try:
         app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
     except gaierror:
-        print('Not connected to the Internet')
+        print('Detected no active Internet connection.')
+        print('Overriding to use default IP and port configuration.')
+        app.run()
 
 
 if __name__ == "__main__":
