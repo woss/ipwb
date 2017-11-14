@@ -237,13 +237,18 @@ def getCDXJLinesWithURIR(urir, indexPath):
     return cdxjLinesWithURIR
 
 
-@app.route('/timemap/<regex("link"):format>/<path:urir>')
+@app.route('/timemap/<regex("link|cdxj"):format>/<path:urir>')
 def showTimeMap(urir, format):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
 
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
-    tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, request.url)
+    if format == "link":
+        tm = generateLinkTimeMapFromCDXJLines(
+            cdxjLinesWithURIR, s, request.url)
+    elif format == "cdxj":
+        tm = generateCDXJTimeMapFromCDXJLines(
+            cdxjLinesWithURIR, s, request.url)
 
     return Response(tm)
 
@@ -257,7 +262,7 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     tmURI = 'http://{0}:{1}/timemap/link/{2}'.format(
         'localhost',  # hostAndPort[0],
         hostAndPort[1], urir)
-    tm = generateTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI)
+    tm = generateLinkTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI)
 
     # Fix base TM relation when viewing abbrev version in Link resp
     tm = tm.replace('rel="self"', 'rel="timemap"')
@@ -300,7 +305,7 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     return tm
 
 
-def generateTimeMapFromCDXJLines(cdxjLines, original, tmself):
+def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
     tmData = '<{0}>; rel="original",\n'.format(unsurt(original))
     tmData += '<{0}>; rel="self"; '.format(tmself)
     tmData += 'type="application/link-format",\n'
@@ -323,6 +328,43 @@ def generateTimeMapFromCDXJLines(cdxjLines, original, tmself):
                 hostAndPort, datetime, unsurt(surtURI),
                 firstLastStr, dtRFC1123)
     tmData = tmData[0:-2]  # Trim final , and LF
+    return tmData
+
+
+def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself):
+    tmData = '!context ["http://tools.ietf.org/html/rfc7089"]\n'
+    tmData += '!id {{"uri": "{0}"}}\n'.format(tmself)
+    tmData += '!keys ["memento_datetime_YYYYMMDDhhmmss"]\n'
+    tmData += '!meta {{"original_uri": "{0}"}}\n'.format(unsurt(original))
+
+    linkTMURI = tmself.replace('/timemap/cdxj/', '/timemap/link/')
+    tmData += ('!meta {{"timemap_uri": {{'
+               '"link_format": "{0}", '
+               '"cdxj_format": "{1}"'
+               '}}}}\n').format(linkTMURI, tmself)
+    hostAndPort = tmself[0:tmself.index('timemap/')]
+
+    for i, line in enumerate(cdxjLines):
+        print(i)
+        (surtURI, datetime, json) = line.split(' ', 2)
+        dtRFC1123 = ipwbConfig.datetimeToRFC1123(datetime)
+        firstLastStr = ''
+
+        if len(cdxjLines) > 1:
+            if i == 0:
+                firstLastStr = 'first '
+            elif i == len(cdxjLines) - 1:
+                firstLastStr = 'last '
+        elif len(cdxjLines) == 1:
+            firstLastStr = 'first last '
+
+        tmData += ('{1} {{'
+                   '"uri": "{0}{1}/{2}", '
+                   '"rel": "{3}memento", '
+                   '"datetime"="{4}"}}\n').format(
+                hostAndPort, datetime, unsurt(surtURI),
+                firstLastStr, dtRFC1123)
+    tmData = tmData[0:-1]  # Trim final , and LF
     return tmData
 
 
