@@ -243,14 +243,20 @@ def showTimeMap(urir, format):
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
 
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
-    if format == "link":
+    tmContentType = ''
+    if format == 'link':
         tm = generateLinkTimeMapFromCDXJLines(
             cdxjLinesWithURIR, s, request.url)
-    elif format == "cdxj":
+        tmContentType = 'application/link-format'
+    elif format == 'cdxj':
         tm = generateCDXJTimeMapFromCDXJLines(
             cdxjLinesWithURIR, s, request.url)
+        tmContentType = 'application/cdxj+ors'
 
-    return Response(tm)
+    resp = Response(tm)
+    resp.headers['Content-Type'] = tmContentType
+
+    return resp
 
 
 def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
