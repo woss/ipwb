@@ -30,6 +30,8 @@ IPFSAPI_PORT = 5001
 IPWBREPLAY_IP = 'localhost'  # 127.0.0.1
 IPWBREPLAY_PORT = 5000
 
+PYPI_TIMEOUT = 5
+
 INDEX_FILE = 'samples/indexes/sample-encrypted.cdxj'
 SAMPLE_WARC = 'samples/warcs/salam-home.warc'
 
@@ -231,12 +233,20 @@ def getIPWBReplayIndexPath():
 
 def runningLatestIPWB():
     try:
-        resp = urllib2.urlopen('https://pypi.python.org/pypi/ipwb/json')
+        resp = urllib2.urlopen('https://pypi.python.org/pypi/ipwb/json', timeout=PYPI_TIMEOUT)
         jResp = json.loads(resp.read())
         latestVersion = jResp['info']['version']
         currentVersion = re.sub(r'\.0+', '.', ipwbVersion)
         return latestVersion == currentVersion
+    #except NoInternetConnection: # Can this be checked in urllib2 without hitting a URI?
+    #    '''Report no internet connection, pypi unavailable here'''
+    #    print('Failed checking for latest version of ipwb')
+    #    print('> pypi.python.org inaccessible.')
+    except urllib2.URLError as e:
+        print('URL error, beyond timeout what else causes this?')
     except:
+        print('An exception occured.')
+        print(sys.exc_info()[0])
         return None
 
 
