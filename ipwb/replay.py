@@ -131,6 +131,8 @@ def commandDaemon(cmd):
 
 @app.route('/memento/*/<path:urir>')
 def showMementosForURIRs(urir):
+    urir = getCompleteURI(urir)
+
     if ipwbConfig.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
@@ -168,6 +170,8 @@ app.url_map.converters['regex'] = RegexConverter
 
 @app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
 def showMemento(urir, datetime):
+    urir = getCompleteURI(urir)
+
     if ipwbConfig.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
@@ -239,6 +243,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
 
 @app.route('/timemap/<regex("link|cdxj"):format>/<path:urir>')
 def showTimeMap(urir, format):
+    urir = getCompleteURI(urir)
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
 
@@ -378,8 +383,17 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself):
     return tmData
 
 
+# Fixes Flask issue of clipping queryString
+def getCompleteURI(uri):
+    qs = request.query_string.decode('utf-8')
+    if qs != '':
+        uri += '?' + qs
+    return uri
+
+
 @app.route('/<regex("[0-9]{14}"):datetime>/<path:urir>')
 def showMementoAtDatetime(urir, datetime):
+    urir = getCompleteURI(urir)
     return show_uri(urir, datetime)
 
 
@@ -417,6 +431,8 @@ def show_uri(path, datetime=None):
                   ' or from the <a href="/">'
                   'IPWB replay homepage</a>.')
         return Response(errStr)
+
+    path = getCompleteURI(path)
     cdxjLine = ''
     try:
         surtedURI = surt.surt(  # Good ol' pep8 line length
