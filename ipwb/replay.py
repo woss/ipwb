@@ -481,7 +481,16 @@ def show_uri(path, datetime=None):
         msg += '<a href="/timemap/link/{0}">Link</a> '.format(urir)
         msg += '<a href="/timemap/cdxj/{0}">CDXJ</a> '.format(urir)
 
-        return Response(msg, status=404)
+        resp = Response(msg, status=404)
+        linkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
+        linkHeader = linkHeader.replace('\n', ' ')
+
+        # By default, a TM has a self-reference URI-T
+        linkHeader = linkHeader.replace('self timemap', 'timemap')
+
+        resp.headers['Link'] = linkHeader
+
+        return resp
 
     cdxjParts = cdxjLine.split(" ", 2)
     jObj = json.loads(cdxjParts[2])
