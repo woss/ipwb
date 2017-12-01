@@ -391,9 +391,10 @@ def getCompleteURI(uri):
     return uri
 
 
-@app.route('/<regex("[0-9]{14}"):datetime>/<path:urir>')
+@app.route('/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
 def showMementoAtDatetime(urir, datetime):
     urir = getCompleteURI(urir)
+    datetime = datetime.ljust(14, '0')
     return show_uri(urir, datetime)
 
 
