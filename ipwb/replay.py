@@ -313,8 +313,13 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
 
 def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
     tmData = '<{0}>; rel="original",\n'.format(unsurt(original))
-    tmData += '<{0}>; rel="self"; '.format(tmself)
+    tmData += '<{0}>; rel="self timemap"; '.format(tmself)
     tmData += 'type="application/link-format",\n'
+
+    cdxjTMURI = tmself.replace('/timemap/link/', '/timemap/cdxj/')
+    tmData += '<{0}>; rel="timemap"; '.format(cdxjTMURI)
+    tmData += 'type="application/cdxj+ors",\n'
+
     hostAndPort = tmself[0:tmself.index('timemap/')]
 
     for i, line in enumerate(cdxjLines):
