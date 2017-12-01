@@ -466,14 +466,21 @@ def show_uri(path, datetime=None):
             redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
             return redirect(redirectURI, code=302)
 
+        urir = ''
         if linesWithSameURIR:
             msg += '<p>{0} capture(s) available:</p><ul>'.format(
                   len(linesWithSameURIR))
             for line in linesWithSameURIR:
                 fields = line.split(' ', 2)
+                urir = unsurt(fields[0])
                 msg += ('<li><a href="/{1}/{0}">{0} at {1}</a></li>'
-                        .format(unsurt(fields[0]), fields[1]))
+                        .format(urir, fields[1]))
             msg += '</ul>'
+
+        msg += '<p>TimeMaps: '
+        msg += '<a href="/timemap/link/{0}">Link</a> '.format(urir)
+        msg += '<a href="/timemap/cdxj/{0}">CDXJ</a> '.format(urir)
+
         return Response(msg, status=404)
 
     cdxjParts = cdxjLine.split(" ", 2)
