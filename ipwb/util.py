@@ -155,7 +155,7 @@ def fetchRemoteFile(path):
 # IPFS Config manipulation from here on out.
 def readIPFSConfig():
     ipfsConfigPath = expanduser("~") + '/.ipfs/config'
-    if os.environ.has_key('IPFS_PATH'):
+    if 'IPFS_PATH' in os.environ:
         ipfsConfigPath = os.environ.get('IPFS_PATH') + '/config'
 
     try:
@@ -169,7 +169,7 @@ def readIPFSConfig():
 
 def writeIPFSConfig(jsonToWrite):
     ipfsConfigPath = expanduser("~") + '/.ipfs/config'
-    if os.environ.has_key('IPFS_PATH'):
+    if 'IPFS_PATH' in os.environ:
         ipfsConfigPath = os.environ.get('IPFS_PATH') + '/config'
 
     with open(ipfsConfigPath, 'w') as f:
