@@ -21,7 +21,7 @@ A pictorial representation of the ipwb indexing and replay process:
 
 Installing
 ----------
-InterPlanetary Wayback requires Python 2.7+ though we are working on have it work on Python 3 as well (see `#51`_).
+InterPlanetary Wayback requires Python 2.7+ though we are working on having it work on Python 3 as well (see `#51`_).
 
 The latest release of ipwb can be installed using pip:
 
