@@ -154,8 +154,12 @@ def fetchRemoteFile(path):
 
 # IPFS Config manipulation from here on out.
 def readIPFSConfig():
+    ipfsConfigPath = expanduser("~") + '/.ipfs/config'
+    if os.environ.has_key('IPFS_PATH'):
+        ipfsConfigPath = os.environ.get('IPFS_PATH') + '/config'
+
     try:
-        with open(expanduser("~") + '/.ipfs/config', 'r') as f:
+        with open(ipfsConfigPath, 'r') as f:
             return json.load(f)
     except IOError:
         logError("IPFS config not found.")
@@ -164,7 +168,11 @@ def readIPFSConfig():
 
 
 def writeIPFSConfig(jsonToWrite):
-    with open(expanduser("~") + '/.ipfs/config', 'w') as f:
+    ipfsConfigPath = expanduser("~") + '/.ipfs/config'
+    if os.environ.has_key('IPFS_PATH'):
+        ipfsConfigPath = os.environ.get('IPFS_PATH') + '/config'
+
+    with open(ipfsConfigPath, 'w') as f:
         f.write(json.dumps(jsonToWrite, indent=4, sort_keys=True))
 
 
