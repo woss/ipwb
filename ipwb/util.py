@@ -16,6 +16,7 @@ import site
 # Datetime conversion to rfc1123
 import locale
 import datetime
+import logging
 
 import urllib2
 import json
@@ -33,14 +34,17 @@ IPWBREPLAY_PORT = 5000
 INDEX_FILE = 'samples/indexes/sample-encrypted.cdxj'
 SAMPLE_WARC = 'samples/warcs/salam-home.warc'
 
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 
 def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
     client = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
 
     try:
-        # OSError if ipfs not installed
-        subprocess.call(['ipfs', '--version'], stdout=open(devnull, 'wb'))
+        # OSError if ipfs not installed, redundant of below
+        # subprocess.call(['ipfs', '--version'], stdout=open(devnull, 'wb'))
 
         # ConnectionError/AttributeError if IPFS daemon not running
         client.id()
@@ -237,22 +241,25 @@ def getIPWBReplayIndexPath():
         return ''
 
 
-def runningLatestIPWB():
+def compareCurrentAndLatestIPWBVersions():
     try:
         resp = urllib2.urlopen('https://pypi.python.org/pypi/ipwb/json')
         jResp = json.loads(resp.read())
         latestVersion = jResp['info']['version']
         currentVersion = re.sub(r'\.0+', '.', ipwbVersion)
-        return latestVersion == currentVersion
+        return (currentVersion, latestVersion)
     except:
         return None
 
 
 def firstRun():
     import indexer
-    if runningLatestIPWB() is False:
+    (current, latest) = compareCurrentAndLatestIPWBVersions()
+    if current != latest:
         print('This version of ipwb is outdated.'
               ' Please run pip install --upgrade ipwb.')
+        print('* Latest version: {0}'.format(latest))
+        print('* Installed version: {0}'.format(current))
 
     # Ensure the sample WARC is in IPFS
     print('Executing first-run procedure on provided sample data.')
