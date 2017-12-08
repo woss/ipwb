@@ -24,6 +24,7 @@ from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 from socket import gaierror
+from socket import error as socketerror
 
 import requests
 
@@ -529,6 +530,7 @@ def show_uri(path, datetime=None):
         return '', 404
     except:
         print('Unknown exception occurred while fetching from ipfs.')
+        print(sys.exec_info()[0])
         sys.exit()
 
     if 'encryption_method' in jObj:
@@ -812,6 +814,10 @@ def start(cdxjFilePath=INDEX_FILE):
         print('Detected no active Internet connection.')
         print('Overriding to use default IP and port configuration.')
         app.run()
+    except socketerror:
+        print('Address {0}:{1} already in use!'.format(
+            IPWBREPLAY_IP, IPWBREPLAY_PORT))
+        sys.exit()
 
 
 if __name__ == "__main__":
