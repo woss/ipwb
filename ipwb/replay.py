@@ -25,6 +25,7 @@ from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
+from urlparse import urlsplit, urlunsplit
 
 import requests
 
@@ -318,6 +319,15 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
 
 
 def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
+    tmurl = list(urlsplit(tmself))
+    if app.proxy is not None:
+        tmurl[1] = app.proxy # Set replay host/port
+        tmself = urlunsplit(tmurl)
+
+    # Extract and trim for host:port prepending
+    tmurl[2] = '' # Clear TM path
+    hostAndPort = urlunsplit(tmurl) + '/'
+
     tmData = '<{0}>; rel="original",\n'.format(unsurt(original))
     tmData += '<{0}>; rel="self timemap"; '.format(tmself)
     tmData += 'type="application/link-format",\n'
@@ -325,8 +335,6 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
     cdxjTMURI = tmself.replace('/timemap/link/', '/timemap/cdxj/')
     tmData += '<{0}>; rel="timemap"; '.format(cdxjTMURI)
     tmData += 'type="application/cdxj+ors",\n'
-
-    hostAndPort = tmself[0:tmself.index('timemap/')]
 
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
@@ -795,8 +803,10 @@ def getCDXJLine_binarySearch(
         return lineFound
 
 
-def start(cdxjFilePath=INDEX_FILE):
+def start(cdxjFilePath=INDEX_FILE, proxy=None):
     hostPort = ipwbConfig.getIPWBReplayConfig()
+    app.proxy = proxy
+
     if not hostPort:
         ipwbConfig.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
         hostPort = ipwbConfig.getIPWBReplayConfig()

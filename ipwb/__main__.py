@@ -43,11 +43,16 @@ def checkArgs_replay(args):
             f.write(cdxjIn)
         args.index = tempFilePath
 
+    proxy = None
+    if hasattr(args, 'proxy') and args.proxy is not None:
+        print('Proxying to ' + args.proxy)
+        proxy = args.proxy
+
     # TODO: add any other sub-arguments for replay here
     if hasattr(args, 'index') and args.index is not None:
-        replay.start(cdxjFilePath=args.index)
+        replay.start(cdxjFilePath=args.index, proxy=proxy)
     else:
-        replay.start()
+        replay.start(proxy=proxy)
 
 
 def checkArgs(argsIn):
@@ -79,17 +84,17 @@ def checkArgs(argsIn):
         default=False)
     indexParser.add_argument(
         '-c',
-        help="Compress WARC content prior to adding to IPFS",
+        help='Compress WARC content prior to adding to IPFS',
         action='store_true',
         default=False)
     indexParser.add_argument(
         '--compressFirst',
-        help="Compress data before encryption, where applicable",
+        help='Compress data before encryption, where applicable',
         action='store_true',
         default=False)
     indexParser.add_argument(
         '--debug',
-        help="Convenience flag to help with testing and debugging",
+        help='Convenience flag to help with testing and debugging',
         action='store_true',
         default=False)
     indexParser.set_defaults(func=checkArgs_index)
@@ -101,7 +106,12 @@ def checkArgs(argsIn):
         help="Start the ipwb replay system")
     replayParser.add_argument(
         'index',
-        help="path, URI, or multihash of file to use for replay",
+        help='path, URI, or multihash of file to use for replay',
+        nargs='?')
+    replayParser.add_argument(
+        '-p', '--proxy',
+        help='Proxy URL',
+        metavar='<host:port>',
         nargs='?')
     replayParser.set_defaults(func=checkArgs_replay)
 
@@ -120,11 +130,7 @@ def checkArgs(argsIn):
     if len(argsIn) == 1:
         parser.print_help()
         sys.exit()
-    # parser.add_argument('replay',
-    #   help="Index a WARC file", default=None, nargs='?')
-    # parser.add_argument('--index', help="Index a WARC file",
-    #  default=None, nargs=1)
-    # parser.add_argument('warcPath', help="Path to a WARC[.gz] file")
+
     results = parser.parse_args()
     results.func(results)
 
