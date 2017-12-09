@@ -25,7 +25,7 @@ from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
-from urlparse import urlsplit, urlunsplit
+from urlparse import urlsplit, urlunsplit # N/A in Py3!
 
 import requests
 
@@ -321,7 +321,13 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
 def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
     tmurl = list(urlsplit(tmself))
     if app.proxy is not None:
-        tmurl[1] = app.proxy  # Set replay host/port
+        # urlsplit put domain in path for "example.com"
+        tmurl[1] = app.proxy  # Set replay host/port if no scheme
+        proxyuri = urlsplit(app.proxy)
+        if proxyuri.scheme != '':
+            tmurl[0] = proxyuri.scheme
+            tmurl[1] = proxyuri.netloc
+
         tmself = urlunsplit(tmurl)
 
     # Extract and trim for host:port prepending
