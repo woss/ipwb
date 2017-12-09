@@ -321,11 +321,11 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
 def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
     tmurl = list(urlsplit(tmself))
     if app.proxy is not None:
-        tmurl[1] = app.proxy # Set replay host/port
+        tmurl[1] = app.proxy  # Set replay host/port
         tmself = urlunsplit(tmurl)
 
     # Extract and trim for host:port prepending
-    tmurl[2] = '' # Clear TM path
+    tmurl[2] = ''  # Clear TM path
     hostAndPort = urlunsplit(tmurl) + '/'
 
     tmData = '<{0}>; rel="original",\n'.format(unsurt(original))
