@@ -249,13 +249,14 @@ def compareCurrentAndLatestIPWBVersions():
         currentVersion = re.sub(r'\.0+', '.', ipwbVersion)
         return (currentVersion, latestVersion)
     except:
-        return None
+        return (None, None)
 
 
 def firstRun():
     import indexer
     (current, latest) = compareCurrentAndLatestIPWBVersions()
-    if current != latest:
+
+    if current != latest and current is not None:
         print('This version of ipwb is outdated.'
               ' Please run pip install --upgrade ipwb.')
         print('* Latest version: {0}'.format(latest))
