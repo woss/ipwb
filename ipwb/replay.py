@@ -548,13 +548,13 @@ def show_uri(path, datetime=None):
     except TypeError:
         print('A type error occurred')
         print(traceback.format_exc())
-        print(sys.exec_info()[0])
+        print(sys.exc_info()[0])
     except HashNotFoundError:
         print("Hashes not found")
         return '', 404
     except:
         print('Unknown exception occurred while fetching from ipfs.')
-        print(sys.exec_info()[0])
+        print(sys.exc_info()[0])
         sys.exit()
 
     if 'encryption_method' in jObj:
