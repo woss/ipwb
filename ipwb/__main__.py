@@ -109,7 +109,7 @@ def checkArgs(argsIn):
         help='path, URI, or multihash of file to use for replay',
         nargs='?')
     replayParser.add_argument(
-        '-p', '--proxy',
+        '-P', '--proxy',
         help='Proxy URL',
         metavar='<host:port>',
         nargs='?')
