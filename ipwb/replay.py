@@ -802,7 +802,8 @@ def start(cdxjFilePath=INDEX_FILE):
         hostPort = ipwbConfig.getIPWBReplayConfig()
 
     if ipwbConfig.isDaemonAlive():
-        ipwbConfig.firstRun()
+        if cdxjFilePath == INDEX_FILE:
+            ipwbConfig.firstRun()
         ipwbConfig.setIPWBReplayIndexPath(cdxjFilePath)
         app.cdxjFilePath = cdxjFilePath
     else:
@@ -810,6 +811,9 @@ def start(cdxjFilePath=INDEX_FILE):
         print('Check that the IPFS daemon is running.')
 
     try:
+        print('IPWB replay started on http://{0}:{1}'.format(
+            IPWBREPLAY_IP, IPWBREPLAY_PORT
+        ))
         app.run(host=IPWBREPLAY_IP, port=IPWBREPLAY_PORT)
     except gaierror:
         print('Detected no active Internet connection.')
