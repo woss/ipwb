@@ -74,12 +74,12 @@ def checkArgs(argsIn):
         default=None)
     indexParser.add_argument(
         '-e',
-        help="Encrypt WARC content prior to disseminating to IPFS",
+        help="Encrypt WARC content prior to adding to IPFS",
         action='store_true',
         default=False)
     indexParser.add_argument(
         '-c',
-        help="Compress WARC content prior to disseminating to IPFS",
+        help="Compress WARC content prior to adding to IPFS",
         action='store_true',
         default=False)
     indexParser.add_argument(
@@ -93,13 +93,15 @@ def checkArgs(argsIn):
         action='store_true',
         default=False)
     indexParser.set_defaults(func=checkArgs_index)
+
     replayParser = subparsers.add_parser(
         'replay',
         prog="ipwb replay",
+        description="Start the ipwb relay system",
         help="Start the ipwb replay system")
     replayParser.add_argument(
         'index',
-        help="CDXJ file to use for replay",
+        help="path, URI, or multihash of file to use for replay",
         nargs='?')
     replayParser.set_defaults(func=checkArgs_replay)
 
