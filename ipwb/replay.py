@@ -25,7 +25,7 @@ from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
-from urlparse import urlsplit, urlunsplit # N/A in Py3!
+from urlparse import urlsplit, urlunsplit  # N/A in Py3!
 
 import requests
 
@@ -326,7 +326,7 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
         proxyuri = urlsplit(app.proxy)
         if proxyuri.scheme != '':
             tmurl[0] = proxyuri.scheme
-            tmurl[1] = proxyuri.netloc
+            tmurl[1] = proxyuri.netloc + proxyuri.path
 
         tmself = urlunsplit(tmurl)
 
