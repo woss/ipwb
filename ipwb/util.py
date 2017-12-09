@@ -26,7 +26,7 @@ from __init__ import __version__ as ipwbVersion
 from ipfsapi.exceptions import ConnectionError
 
 
-IPFSAPI_IP = '127.0.0.1'
+IPFSAPI_IP = '0.0.0.0'
 IPFSAPI_PORT = 5001
 IPWBREPLAY_IP = 'localhost'  # 127.0.0.1
 IPWBREPLAY_PORT = 5000
