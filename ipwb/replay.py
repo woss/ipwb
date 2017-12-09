@@ -789,7 +789,8 @@ def getCDXJLine_binarySearch(
 
         lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
         if lineFound is None:
-            print("Could not {0} in CDXJ at {1}".format(surtURI, fullFilePath))
+            print("Could not find {0} in CDXJ at {1}".format(
+                surtURI, fullFilePath))
 
         return lineFound
 
