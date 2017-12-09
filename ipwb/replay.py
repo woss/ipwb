@@ -318,8 +318,8 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     return tm
 
 
-def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
-    tmurl = list(urlsplit(tmself))
+def getProxiedURIT(uriT):
+    tmurl = list(urlsplit(uriT))
     if app.proxy is not None:
         # urlsplit put domain in path for "example.com"
         tmurl[1] = app.proxy  # Set replay host/port if no scheme
@@ -328,6 +328,12 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
             tmurl[0] = proxyuri.scheme
             tmurl[1] = proxyuri.netloc + proxyuri.path
 
+    return tmurl
+
+
+def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
+    tmurl = getProxiedURIT(tmself)
+    if app.proxy is not None:
         tmself = urlunsplit(tmurl)
 
     # Extract and trim for host:port prepending
