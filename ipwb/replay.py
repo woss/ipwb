@@ -369,6 +369,10 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
 
 
 def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself):
+    tmurl = getProxiedURIT(tmself)
+    if app.proxy is not None:
+        tmself = urlunsplit(tmurl)
+
     tmData = '!context ["http://tools.ietf.org/html/rfc7089"]\n'
     tmData += '!id {{"uri": "{0}"}}\n'.format(tmself)
     tmData += '!keys ["memento_datetime_YYYYMMDDhhmmss"]\n'
