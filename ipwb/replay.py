@@ -25,6 +25,7 @@ from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
+from urlparse import urlsplit, urlunsplit  # N/A in Py3!
 
 import requests
 
@@ -317,7 +318,28 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     return tm
 
 
+def getProxiedURIT(uriT):
+    tmurl = list(urlsplit(uriT))
+    if app.proxy is not None:
+        # urlsplit put domain in path for "example.com"
+        tmurl[1] = app.proxy  # Set replay host/port if no scheme
+        proxyuri = urlsplit(app.proxy)
+        if proxyuri.scheme != '':
+            tmurl[0] = proxyuri.scheme
+            tmurl[1] = proxyuri.netloc + proxyuri.path
+
+    return tmurl
+
+
 def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
+    tmurl = getProxiedURIT(tmself)
+    if app.proxy is not None:
+        tmself = urlunsplit(tmurl)
+
+    # Extract and trim for host:port prepending
+    tmurl[2] = ''  # Clear TM path
+    hostAndPort = urlunsplit(tmurl) + '/'
+
     tmData = '<{0}>; rel="original",\n'.format(unsurt(original))
     tmData += '<{0}>; rel="self timemap"; '.format(tmself)
     tmData += 'type="application/link-format",\n'
@@ -325,8 +347,6 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
     cdxjTMURI = tmself.replace('/timemap/link/', '/timemap/cdxj/')
     tmData += '<{0}>; rel="timemap"; '.format(cdxjTMURI)
     tmData += 'type="application/cdxj+ors",\n'
-
-    hostAndPort = tmself[0:tmself.index('timemap/')]
 
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
@@ -349,6 +369,10 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
 
 
 def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself):
+    tmurl = getProxiedURIT(tmself)
+    if app.proxy is not None:
+        tmself = urlunsplit(tmurl)
+
     tmData = '!context ["http://tools.ietf.org/html/rfc7089"]\n'
     tmData += '!id {{"uri": "{0}"}}\n'.format(tmself)
     tmData += '!keys ["memento_datetime_YYYYMMDDhhmmss"]\n'
@@ -795,8 +819,10 @@ def getCDXJLine_binarySearch(
         return lineFound
 
 
-def start(cdxjFilePath=INDEX_FILE):
+def start(cdxjFilePath=INDEX_FILE, proxy=None):
     hostPort = ipwbConfig.getIPWBReplayConfig()
+    app.proxy = proxy
+
     if not hostPort:
         ipwbConfig.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
         hostPort = ipwbConfig.getIPWBReplayConfig()
