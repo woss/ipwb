@@ -229,7 +229,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
 
 
 def generateCDXJMetadata(cdxjLines=None):
-    metadata = ['!context ["http://oduwsdl.github.io/contexts/cdxj"]']
+    metadata = ['!context ["http://tools.ietf.org/html/rfc7089"]']
     metaVals = {
         'generator': "InterPlanetary Wayback v.{0}".format(ipwbVersion),
         'created_at': '{0}'.format(datetime.datetime.now().isoformat())
