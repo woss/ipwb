@@ -9,19 +9,19 @@ function shortestFirst(a, b) {
 }
 
 function showURIs () {
-  var ul = document.getElementById('uriList')
+  let ul = document.getElementById('uriList')
   if (ul.childNodes.length > 0) {
     return // Prevent multiple adds of the URI list to the DOM
   }
 
-  var htmlPages = 0
-  var uriKeys = Object.keys(uris).sort(shortestFirst)
-  for (var uri of uriKeys) {
-    for (var datetimesI = 0; datetimesI < uris[uri]['datetimes'].length; datetimesI++) {
-      var datetime = uris[uri]['datetimes'][datetimesI]
+  let htmlPages = 0
+  const uriKeys = Object.keys(uris).sort(shortestFirst)
+  for (let uri of uriKeys) {
+    for (let datetimesI = 0; datetimesI < uris[uri]['datetimes'].length; datetimesI++) {
+      let datetime = uris[uri]['datetimes'][datetimesI]
 
-      var li = document.createElement('li')
-      var a = document.createElement('a')
+      let li = document.createElement('li')
+      let a = document.createElement('a')
       a.href = datetime + '/' + uri
       a.appendChild(document.createTextNode(uri))
       dt = document.createTextNode(' (' + datetime + ')')
@@ -45,7 +45,7 @@ function showURIs () {
 }
 
 function setUIExpandedState(urisObj) {
-  var urisHash  = calculateURIsHash(urisObj)
+  const urisHash  = calculateURIsHash(urisObj)
   setURIsHash(urisHash)
 }
 
@@ -62,9 +62,9 @@ function setURIsHash(hashIn) {
 }
 
 String.prototype.hashCode = function () {
-  var hash = 0
-  var i
-  var chr
+  let hash = 0
+  let i
+  let chr
   if (this.length === 0) {
     return hash
   }
@@ -77,10 +77,10 @@ String.prototype.hashCode = function () {
 };
 
 function addEventListeners () {
-  var target = document.getElementById('memCountListLink')
+  let target = document.getElementById('memCountListLink')
   target.addEventListener('click', showURIs, false)
 
-  var showAllInListingButton = document.getElementById('showEmbeddedURI')
+  let showAllInListingButton = document.getElementById('showEmbeddedURI')
   showAllInListingButton.onclick = function showAllURIs () {
     document.getElementById('uriList').classList.add('forceDisplay')
   }
@@ -88,15 +88,15 @@ function addEventListeners () {
   getIPFSWebUIAddress()
   updateServiceWorkerVersionUI()
 
-  var reinstallServiceWorkerButton = document.getElementById('reinstallServiceWorker')
+  let reinstallServiceWorkerButton = document.getElementById('reinstallServiceWorker')
   reinstallServiceWorkerButton.onclick = reinstallServiceWorker
 
   setShowURIsVisibility()
 }
 
 function setShowURIsVisibility () {
-  var previousHash = getURIsHash() + ''
-  var newHash = calculateURIsHash(uris) + ''
+  const previousHash = getURIsHash() + ''
+  const newHash = calculateURIsHash(uris) + ''
 
   if (window.localStorage.getItem('showURIs') && previousHash === newHash) {
     showURIs()
@@ -104,8 +104,8 @@ function setShowURIsVisibility () {
 }
 
 function setPlurality () {
-  var urimCount = document.getElementById('memCountInt').innerHTML
-  var htmlFilesPlurality = document.getElementById('htmlPages').innerHTML
+  const urimCount = document.getElementById('memCountInt').innerHTML
+  const htmlFilesPlurality = document.getElementById('htmlPages').innerHTML
 
   if (urimCount === '1') {
     document.getElementById('plural').classList.add('hidden')
@@ -116,15 +116,15 @@ function setPlurality () {
 }
 
 function setShowAllButtonStatus () {
-  var urimCount = document.getElementById('memCountInt').innerHTML
-  var htmlFilesPlurality = document.getElementById('htmlPages').innerHTML
+  const urimCount = document.getElementById('memCountInt').innerHTML
+  const htmlFilesPlurality = document.getElementById('htmlPages').innerHTML
   if (urimCount === htmlFilesPlurality) {
     document.getElementById('showEmbeddedURI').setAttribute('disabled','disabled')
   }
 }
 
 function assignStatusButtonHandlers () {
-  var button = document.getElementsByTagName('button')[0]
+  let button = document.getElementsByTagName('button')[0]
   if (button.innerHTML === 'Start') {
     button.addEventListener('click', startIPFSDaemon)
   } else {
@@ -145,11 +145,11 @@ function stopIPFSDaemon () {
 }
 
 function getIPFSWebUIAddress () {
-  var setIPFSWebUILink = function (resp) {
+  const setIPFSWebUILink = function (resp) {
     document.getElementById('webui').setAttribute('href', 'http://' + resp)
   }
-  var fail = function () { console.log('fail') }
-  var err = function () { console.log('err') }
+  const fail = function () { console.log('fail') }
+  const err = function () { console.log('err') }
   makeAnAJAXRequest('/config/openEndedPlaceHolder', setIPFSWebUILink, fail, err)
 }
 
@@ -160,14 +160,14 @@ function updateIPFSDaemonButtonUI () {
 }
 
 function sendCommandToIPFSDaemon (cmd) {
-  var failFunction = function () { console.log('Comm w/ ipfs daemon failed.') }
-  var errFunction = function () { console.log('Error talking to ipfs daemon.') }
+  const failFunction = function () { console.log('Comm w/ ipfs daemon failed.') }
+  const errFunction = function () { console.log('Error talking to ipfs daemon.') }
   makeAnAJAXRequest('/daemon/' + cmd, updateIPFSDaemonButtonUI,
     failFunction, errFunction)
 }
 
 function makeAnAJAXRequest (address, successFunction, failFunction, errorFunction) {
-  var xmlhttp = new XMLHttpRequest()
+  let xmlhttp = new XMLHttpRequest()
 
   xmlhttp.onreadystatechange = function () {
     if (xmlhttp.readyState === XMLHttpRequest.DONE) {
@@ -222,7 +222,7 @@ function updateServiceWorkerVersionUI () {
 }
 
 function installServiceWorker () {
-  var newInstallation = false
+  let newInstallation = false
 
   if (navigator.serviceWorker.controller === null) { // Ideally we would use serviceWorker.getRegistration
     newInstallation = true
@@ -233,8 +233,8 @@ function installServiceWorker () {
   }).catch(function(err) {
     console.log('ServiceWorker registration failed: ', err)
   }).then(function(rr){
-    var dt = document.location.href.split('/')[3]
-    var viewingMemento = dt.length === 14 && parseInt(dt, 10) + '' === dt
+    const dt = document.location.href.split('/')[3]
+    const viewingMemento = dt.length === 14 && parseInt(dt, 10) + '' === dt
 
     // Reload the page with processing by the newly installed Service Worker
     if (newInstallation && viewingMemento) {
