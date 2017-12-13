@@ -1,6 +1,6 @@
 /* eslint-env serviceworker */
 
-var baseDatetime = ''
+let baseDatetime = ''
 
 function getMyVersion () {
   fetch(self.location.href)
@@ -18,19 +18,19 @@ self.addEventListener('activate', function (event) {
 })
 
 self.addEventListener('fetch', function (event) {
-  var request = event.request
+  let request = event.request
 
-  var url = new URL(event.request.url)
-  var isNavigation = event.request.mode === 'navigate'
-  var isWebUI = event.request.url.indexOf('/webui/') !== -1
-  var isDaemon = event.request.url.indexOf('/daemon/') !== -1
-  var isConfig = event.request.url.indexOf('/config/') !== -1
-  var isReplayRoot = (url.pathname === '/' || url.pathname === '')
-  var isRootMemento = event.request.url === event.request.referrer
+  const url = new URL(event.request.url)
+  const isNavigation = event.request.mode === 'navigate'
+  const isWebUI = event.request.url.indexOf('/webui/') !== -1
+  const isDaemon = event.request.url.indexOf('/daemon/') !== -1
+  const isConfig = event.request.url.indexOf('/config/') !== -1
+  const isReplayRoot = (url.pathname === '/' || url.pathname === '')
+  const isRootMemento = event.request.url === event.request.referrer
   //var isAMemento = event.request.url.indexOf('/memento/') !== -1 || event.request.url.match('\/[0-9]{14}\/') !== null
-  var isAMemento = event.request.url.match('\/[0-9]{14}\/') !== null
+  const isAMemento = event.request.url.match('\/[0-9]{14}\/') !== null
 
-  var referrerDatetime = event.request.referrer.match(/\/([0-9]{14})\//)
+  let referrerDatetime = event.request.referrer.match(/\/([0-9]{14})\//)
   if (referrerDatetime !== null) {
     referrerDatetime = referrerDatetime[1]
   }
