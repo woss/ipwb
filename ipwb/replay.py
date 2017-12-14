@@ -608,7 +608,7 @@ def show_uri(path, datetime=None):
                 continue  # Data may have no actually been chunked
             resp.set_data(unchunkedPayload)
 
-        if k.lower() != "content-type":
+        if k.lower() not in ["content-type", "content-encoding"]:
             k = "X-Archive-Orig-" + k
 
         resp.headers[k] = v
