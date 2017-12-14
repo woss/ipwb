@@ -17,6 +17,7 @@ import site
 import locale
 import datetime
 import logging
+import platform
 
 import urllib2
 import json
@@ -136,10 +137,15 @@ def retrieveMemCount():
 
 
 def datetimeToRFC1123(digits14):
-    try:
-        locale.setlocale(locale.LC_TIME, 'en_US')
-    except locale.Error as e:
-        locale.setlocale(locale.LC_TIME, 'en_US.utf8')
+    currentOS = platform.system()
+    if currentOS == 'Darwin':
+        newLocale = 'en_US'
+    elif currentOS == 'Windows':
+        newLocale = 'english'
+    else:  # Assume Linux
+        newLocale = 'en_US.utf8'
+
+    locale.setlocale(locale.LC_TIME, newLocale)
     d = datetime.datetime.strptime(digits14, '%Y%m%d%H%M%S')
     return d.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
