@@ -463,7 +463,7 @@ def show_uri(path, datetime=None):
         return showWebUI('index.html')
         sys.exit()
 
-    if path == 'serviceWorker.js':
+    if path == 'reconstructive.js':
         return getServiceWorker(path)
         sys.exit()
 
