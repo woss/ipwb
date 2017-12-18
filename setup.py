@@ -35,7 +35,7 @@ setup(
     """,
     package_data={
         'ipwb': [
-            'reconstructive.js',
+            'serviceWorker.js',
             'webui/*.*',
             'webui/favicons/*.*',
             'samples/indexes/*.*',
