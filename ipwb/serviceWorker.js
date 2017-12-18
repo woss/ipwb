@@ -1,7 +1,7 @@
 /* eslint-env serviceworker */
 
 // This makes a module available named "reconstructive"
-importScripts('reconstructive.js')
+importScripts('/reconstructive.js')
 
 // Customize configs (defaults should work for IPWB out of the box)
 // reconstructive.init({
