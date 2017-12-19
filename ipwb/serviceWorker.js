@@ -16,9 +16,6 @@ importScripts('/reconstructive.js')
 //<   notGet: f (event, config),
 //<   localResource: f (event, config)
 //< }
-reconstructive.exclusions.selfScript = function (event, config) {
-  event.request.url.endsWith('reconstructive.js')
-}
 
 // Pass a custom function to generate banner markup
 // reconstructive.bannerCreator(f (event, rewritten, config))
