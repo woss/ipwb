@@ -137,7 +137,11 @@ def commandDaemon(cmd):
             IPFS_API.shutdown()
         except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as e:
             # go-ipfs < 0.4.10
-            subprocess.call(['killall', 'ipfs'])
+            if os.name == 'nt':
+                subprocess.call(['taskkill', '/im', 'ipfs.exe', '/F'])
+            else:
+                subprocess.call(['killall', 'ipfs'])
+
         return Response('IPFS daemon stopping...')
     else:
         print('ERROR, bad command sent to daemon API!')
