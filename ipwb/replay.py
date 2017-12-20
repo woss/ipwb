@@ -137,7 +137,11 @@ def commandDaemon(cmd):
             IPFS_API.shutdown()
         except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as e:
             # go-ipfs < 0.4.10
-            subprocess.call(['killall', 'ipfs'])
+            if os.name == 'nt':
+                subprocess.call(['taskkill', '/im', 'ipfs.exe', '/F'])
+            else:
+                subprocess.call(['killall', 'ipfs'])
+
         return Response('IPFS daemon stopping...')
     else:
         print('ERROR, bad command sent to daemon API!')
@@ -357,7 +361,10 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
     tmurl[2] = ''  # Clear TM path
     hostAndPort = urlunsplit(tmurl) + '/'
 
-    tmData = '<{0}>; rel="original",\n'.format(unsurt(original))
+    # unsurted URI will never have a scheme, add one
+    originalURI = 'http://{0}'.format(unsurt(original))
+
+    tmData = '<{0}>; rel="original",\n'.format(originalURI)
     tmData += '<{0}>; rel="self timemap"; '.format(tmself)
     tmData += 'type="application/link-format",\n'
 
@@ -390,10 +397,13 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself):
     if app.proxy is not None:
         tmself = urlunsplit(tmurl)
 
+    # unsurted URI will never have a scheme, add one
+    originalURI = 'http://{0}'.format(unsurt(original))
+
     tmData = '!context ["http://tools.ietf.org/html/rfc7089"]\n'
     tmData += '!id {{"uri": "{0}"}}\n'.format(tmself)
     tmData += '!keys ["memento_datetime_YYYYMMDDhhmmss"]\n'
-    tmData += '!meta {{"original_uri": "{0}"}}\n'.format(unsurt(original))
+    tmData += '!meta {{"original_uri": "{0}"}}\n'.format(originalURI)
 
     linkTMURI = tmself.replace('/timemap/cdxj/', '/timemap/link/')
     tmData += ('!meta {{"timemap_uri": {{'
