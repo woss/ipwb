@@ -70,7 +70,6 @@ self.addEventListener('fetch', function (event) {
   }
 
   function reroute (request, datetime) {
-    // TODO: Use replay host/ip and host here instead
-    return new Request(`${self.location.origin}/memento/${datetime}/${request.url}`) // TODO: Rm hard-code for server
+    return new Request(`${self.location.origin}/memento/${datetime}/${request.url}`)
   }
 })
