@@ -1,10 +1,11 @@
-console.log('Reconstructive downloaded');
-
 var reconstructive = (function() {
+  const NAME = 'Reconstructive',
+        VERSION = '0.2';
 
   let config = {
-    version: 'reconstructive.js:v1',
-    urimPattern: self.location.origin + '/memento/<datetime>/<urir>',
+    id: `${NAME}:${VERSION}`,
+    debug: false,
+    urimPattern: `${self.location.origin}/memento/<datetime>/<urir>`,
     showBanner: false
   };
 
@@ -20,7 +21,7 @@ var reconstructive = (function() {
   function shouldExclude(event, config) {
     return Object.keys(exclusions).some(key => {
       if (exclusions[key](event, config)) {
-        console.log('Exclusion found:', key, event);
+        config.debug && console.log('Exclusion found:', key, event.request.url);
         return true;
       }
       return false;
@@ -36,50 +37,63 @@ var reconstructive = (function() {
     if(opts instanceof Object) {
       Object.assign(config, opts);
       derivedConfig();
-      console.log('Reconstructive configs updated');
+      config.debug && console.log(`${NAME}:${VERSION} initialized with supplied configs`);
     } else {
       console.warn('Expected an object not a', typeof opts);
     }
   }
 
   function reroute(event) {
+    config.debug && console.log('Rerouting requested', event);
     if (shouldExclude(event, config)) return;
-    request = createUrimRequest(event);
-    event.respondWith(
-      fetch(request)
+    if (!config.urimRegex.test(event.request.url)) {
+      let urim = createUrim(event);
+      event.respondWith(async urim => {
+        return localRedirect(urim);
+      });
+    } else {
+      request = createRequest(event);
+      event.respondWith(
+        fetch(request)
         .then(response => {
           return fetchSuccess(event, response, config);
         })
         .catch(fetchFailure)
-    );
+      );
+    }
   }
 
-  function createUrimRequest(event) {
-    let urim = event.request.url;
-    if (!config.urimRegex.test(urim)) {
-      let [, datetime, refUrir] = event.request.referrer.match(config.urimRegex);
-      if (isNaN(datetime)) {
-        [datetime, refUrir] = [refUrir, datetime];
-      }
-      let urir = new URL(urim);
-      if (urir.origin == self.location.origin) {
-        refOrigin = refUrir.match(/^(https?:\/\/)?[^\/]+/)[0];
-        urir = refOrigin + urir.pathname + urir.search;
-      } else {
-        urir = urir.href;
-      }
-      urim = config.urimPattern.replace('<datetime>', datetime).replace('<urir>', urir);
+  function createUrim(event) {
+    let [, datetime, refUrir] = event.request.referrer.match(config.urimRegex);
+    if (isNaN(datetime)) {
+      [datetime, refUrir] = [refUrir, datetime];
     }
+    let urir = new URL(event.request.url);
+    if (urir.origin == self.location.origin) {
+      refOrigin = refUrir.match(/^(https?:\/\/)?[^\/]+/)[0];
+      urir = refOrigin + urir.pathname + urir.search;
+    } else {
+      urir = urir.href;
+    }
+    return config.urimPattern.replace('<datetime>', datetime).replace('<urir>', urir);
+  }
+
+  function createRequest(event) {
+    let headers = cloneHeaders(event.request.headers);
+    headers.set('X-ServiceWorker', config.id);
+    return new Request(event.request.url, {headers: headers, redirect: 'manual'});
+  }
+
+  function cloneHeaders(original) {
     let headers = new Headers();
-    for (let hdr of event.request.headers.entries()) {
+    for (let hdr of original.entries()) {
       headers.append(hdr[0], hdr[1]);
     }
-    headers.set('X-ServiceWorker', config.version);
-    return new Request(urim, {headers: headers, redirect: 'manual'});
+    return headers;
   }
 
   function fetchSuccess(event, response, config) {
-    console.log('Fetched from server:', response);
+    config.debug && console.log('Fetched from server:', response);
     if (response.ok) {
       return rewrite(event, response, config);
     }
@@ -87,7 +101,7 @@ var reconstructive = (function() {
   }
 
   function fetchFailure(error) {
-    console.log(error);
+    config.debug && console.log(error);
     return new Response('<h1>Service Unavailable</h1>', {
       status: 503,
       statusText: 'Service Unavailable',
@@ -97,10 +111,22 @@ var reconstructive = (function() {
     });
   }
 
+  function localRedirect(urim) {
+    config.debug && console.log('Locally redirecting to:', urim);
+    return new Response(`<h1>Locally Redirecting</h1><p>${urim}</p>`, {
+      status: 302,
+      statusText: 'Found',
+      headers: new Headers({
+        'Location': urim,
+        'Content-Type': 'text/html'
+      })
+    });
+  }
+
   function rewrite(event, response, config) {
     // TODO: Make necessary changes in the response
     if (config.showBanner && response.headers.get('Content-Type') == 'text/xml') {
-      let banner = createBanner(event, rewritten, config);
+      let banner = createBanner(event, response, config);
       // TODO: Add the banner markup in the appropriate place
     }
     return response;
