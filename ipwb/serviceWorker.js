@@ -20,6 +20,11 @@ reconstructive.init({
 //<   notGet: f (event, config),
 //<   localResource: f (event, config)
 //< }
+reconstructive.exclusions.specialEndpint = function(event, config) {
+  return ['/webui/', '/daemon/', '/config/'].some(ep => {
+    event.request.url.startsWith(self.location.origin + ep)
+  })
+}
 
 // Pass a custom function to generate banner markup
 // reconstructive.bannerCreator(f (event, response, config))
