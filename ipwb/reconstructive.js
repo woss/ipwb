@@ -48,17 +48,13 @@ var reconstructive = (function() {
     if (shouldExclude(event, config)) return;
     if (!config.urimRegex.test(event.request.url)) {
       let urim = createUrim(event);
-      event.respondWith(async function(urim) {
-        return localRedirect(urim);
-      }(urim));
+      event.respondWith((urim => localRedirect(urim))(urim));
     } else {
-      request = createRequest(event);
+      let request = createRequest(event);
       event.respondWith(
         fetch(request)
-        .then(response => {
-          return fetchSuccess(event, response, config);
-        })
-        .catch(fetchFailure)
+          .then(response => fetchSuccess(event, response, config))
+          .catch(fetchFailure)
       );
     }
   }
@@ -70,7 +66,7 @@ var reconstructive = (function() {
     }
     let urir = new URL(event.request.url);
     if (urir.origin == self.location.origin) {
-      refOrigin = refUrir.match(/^(https?:\/\/)?[^\/]+/)[0];
+      let refOrigin = refUrir.match(/^(https?:\/\/)?[^\/]+/)[0];
       urir = refOrigin + urir.pathname + urir.search;
     } else {
       urir = urir.href;
@@ -111,7 +107,7 @@ var reconstructive = (function() {
     });
   }
 
-  function localRedirect(urim) {
+  async function localRedirect(urim) {
     config.debug && console.log('Locally redirecting to:', urim);
     return new Response(`<h1>Locally Redirecting</h1><p>${urim}</p>`, {
       status: 302,
@@ -125,7 +121,7 @@ var reconstructive = (function() {
 
   function rewrite(event, response, config) {
     // TODO: Make necessary changes in the response
-    if (config.showBanner && response.headers.get('Content-Type') == 'text/xml') {
+    if (config.showBanner && event.request.mode == 'navigate' && response.headers.get('Content-Type').toLowerCase().indexOf('text/html') != -1) {
       let banner = createBanner(event, response, config);
       // TODO: Add the banner markup in the appropriate place
     }
@@ -160,5 +156,4 @@ var reconstructive = (function() {
     updateRewriter: updateRewriter,
     bannerCreator: bannerCreator
   };
-
 })();
