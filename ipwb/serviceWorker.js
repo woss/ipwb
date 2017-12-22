@@ -10,7 +10,7 @@ importScripts('/reconstructive.js')
 //   urimPattern: `${self.location.origin}/memento/<datetime>/<urir>`,
 //   showBanner: false
 // })
-reconstructive.init({
+Reconstructive.init({
   debug: true
 })
 
@@ -20,16 +20,16 @@ reconstructive.init({
 //<   notGet: f (event, config),
 //<   localResource: f (event, config)
 //< }
-reconstructive.exclusions.specialEndpint = function(event, config) {
+Reconstructive.exclusions.specialEndpint = function(event, config) {
   return ['/webui/', '/daemon/', '/config/'].some(ep => {
     event.request.url.startsWith(self.location.origin + ep)
   })
 }
 
 // Pass a custom function to generate banner markup
-// reconstructive.bannerCreator(f (event, response, config))
+// reconstructive.bannerCreator(f (response, event, config) => string)
 // Or update the rewriting logic
-// reconstructive.updateRewriter(f (event, response, config))
+// reconstructive.updateRewriter(f (response, event, config) => Response)
 
 // This is not necessary, but can be useful for debugging or in future
 self.addEventListener('install', function (event) {
@@ -41,7 +41,7 @@ self.addEventListener('activate', function (event) {
   console.log('Activating ServiceWorker.')
 })
 
-self.addEventListener("fetch", function(event) {
+self.addEventListener('fetch', function(event) {
   // Add any custom logic here to conditionally call the reroute function
-  reconstructive.reroute(event);
+  Reconstructive.reroute(event);
 })
