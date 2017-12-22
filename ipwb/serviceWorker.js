@@ -20,6 +20,7 @@ Reconstructive.init({
 //<   notGet: f (event, config),
 //<   localResource: f (event, config)
 //< }
+Reconstructive.exclusions.replayRoot = (event, config) => event.request.url.replace(/\/+$/, '') == self.location.origin
 Reconstructive.exclusions.specialEndpint = function(event, config) {
   return ['/webui/', '/daemon/', '/config/'].some(ep => event.request.url.startsWith(self.location.origin + ep))
 }
