@@ -8,7 +8,7 @@ Peer-To-Peer Permanence of Web Archives
 
 |travis| |pypi| |codecov|
 
-InterPlanetary Wayback (ipwb) facilitates permanence and collaboration in web archives by disseminating the contents of `WARC`_ files into the IPFS network. `IPFS`_ is a peer-to-peer content-addressable file system that inherently allows deduplication and facilitates opt-in replication. ipwb splits the header and payload of WARC response records before disseminating into IPFS to leverage the deduplication, builds a `CDXJ index`_ with references to the IPFS hashes returns, and combines the header and payload from IPFS at the time of replay. 
+InterPlanetary Wayback (ipwb) facilitates permanence and collaboration in web archives by disseminating the contents of `WARC`_ files into the IPFS network. `IPFS`_ is a peer-to-peer content-addressable file system that inherently allows deduplication and facilitates opt-in replication. ipwb splits the header and payload of WARC response records before disseminating into IPFS to leverage the deduplication, builds a `CDXJ index`_ with references to the IPFS hashes returns, and combines the header and payload from IPFS at the time of replay.
 
 InterPlanetary Wayback primarily consists of two scripts:
 
@@ -32,7 +32,7 @@ The latest release of ipwb can be installed using pip:
 The latest development version containing changes not yet released can be installed from source:
 
 .. code-block:: bash
-      
+
       $ git clone https://github.com/oduwsdl/ipwb
       $ cd ipwb
       $ pip install -r requirements.txt
@@ -69,7 +69,7 @@ In a separate terminal session (or the same if you started the daemon in the bac
       $ ipwb index ipwb/samples/warcs/salam-home.warc
 
 
-`indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g., 
+`indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g.,
 
 .. code-block:: bash
 
@@ -86,7 +86,7 @@ An archival replay system is also included with ipwb to re-experience the conten
 .. code-block:: bash
 
       $ ipwb replay
-	  
+
 A CDXJ index can also be provided and used by the ipwb replay system by specifying the path of the index file as a parameter to the replay system:
 
 .. code-block:: bash
@@ -103,6 +103,29 @@ ipwb also supports using an IPFS hash or any HTTP location as the source of the 
 Once started, the replay system's web interface can be accessed through a web browser, e.g., http://localhost:5000/ by default.
 
 .. (TODO: provide instructions on specifying a CDXJ file/directory to be read from the CDXJ replay system)
+
+Using Docker
+------------
+
+A pre-built Docker image is made available that can be run as following:
+
+.. code-block:: bash
+
+      $ docker container run -it --rm -p 5000:5000 oduwsdl/ipwb
+
+The container will run an IPFS daemon, index WARCs, and replay using the newly created index.
+It will take a few seconds to be ready, then the replay will be accessible at http://localhost:5000/ with a sample archived page.
+To index and replay your own WARC file, run the following command:
+
+.. code-block:: bash
+
+      $ docker container run -it --rm -p 5000:5000 -v /path/to/warcs:/warcs -e WARCS_PATH=/warcs/custom.warc.gz oduwsdl/ipwb
+
+To build an image from the source, run the following command from the directory where the source code is checked out.
+
+.. code-block:: bash
+
+      $ docker image build -t ipwb .
 
 Help
 -------------
