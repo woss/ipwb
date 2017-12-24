@@ -115,15 +115,15 @@ A pre-built Docker image is made available that can be run as following:
 
 The container will run an IPFS daemon, index a sample WARC file, and replay it using the newly created index.
 It will take a few seconds to be ready, then the replay will be accessible at http://localhost:5000/ with a sample archived page.
-To index and replay your own WARC file, mount your WARC store at `/warc` using `-v` (or `--volume`) flag and run the following command:
+
+To index and replay your own WARC file, bind mount your data folders inside the container using `-v` (or `--volume`) flag and run commands accordingly. The provided docker image has designated `/data` directory, inside which there are `warc`, `cdxj`, and `ipfs` folders where host folders can be mounted separately or as a single mount point at the parent `/data` directory. Assuming that the host machine has a `/path/to/data` folder under which there are `warc`, `cdxj`, and `ipfs` folders and a WARC file at `/path/to/data/warc/custom.warc.gz`.
 
 .. code-block:: bash
 
-      $ docker container run -it --rm -v /path/to/warc/folder:/warc oduwsdl/ipwb ipwb index /warc/custom.warc.gz > /cdxj/custom.cdxj
-      $ docker container run -it --rm -p 5000:5000 oduwsdl/ipwb ipwb replay /cdxj/custom.cdxj
+      $ docker container run -it --rm -v /path/to/data:/data oduwsdl/ipwb ipwb index /data/warc/custom.warc.gz -o /data/cdxj/custom.cdxj
+      $ docker container run -it --rm -v /path/to/data:/data -p 5000:5000 oduwsdl/ipwb ipwb replay /data/cdxj/custom.cdxj
 
-Generated index files (CDXJ) and the IPFS store can also be persisted using volumes.
-Bind mount corresponding host directories at `/cdxj` and `/ipfs`.
+If the host folder structure is something other than `/some/path/{warcc,cdxj,ipfs}` then these volumes need to be mounted separately.
 
 To build an image from the source, run the following command from the directory where the source code is checked out.
 
