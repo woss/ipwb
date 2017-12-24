@@ -11,10 +11,10 @@ LABEL      app.name="InterPlanetary Wayback (IPWB)" \
            app.authors="Mat Kelly <@machawk1> and Sawood Alam <@ibnesayeed>"
 
 # Create folders for WARC, CDXJ and IPFS stores
-RUN        mkdir /warc /cdxj /ipfs
+RUN        mkdir -p /data/{warc,cdxj,ipfs}
 
 # Download and install IPFS
-ENV        IPFS_PATH=/ipfs
+ENV        IPFS_PATH=/data/ipfs
 ARG        IPFS_VERSION=v0.4.13
 RUN        cd /tmp \
            && wget https://dist.ipfs.io/go-ipfs/v0.4.13/go-ipfs_${IPFS_VERSION}_linux-amd64.tar.gz \
