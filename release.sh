@@ -13,7 +13,7 @@ echo $PYVAR\'$VERSION_STRING\'>'ipwb/'$FILE_NAME
 
 # Push to GitHub
 git add 'ipwb/'$FILE_NAME
-git commit -m "DEPLOY: Bump version for pypi to "$VERSION_STRING
+git commit -m "RELEASE: Bump version for pypi to "$VERSION_STRING
 
 # Create a tag in repo
 TAG_NAME='v'$VERSION_STRING
