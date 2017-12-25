@@ -5,7 +5,7 @@ git pull
 
 # Update version in project
 PYVAR="__version__ = "
-VERSION_STRING=`date +0.%Y.%m.%d.%H%M`
+VERSION_STRING=`date -u +0.%Y.%m.%d.%H%M`
 FILE_NAME='__init__.py'
 
 # Update ipwb version
