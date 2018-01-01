@@ -91,7 +91,7 @@ def createIPFSTempPath():
 
 def indexFileAt(warcPaths, encryptionKey=None,
                 compressionLevel=None, encryptTHENCompress=True,
-                quiet=False, debug=False):
+                quiet=False, outfile=None, debug=False):
     global DEBUG
     DEBUG = debug
 
@@ -102,6 +102,16 @@ def indexFileAt(warcPaths, encryptionKey=None,
         verifyFileExists(warcPath)
 
     cdxjLines = []
+
+    if outfile:
+        try:
+            outputFile = open(outfile, 'a+')
+            # Read existing non-meta lines (if any) to allow automatic merge
+            cdxjLines = [l.strip() for l in outputFile if l[:1] != '!']
+        except IOError as e:
+            logError(e)
+            logError('Writing generated CDXJ to STDOUT instead')
+            outfile = None
 
     if encryptionKey is not None and len(encryptionKey) == 0:
         encryptionKey = askUserForEncryptionKey()
@@ -134,7 +144,16 @@ def indexFileAt(warcPaths, encryptionKey=None,
 
     if quiet:
         return cdxjLines
-    print('\n'.join(cdxjLines))
+
+    if outfile:
+        # Truncate existing CDXJ file contents (if any) before writing to it
+        outputFile.seek(0)
+        outputFile.truncate()
+        for line in cdxjLines:
+            outputFile.write(line + "\n")
+        outputFile.close()
+    else:
+        print('\n'.join(cdxjLines))
 
 
 def getCDXJLinesFromFile(warcPath, **encCompOpts):

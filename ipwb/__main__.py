@@ -28,7 +28,8 @@ def checkArgs_index(args):
         compressionLevel = 6  # Magic 6, TA-DA!
 
     indexer.indexFileAt(args.warcPath, encKey, compressionLevel,
-                        args.compressFirst, debug=args.debug)
+                        args.compressFirst, outfile=args.outfile,
+                        debug=args.debug)
 
 
 def checkArgs_replay(args):
@@ -92,6 +93,10 @@ def checkArgs(argsIn):
         help='Compress data before encryption, where applicable',
         action='store_true',
         default=False)
+    indexParser.add_argument(
+        '-o', '--outfile',
+        help='Path to an output CDXJ file, defaults to STDOUT',
+        default=None)
     indexParser.add_argument(
         '--debug',
         help='Convenience flag to help with testing and debugging',
