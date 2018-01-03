@@ -18,8 +18,8 @@ git commit -m "RELEASE: Bump version for pypi to "$VERSION_STRING
 # Create a tag in repo
 TAG_NAME='v'$VERSION_STRING
 git tag $TAG_NAME
-git push origin $TAG_NAME
 git push
+git push origin $TAG_NAME
 
 # Push to pypi
 rm -rf dist; python setup.py sdist bdist_wheel; twine upload dist/*
