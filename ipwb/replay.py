@@ -483,7 +483,7 @@ def show_uri(path, datetime=None):
                   'Start it using $ ipfs daemon on the command-line '
                   ' or from the <a href="/">'
                   'IPWB replay homepage</a>.')
-        return Response(errStr)
+        return Response(errStr, status=503)
 
     path = getCompleteURI(path)
     cdxjLine = ''
