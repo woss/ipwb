@@ -62,7 +62,7 @@ def pushToIPFS(hstr, payload):
             print('Run "ipfs daemon" in another terminal session.')
 
             sys.exit()
-        except:  # TODO: Do not use bare except
+        except Exception as e:  # TODO: Do not use bare except
             attemptCount = '{0}/{1}'.format(retryCount + 1, ipfsRetryCount)
             logError('IPFS failed to add, ' +
                      'retrying attempt {0}'.format(attemptCount))
@@ -197,7 +197,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 hstr += "\n" + ': '.join(h)
             try:
                 statusCode = hdrs.statusline.split()[0]
-            except:  # TODO: Do not use bare except
+            except Exception as e:  # TODO: Do not use bare except
                 break
 
             if not entry.buffer:
