@@ -61,7 +61,7 @@ def pushToIPFS(hstr, payload):
             print('IPFS daemon is likely not running.')
             print('Run "ipfs daemon" in another terminal session.')
             sys.exit()
-        except:
+        except:  # TODO: Do not use bare except
             attemptCount = '{0}/{1}'.format(retryCount + 1, ipfsRetryCount)
             logError('IPFS failed to add, ' +
                      'retrying attempt {0}'.format(attemptCount))
@@ -120,9 +120,9 @@ def indexFileAt(warcPaths, encryptionKey=None,
             logError('Blank key entered, encryption disabled')
 
     encryptionAndCompressionSetting = {
-      'encryptTHENCompress': encryptTHENCompress,
-      'encryptionKey': encryptionKey,
-      'compressionLevel': compressionLevel
+        'encryptTHENCompress': encryptTHENCompress,
+        'encryptionKey': encryptionKey,
+        'compressionLevel': compressionLevel
     }
 
     for warcPath in warcPaths:
@@ -158,9 +158,9 @@ def indexFileAt(warcPaths, encryptionKey=None,
 
 def getCDXJLinesFromFile(warcPath, **encCompOpts):
     textRecordParserOptions = {
-      'cdxj': True,
-      'include_all': False,
-      'surt_ordered': False}
+        'cdxj': True,
+        'include_all': False,
+        'surt_ordered': False}
     iter = TextRecordParser(**textRecordParserOptions)
 
     recordCount = 0
@@ -196,7 +196,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 hstr += "\n" + ': '.join(h)
             try:
                 statusCode = hdrs.statusline.split()[0]
-            except:
+            except:  # TODO: Do not use bare except
                 break
 
             if not entry.buffer:
@@ -242,10 +242,10 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             mime = entry.get('mime')
             obj = {
                 'locator': 'urn:ipfs/{0}/{1}'.format(
-                  httpHeaderIPFSHash, payloadIPFSHash),
+                    httpHeaderIPFSHash, payloadIPFSHash),
                 'status_code': statusCode,
                 'mime_type': mime
-                }
+            }
             if encCompOpts.get('encryptionKey') is not None:
                 obj['encryption_key'] = encCompOpts.get('encryptionKey')
                 obj['encryption_method'] = 'xor'
@@ -303,7 +303,7 @@ def showProgress(msg, i, n):
     line = '{0}: {1}/{2}'.format(msg, i, n)
     print(line, file=sys.stderr, end='\r')
     # Clear status line, show complete msg
-    if i == n-1:
+    if i == n - 1:
         finalMsg = msg + ' complete'
         spaceDelta = len(finalMsg) - len(msg)
         spaces = '' * spaceDelta if spaceDelta > 0 else ''
@@ -348,6 +348,7 @@ class TextRecordParser(DefaultRecordParser):
     def create_record_iter(self, raw_iter):
         raw_iter.INC_RECORD = ''
         return super(TextRecordParser, self).create_record_iter(raw_iter)
+
 
 if __name__ == '__main__':
     checkArgs(sys.argv)

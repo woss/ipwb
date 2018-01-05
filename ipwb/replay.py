@@ -48,6 +48,7 @@ import base64
 from werkzeug.routing import BaseConverter
 from __init__ import __version__ as ipwbVersion
 
+
 app = Flask(__name__)
 app.debug = False
 
@@ -185,6 +186,8 @@ class RegexConverter(BaseConverter):
     def __init__(self, url_map, *items):
         super(RegexConverter, self).__init__(url_map)
         self.regex = items[0]
+
+
 app.url_map.converters['regex'] = RegexConverter
 
 
@@ -471,11 +474,9 @@ def show_uri(path, datetime=None):
 
     if len(path) == 0:
         return showWebUI('index.html')
-        sys.exit()
 
     if path == 'serviceWorker.js':
         return getServiceWorker(path)
-        sys.exit()
 
     daemonAddress = '{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT)
     if not ipwbConfig.isDaemonAlive(daemonAddress):
@@ -488,7 +489,7 @@ def show_uri(path, datetime=None):
     path = getCompleteURI(path)
     cdxjLine = ''
     try:
-        surtedURI = surt.surt(  # Good ol' pep8 line length
+        surtedURI = surt.surt(
                      path, path_strip_trailing_slash_unless_empty=False)
         indexPath = ipwbConfig.getIPWBReplayIndexPath()
 
