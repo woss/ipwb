@@ -37,6 +37,7 @@ setup(
         'ipwb': [
             'serviceWorker.js',
             'reconstructive.js',
+            'reconstructive-banner.js',
             'webui/*.*',
             'webui/favicons/*.*',
             'samples/indexes/*.*',
