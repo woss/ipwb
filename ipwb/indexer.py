@@ -62,7 +62,7 @@ def pushToIPFS(hstr, payload):
             print('Run "ipfs daemon" in another terminal session.')
 
             sys.exit()
-        except Exception as e:  # TODO: Do not use bare except
+        except:  # TODO: Do not use bare except
             attemptCount = '{0}/{1}'.format(retryCount + 1, ipfsRetryCount)
             logError('IPFS failed to add, ' +
                      'retrying attempt {0}'.format(attemptCount))
@@ -197,7 +197,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 hstr += "\n" + ': '.join(h)
             try:
                 statusCode = hdrs.statusline.split()[0]
-            except Exception as e:  # TODO: Do not use bare except
+            except:  # TODO: Do not use bare except
                 break
 
             if not entry.buffer:
@@ -237,8 +237,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
 
             (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
 
-            originaluri = entry.get('url')
-            originaluri_surted = surt.surt(originaluri,
+            uri = surt.surt(entry.get('url'),
                             path_strip_trailing_slash_unless_empty=False)
             timestamp = entry.get('timestamp')
             mime = entry.get('mime')
@@ -246,16 +245,14 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 'locator': 'urn:ipfs/{0}/{1}'.format(
                     httpHeaderIPFSHash, payloadIPFSHash),
                 'status_code': statusCode,
-                'mime_type': mime,
-                'original_uri': originaluri
+                'mime_type': mime
             }
             if encCompOpts.get('encryptionKey') is not None:
                 obj['encryption_key'] = encCompOpts.get('encryptionKey')
                 obj['encryption_method'] = 'xor'
             objJSON = json.dumps(obj)
 
-            cdxjLine = '{0} {1} {2}'.format(originaluri_surted,
-                                            timestamp, objJSON)
+            cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
             cdxjLines.append(cdxjLine)  # + '\n'
         return cdxjLines
 
