@@ -3,14 +3,16 @@
 // This makes a module available named "reconstructive"
 importScripts('/reconstructive.js')
 
-// Customize configs (defaults should work for IPWB out of the box)
+// Customize configs
 // reconstructive.init({
 //   id: `${NAME}:${VERSION}`,
-//   debug: false,
 //   urimPattern: `${self.location.origin}/memento/<datetime>/<urir>`,
-//   showBanner: false
-// })
+//   bannerElementLocation: `${self.location.origin}/reconstructive-banner.js`,
+//   showBanner: false,
+//   debug: false
+// });
 Reconstructive.init({
+  showBanner: true,
   debug: true
 })
 

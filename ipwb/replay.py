@@ -477,7 +477,12 @@ def show_uri(path, datetime=None):
     if len(path) == 0:
         return showWebUI('index.html')
 
-    if path in ['serviceWorker.js', 'reconstructive.js']:
+    # TODO: Use a better approach to serve static contents
+    # instead of using the same logic for every JS file as the SW script
+    localScripts = ['serviceWorker.js',
+                    'reconstructive.js',
+                    'reconstructive-banner.js']
+    if path in localScripts:
         return getServiceWorker(path)
 
     daemonAddress = '{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT)

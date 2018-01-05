@@ -5,26 +5,28 @@
  *
  * @overview  Reconstructive is a module to be used in a ServiceWorker of an archival replay.
  * @author    Sawood Alam <ibnesayeed@gmail.com>
- * @version   0.3
+ * @version   0.4
  * @license   MIT
  * @copyright ODU Web Science / Digital Libraries Research Group 2017
  */
 var Reconstructive = (function() {
   const NAME = 'Reconstructive',
-        VERSION = '0.3';
+        VERSION = '0.4';
 
   /**
-   * config - Primary config object that can be customized using init() fucntion.
+   * config - Primary config object that can be customized using init() function.
    *
    * @private
-   * @property {string}  id          - Identifier of the module, sent to the server as X-ServiceWorker header. Defaults to the name and version of the module.
-   * @property {string}  urimPattern - The format of URI-Ms (e.g., http://example.com/archive/<datetime>/<urir>).
-   * @property {boolean} showBanner  - Whether or not to show an archival banner. Defaults to false.
-   * @property {boolean} debug       - Whether or not to show debug messages in the console. Defaults to false.
+   * @property {string}  id                    - Identifier of the module, sent to the server as X-ServiceWorker header. Defaults to the name and version of the module.
+   * @property {string}  urimPattern           - The format of URI-Ms (e.g., http://example.com/archive/<datetime>/<urir>).
+   * @property {string}  bannerElementLocation - The URL or absolute path of the JS file that defines custom banner element. Only necessary if showBanner is set to true.
+   * @property {boolean} showBanner            - Whether or not to show an archival banner. Defaults to false.
+   * @property {boolean} debug                 - Whether or not to show debug messages in the console. Defaults to false.
    */
   let config = {
     id: `${NAME}:${VERSION}`,
     urimPattern: `${self.location.origin}/memento/<datetime>/<urir>`,
+    bannerElementLocation: `${self.location.origin}/reconstructive-banner.js`,
     showBanner: false,
     debug: false
   };
@@ -73,6 +75,7 @@ var Reconstructive = (function() {
   */
   let exclusions = {
     notGet: (event, config) => event.request.method != 'GET',
+    bannerElement: (event, config) => config.showBanner && event.request.url.endsWith(config.bannerElementLocation),
     localResource: (event, config) => !(config.urimRegex.test(event.request.url) || config.urimRegex.test(event.request.referrer))
   };
 
@@ -156,7 +159,7 @@ var Reconstructive = (function() {
    * cloneHeaders - Clones provided request or response headers.
    *
    * @private
-   * @param   {Headers} original - Origina request or response headers.
+   * @param   {Headers} original - Original request or response headers.
    * @return  {Headers}          - A clone of the supplied headers.
    */
   function cloneHeaders(original) {
@@ -283,12 +286,13 @@ var Reconstructive = (function() {
    * @return  {string}              - Potentially modified response.
    */
   function createBanner(response, event, config) {
-    // TODO: Add a genric banner markup
-    return '';
+    let [datetime, urir] = extractDatetimeUrir(response.url);
+    return `<script src="${config.bannerElementLocation}"></script>
+            <reconstructive-banner urir="${urir}" datetime="${datetime}"></reconstructive-banner>`;
   }
 
   /**
-   * reroute - The callback fucntion on the fetch event.
+   * reroute - The callback function on the fetch event.
    *           Logs the fetch event for debugging.
    *           Checks for any rerouting exclusions.
    *           If the request URL is a URI-M then creates a new request with certain modifications in the original request and fetches it from the server.
@@ -355,7 +359,7 @@ var Reconstructive = (function() {
    *
    * @public
    * @namespace Reconstructive
-   * @property  {function}     init           - Initialization fucntion to update configs.
+   * @property  {function}     init           - Initialization function to update configs.
    * @property  {object}       exclusions     - Object of rerouting exclusion functions.
    * @property  {function}     reroute        - Callback function to be bound on fetch event.
    * @property  {function}     updateRewriter - Setter function to override rewrite() function.
