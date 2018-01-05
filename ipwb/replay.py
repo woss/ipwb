@@ -450,7 +450,7 @@ def getCompleteURI(uri):
 def showMementoAtDatetime(urir, datetime):
     urir = getCompleteURI(urir)
     datetime = datetime.ljust(14, '0')
-    return show_uri(urir, datetime)
+    return redirect("/memento/{0}/{1}".format(datetime, urir), code=301)
 
 
 @app.errorhandler(Exception)
@@ -475,7 +475,7 @@ def show_uri(path, datetime=None):
     if len(path) == 0:
         return showWebUI('index.html')
 
-    if path == 'serviceWorker.js':
+    if path in ['serviceWorker.js', 'reconstructive.js']:
         return getServiceWorker(path)
 
     daemonAddress = '{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT)
