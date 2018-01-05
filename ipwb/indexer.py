@@ -237,7 +237,8 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
 
             (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
 
-            uri = surt.surt(entry.get('url'),
+            originaluri = entry.get('url')
+            originaluri_surted = surt.surt(originaluri,
                             path_strip_trailing_slash_unless_empty=False)
             timestamp = entry.get('timestamp')
             mime = entry.get('mime')
@@ -245,14 +246,16 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 'locator': 'urn:ipfs/{0}/{1}'.format(
                     httpHeaderIPFSHash, payloadIPFSHash),
                 'status_code': statusCode,
-                'mime_type': mime
+                'mime_type': mime,
+                'original_uri': originaluri
             }
             if encCompOpts.get('encryptionKey') is not None:
                 obj['encryption_key'] = encCompOpts.get('encryptionKey')
                 obj['encryption_method'] = 'xor'
             objJSON = json.dumps(obj)
 
-            cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
+            cdxjLine = '{0} {1} {2}'.format(originaluri_surted,
+                                            timestamp, objJSON)
             cdxjLines.append(cdxjLine)  # + '\n'
         return cdxjLines
 
