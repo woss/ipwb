@@ -238,8 +238,9 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
 
             originaluri = entry.get('url')
-            originaluri_surted = surt.surt(originaluri,
-                            path_strip_trailing_slash_unless_empty=False)
+            originaluri_surted = \
+                surt.surt(originaluri,
+                          path_strip_trailing_slash_unless_empty=False)
             timestamp = entry.get('timestamp')
             mime = entry.get('mime')
             obj = {
