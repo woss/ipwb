@@ -88,7 +88,7 @@ def test_unit_commandDaemon():
         urllib2.urlopen('http://localhost:5001')
     except urllib2.HTTPError, e:
         assert e.code == 404
-    except:
+    except Exception as e:
         assert False
 
 

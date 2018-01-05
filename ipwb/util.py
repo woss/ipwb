@@ -57,7 +57,7 @@ def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
         logError("IPFS is likely not installed. "
                  "See https://ipfs.io/docs/install/")
         sys.exit()
-    except:
+    except Exception as e:
         logError('Unknown error in retrieving daemon status')
         logError(sys.exc_info()[0])
 
@@ -86,7 +86,7 @@ def isValidCDXJLine(cdxjLine):
     except NameError:
         metadataRecord = isCDXJMetadataRecord(cdxjLine)
         return metadataRecord
-    except:
+    except Exception as e:
         return False
 
 
@@ -156,7 +156,7 @@ def fetchRemoteFile(path):
         return r.text
     except ConnectionError:
         logError('File at {0} is unavailable.'.format(path))
-    except:
+    except Exception as E:
         logError('An unknown error occurred trying to fetch {0}'.format(path))
         logError(sys.exc_info()[0])
     return None
@@ -254,7 +254,7 @@ def compareCurrentAndLatestIPWBVersions():
         latestVersion = jResp['info']['version']
         currentVersion = re.sub(r'\.0+', '.', ipwbVersion)
         return (currentVersion, latestVersion)
-    except:
+    except Exception as e:
         return (None, None)
 
 

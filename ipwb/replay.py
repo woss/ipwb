@@ -500,7 +500,7 @@ def show_uri(path, datetime=None):
         cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
         print('CDXJ Line: {0}'.format(cdxjLine))
 
-    except:
+    except Exception as e:
         print(sys.exc_info()[0])
         respString = ('{0} not found :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
@@ -580,7 +580,7 @@ def show_uri(path, datetime=None):
     except HashNotFoundError:
         print("Hashes not found")
         return '', 404
-    except:
+    except Exception as e:
         print('Unknown exception occurred while fetching from ipfs.')
         print(sys.exc_info()[0])
         sys.exit()
@@ -615,7 +615,7 @@ def show_uri(path, datetime=None):
         if k.lower() == 'transfer-encoding' and v.lower() == 'chunked':
             try:
                 unchunkedPayload = extractResponseFromChunkedData(payload)
-            except:
+            except Exception as e:
                 continue  # Data may have no actually been chunked
             resp.set_data(unchunkedPayload)
 
@@ -693,7 +693,7 @@ def fetchRemoteCDXJFile(path):
             dataFromIPFS = IPFS_API.cat(path)
         except hashNotInIPFS:
             return ''
-        except:
+        except Exception as e:
             print("An error occurred with ipfs.cat")
             print(sys.exc_info()[0])
             sys.exit()
@@ -756,7 +756,7 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
         try:
             jsonFields = json.loads(cdxjFields[2])
-        except:  # Skip lines w/o JSON block
+        except Exception as e:  # Skip lines w/o JSON block
             continue
 
         if uri not in uris:
