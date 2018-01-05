@@ -213,6 +213,8 @@ def showMemento(urir, datetime):
 
     uri = unsurt(closestLine.split(' ')[0])
     newDatetime = closestLine.split(' ')[1]
+    if newDatetime != datetime:
+        return redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
     return show_uri(uri, newDatetime)
 
 
