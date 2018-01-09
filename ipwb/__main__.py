@@ -132,8 +132,19 @@ def checkArgs(argsIn):
         '-v', '--version', help='Report the version of ipwb', action='version',
         version='InterPlanetary Wayback ' + ipwbVersion)
 
-    if len(argsIn) == 1:
+    argCount = len(argsIn)
+    cmdList = ['index', 'replay']
+
+    # Various invocation error, used to show appropriate help
+    cmdError_index = argCount == 2 and argsIn[1] == 'index'
+    cmdError_noCommand = argCount == 1
+    cmdError_invalidCommand = argCount > 1 and argsIn[1] not in cmdList
+
+    if cmdError_noCommand or cmdError_invalidCommand:
         parser.print_help()
+        sys.exit()
+    elif cmdError_index:
+        indexParser.print_help()
         sys.exit()
 
     results = parser.parse_args()
