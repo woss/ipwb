@@ -514,44 +514,7 @@ def show_uri(path, datetime=None):
             path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
         return Response(respString)
     if cdxjLine is None:  # Resource not found in archives
-        msg = '<h1>ERROR 404</h1>'
-        msg += 'No capture found for {0} at {1}.'.format(path, datetime)
-        linesWithSameURIR = getCDXJLinesWithURIR(path, None)
-        print('CDXJ lines with URI-R at {0}'.format(path))
-        print(linesWithSameURIR)
-
-        # TODO: Use closest instead of conditioning on single entry
-        #  temporary fix for core functionality in #225
-        if len(linesWithSameURIR) == 1:
-            fields = linesWithSameURIR[0].split(' ', 2)
-            redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
-            return redirect(redirectURI, code=302)
-
-        urir = ''
-        if linesWithSameURIR:
-            msg += '<p>{0} capture(s) available:</p><ul>'.format(
-                  len(linesWithSameURIR))
-            for line in linesWithSameURIR:
-                fields = line.split(' ', 2)
-                urir = unsurt(fields[0])
-                msg += ('<li><a href="/{1}/{0}">{0} at {1}</a></li>'
-                        .format(urir, fields[1]))
-            msg += '</ul>'
-
-        msg += '<p>TimeMaps: '
-        msg += '<a href="/timemap/link/{0}">Link</a> '.format(urir)
-        msg += '<a href="/timemap/cdxj/{0}">CDXJ</a> '.format(urir)
-
-        resp = Response(msg, status=404)
-        linkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
-        linkHeader = linkHeader.replace('\n', ' ')
-
-        # By default, a TM has a self-reference URI-T
-        linkHeader = linkHeader.replace('self timemap', 'timemap')
-
-        resp.headers['Link'] = linkHeader
-
-        return resp
+        return generateNoMementosInterface(path, datetime)
 
     cdxjParts = cdxjLine.split(" ", 2)
     jObj = json.loads(cdxjParts[2])
@@ -643,6 +606,47 @@ def show_uri(path, datetime=None):
     # Get TimeMap for Link response header
     respWithLinkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
     resp.headers['Link'] = respWithLinkHeader.replace('\n', ' ')
+
+    return resp
+
+
+def generateNoMementosInterface(path, datetime):
+    msg = '<h1>ERROR 404</h1>'
+    msg += 'No capture found for {0} at {1}.'.format(path, datetime)
+    linesWithSameURIR = getCDXJLinesWithURIR(path, None)
+    print('CDXJ lines with URI-R at {0}'.format(path))
+    print(linesWithSameURIR)
+
+    # TODO: Use closest instead of conditioning on single entry
+    #  temporary fix for core functionality in #225
+    if len(linesWithSameURIR) == 1:
+        fields = linesWithSameURIR[0].split(' ', 2)
+        redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
+        return redirect(redirectURI, code=302)
+
+    urir = ''
+    if linesWithSameURIR:
+        msg += '<p>{0} capture(s) available:</p><ul>'.format(
+            len(linesWithSameURIR))
+        for line in linesWithSameURIR:
+            fields = line.split(' ', 2)
+            urir = unsurt(fields[0])
+            msg += ('<li><a href="/{1}/{0}">{0} at {1}</a></li>'
+                    .format(urir, fields[1]))
+        msg += '</ul>'
+
+    msg += '<p>TimeMaps: '
+    msg += '<a href="/timemap/link/{0}">Link</a> '.format(urir)
+    msg += '<a href="/timemap/cdxj/{0}">CDXJ</a> '.format(urir)
+
+    resp = Response(msg, status=404)
+    linkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
+    linkHeader = linkHeader.replace('\n', ' ')
+
+    # By default, a TM has a self-reference URI-T
+    linkHeader = linkHeader.replace('self timemap', 'timemap')
+
+    resp.headers['Link'] = linkHeader
 
     return resp
 
