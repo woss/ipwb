@@ -20,7 +20,7 @@ import pkg_resources
 import surt
 import re
 import traceback
-import signal
+import stopit # import signal # signal alarms don't work on Windows
 from pywb.utils.binsearch import iter_exact
 from pywb.utils.canonicalize import unsurt
 # from pywb.utils.canonicalize import canonicalize as surt
@@ -566,13 +566,20 @@ def show_uri(path, datetime=None):
         def handler(signum, frame):
             raise HashNotFoundError()
 
-        signal.signal(signal.SIGALRM, handler)
-        signal.alarm(10)
+        print('a')
 
-        payload = IPFS_API.cat(digests[-1])
-        header = IPFS_API.cat(digests[-2])
+        with stopit.ThreadingTimeout(3) as to_ctx_mgr:
+            assert to_ctx_mgr.state == to_ctx_mgr.EXECUTING
+            print('processing')
+            result = catFromIPFS(digests[-2], digests[-1])
+            [header, payload] = result
+        print(to_ctx_mgr.state)
+        #payload = IPFS_API.cat(digests[-1])
+        #header = IPFS_API.cat(digests[-2])
+        print('c')
 
-        signal.alarm(0)
+
+
 
     except ipfsapi.exceptions.TimeoutError:
         print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
@@ -645,6 +652,17 @@ def show_uri(path, datetime=None):
     resp.headers['Link'] = respWithLinkHeader.replace('\n', ' ')
 
     return resp
+
+
+@stopit.threading_timeoutable(timeout_param='catTimeout')
+def catFromIPFS(headerHash, payloadHash, timeout='processing'):
+    print('and a 1')
+    payload = IPFS_API.cat(payloadHash)
+    print('and a 2')
+    header = IPFS_API.cat(headerHash)
+    print('and a 3')
+
+    return [header, payload]
 
 
 def extractResponseFromChunkedData(data):
