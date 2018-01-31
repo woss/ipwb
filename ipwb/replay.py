@@ -525,8 +525,8 @@ def show_uri(path, datetime=None):
     class HashNotFoundError(Exception):
         pass
 
-    payload = ''
-    header = ''
+    payload = None
+    header = None
     try:
         def handler(signum, frame):
             raise HashNotFoundError()
@@ -550,11 +550,12 @@ def show_uri(path, datetime=None):
         print(traceback.format_exc())
         print(sys.exc_info()[0])
     except HashNotFoundError:
-        if payload == '':
+        if payload is None:
             print("Hashes not found")
             return '', 404
         else:  # payload found but not header, fabricate header
             print("HTTP header not found, fabricating for resp replay")
+            header = ''
     except Exception as e:
         print('Unknown exception occurred while fetching from ipfs.')
         print(sys.exc_info()[0])
@@ -608,7 +609,7 @@ def show_uri(path, datetime=None):
 
     resp.headers['Memento-Datetime'] = ipwbConfig.datetimeToRFC1123(datetime)
 
-    if header == '':
+    if header is None:
         resp.headers['X-Headers-Generated-By'] = 'InterPlanetary Wayback'
 
     # Get TimeMap for Link response header
