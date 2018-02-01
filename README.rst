@@ -218,7 +218,7 @@ MIT
 .. _zombies: http://ws-dl.blogspot.com/2012/10/2012-10-10-zombies-in-archives.html
 .. _pywb: https://github.com/ikreymer/pywb
 .. _Install IPFS: https://ipfs.io/docs/install/
-.. |travis| image:: https://api.travis-ci.org/oduwsdl/ipwb.png?branch=master
+.. |travis| image:: https://travis-ci.org/oduwsdl/ipwb.svg?branch=master
   :target: https://travis-ci.org/oduwsdl/ipwb
 .. |pypi| image:: https://img.shields.io/pypi/v/ipwb.svg
   :target: https://pypi.python.org/pypi/ipwb
