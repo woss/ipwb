@@ -21,7 +21,7 @@ setup(
         'ipwb'
     ],
     install_requires=[
-        'pywb',
+        'pywb==0.33.2',
         'ipfsapi',
         'flask',
         'pycrypto'
