@@ -15,7 +15,7 @@ RUN        mkdir -p /data/{warc,cdxj,ipfs}
 
 # Download and install IPFS
 ENV        IPFS_PATH=/data/ipfs
-ARG        IPFS_VERSION=v0.4.13
+ARG        IPFS_VERSION=v0.4.14
 RUN        cd /tmp \
            && wget https://dist.ipfs.io/go-ipfs/v0.4.13/go-ipfs_${IPFS_VERSION}_linux-amd64.tar.gz \
            && tar xvfz go-ipfs*.tar.gz \
