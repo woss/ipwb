@@ -123,7 +123,7 @@ To index and replay your own WARC file, bind mount your data folders inside the 
       $ docker container run -it --rm -v /path/to/data:/data oduwsdl/ipwb ipwb index -o /data/cdxj/custom.cdxj /data/warc/custom.warc.gz
       $ docker container run -it --rm -v /path/to/data:/data -p 5000:5000 oduwsdl/ipwb ipwb replay /data/cdxj/custom.cdxj
 
-If the host folder structure is something other than `/some/path/{warcc,cdxj,ipfs}` then these volumes need to be mounted separately.
+If the host folder structure is something other than `/some/path/{warc,cdxj,ipfs}` then these volumes need to be mounted separately.
 
 To build an image from the source, run the following command from the directory where the source code is checked out.
 
