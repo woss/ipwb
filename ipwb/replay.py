@@ -531,13 +531,15 @@ def show_uri(path, datetime=None):
         def handler(signum, frame):
             raise HashNotFoundError()
 
-        signal.signal(signal.SIGALRM, handler)
-        signal.alarm(10)
+        if os.name != 'nt':  # Bug #310
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(10)
 
         payload = IPFS_API.cat(digests[-1])
         header = IPFS_API.cat(digests[-2])
 
-        signal.alarm(0)
+        if os.name != 'nt':  # Bug #310
+            signal.alarm(0)
 
     except ipfsapi.exceptions.TimeoutError:
         print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
