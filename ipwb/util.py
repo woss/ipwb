@@ -148,7 +148,7 @@ def setLocale():
     locale.setlocale(locale.LC_TIME, newLocale)
 
 
-def datetimeToRFC1123(digits14):
+def digits14ToRFC1123(digits14):
     setLocale()
     d = datetime.datetime.strptime(digits14, '%Y%m%d%H%M%S')
     return d.strftime('%a, %d %b %Y %H:%M:%S GMT')

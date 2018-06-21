@@ -175,7 +175,7 @@ def showMementosForURIRs(urir):
         for line in cdxjLinesWithURIR:
             fields = line.split(' ', 2)
             dt14 = fields[1]
-            dtrfc1123 = ipwbConfig.datetimeToRFC1123(fields[1])
+            dtrfc1123 = ipwbConfig.digits14ToRFC1123(fields[1])
             msg += ('<li><a href="/{1}/{0}">{0} at {2}</a></li>'
                     .format(unsurt(fields[0]), dt14, dtrfc1123))
         msg += '</ul>'
@@ -401,7 +401,7 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
 
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
-        dtRFC1123 = ipwbConfig.datetimeToRFC1123(datetime)
+        dtRFC1123 = ipwbConfig.digits14ToRFC1123(datetime)
         firstLastStr = ''
 
         if len(cdxjLines) > 1:
@@ -441,7 +441,7 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
 
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
-        dtRFC1123 = ipwbConfig.datetimeToRFC1123(datetime)
+        dtRFC1123 = ipwbConfig.digits14ToRFC1123(datetime)
         firstLastStr = ''
 
         if len(cdxjLines) > 1:
@@ -631,7 +631,7 @@ def show_uri(path, datetime=None):
     newPayload = newPayload.replace('</html>', ipwbjsinject + '</html>')
     resp.set_data(newPayload)
 
-    resp.headers['Memento-Datetime'] = ipwbConfig.datetimeToRFC1123(datetime)
+    resp.headers['Memento-Datetime'] = ipwbConfig.digits14ToRFC1123(datetime)
 
     if header is None:
         resp.headers['X-Headers-Generated-By'] = 'InterPlanetary Wayback'
