@@ -269,6 +269,16 @@ def getCDXJLinesWithURIR(urir, indexPath):
     return cdxjLinesWithURIR
 
 
+@app.route('/timegate/<path:urir>')
+def queryTimeGate(urir):
+    adt = request.headers.get("Accept-Datetime")
+    if adt is None:
+        adt = ipwbConfig.getRFC1123OfNow()
+
+    datetime14 = ipwbConfig.rfc1123ToDigits14(adt)
+    return showMemento(urir, datetime14)
+
+
 @app.route('/timemap/<regex("link|cdxj"):format>/<path:urir>')
 def showTimeMap(urir, format):
     urir = getCompleteURI(urir)

@@ -16,6 +16,7 @@ import site
 # Datetime conversion to rfc1123
 import locale
 import datetime
+import calendar
 import logging
 import platform
 
@@ -136,7 +137,7 @@ def retrieveMemCount():
         return i+1
 
 
-def datetimeToRFC1123(digits14):
+def setLocale():
     currentOS = platform.system()
     if currentOS == 'Darwin':
         newLocale = 'en_US'
@@ -146,7 +147,26 @@ def datetimeToRFC1123(digits14):
         newLocale = 'en_US.utf8'
 
     locale.setlocale(locale.LC_TIME, newLocale)
+
+
+def datetimeToRFC1123(digits14):
+    setLocale()
     d = datetime.datetime.strptime(digits14, '%Y%m%d%H%M%S')
+    return d.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+
+def rfc1123ToDigits14(rfc1123DateString):
+    setLocale()
+    d = datetime.datetime.strptime(rfc1123DateString, '%a, %d %b %Y %H:%M:%S %Z')
+
+    # TODO: Account for conversion if TZ other than GMT not specified
+
+    return d.strftime('%Y%m%d%H%M%S')
+
+
+def getRFC1123OfNow():
+    setLocale()
+    d = datetime.datetime.now()
     return d.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
 
