@@ -287,13 +287,19 @@ def showTimeMap(urir, format):
 
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
     tmContentType = ''
+
+    hostAndPort = ipwbConfig.getIPWBReplayConfig()
+    tgURI = 'http://{0}:{1}/timegate/{2}'.format(
+        'localhost',
+        hostAndPort[1], urir)
+
     if format == 'link':
         tm = generateLinkTimeMapFromCDXJLines(
-            cdxjLinesWithURIR, s, request.url)
+            cdxjLinesWithURIR, s, request.url, tgURI)
         tmContentType = 'application/link-format'
     elif format == 'cdxj':
         tm = generateCDXJTimeMapFromCDXJLines(
-            cdxjLinesWithURIR, s, request.url)
+            cdxjLinesWithURIR, s, request.url, tgURI)
         tmContentType = 'application/cdxj+ors'
 
     resp = Response(tm)
@@ -308,10 +314,14 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
     hostAndPort = ipwbConfig.getIPWBReplayConfig()
 
+    tgURI = 'http://{0}:{1}/timegate/{2}'.format(
+        'localhost',  # hostAndPort[0],
+        hostAndPort[1], urir)
+
     tmURI = 'http://{0}:{1}/timemap/link/{2}'.format(
         'localhost',  # hostAndPort[0],
         hostAndPort[1], urir)
-    tm = generateLinkTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI)
+    tm = generateLinkTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI, tgURI)
 
     # Fix base TM relation when viewing abbrev version in Link resp
     tm = tm.replace('rel="self"', 'rel="timemap"')
@@ -367,7 +377,7 @@ def getProxiedURIT(uriT):
     return tmurl
 
 
-def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
+def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     tmurl = getProxiedURIT(tmself)
     if app.proxy is not None:
         tmself = urlunsplit(tmurl)
@@ -386,6 +396,8 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
     cdxjTMURI = tmself.replace('/timemap/link/', '/timemap/cdxj/')
     tmData += '<{0}>; rel="timemap"; '.format(cdxjTMURI)
     tmData += 'type="application/cdxj+ors",\n'
+
+    tmData += '<{0}>; rel="timegate"; '.format(tgURI)
 
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
@@ -407,7 +419,7 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself):
     return tmData
 
 
-def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself):
+def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     tmurl = getProxiedURIT(tmself)
     if app.proxy is not None:
         tmself = urlunsplit(tmurl)
@@ -419,7 +431,7 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself):
     tmData += '!id {{"uri": "{0}"}}\n'.format(tmself)
     tmData += '!keys ["memento_datetime_YYYYMMDDhhmmss"]\n'
     tmData += '!meta {{"original_uri": "{0}"}}\n'.format(originalURI)
-
+    tmData += '!meta {{"timegate_uri": "{0}"}}\n'.format(tgURI)
     linkTMURI = tmself.replace('/timemap/cdxj/', '/timemap/link/')
     tmData += ('!meta {{"timemap_uri": {{'
                '"link_format": "{0}", '
