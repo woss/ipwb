@@ -156,7 +156,8 @@ def datetimeToRFC1123(digits14):
 
 def rfc1123ToDigits14(rfc1123DateString):
     setLocale()
-    d = datetime.datetime.strptime(rfc1123DateString, '%a, %d %b %Y %H:%M:%S %Z')
+    d = datetime.datetime.strptime(rfc1123DateString,
+                                   '%a, %d %b %Y %H:%M:%S %Z')
 
     # TODO: Account for conversion if TZ other than GMT not specified
 
