@@ -191,8 +191,7 @@ class RegexConverter(BaseConverter):
 app.url_map.converters['regex'] = RegexConverter
 
 
-@app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
-def showMemento(urir, datetime):
+def resolveMemento(urir, datetime):
     """ Request a URI-R at a supplied datetime from the CDXJ """
     urir = getCompleteURI(urir)
 
@@ -214,15 +213,22 @@ def showMemento(urir, datetime):
     uri = unsurt(closestLine.split(' ')[0])
     newDatetime = closestLine.split(' ')[1]
 
+    linkHeader = getLinkHeaderAbbreviatedTimeMap(urir, newDatetime)
+    linkHeader = linkHeader.replace('\n', ' ')
+
+    return (newDatetime, linkHeader, uri)
+
+
+@app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
+def showMemento(urir, datetime):
+    (newDatetime, linkHeader, uri) = resolveMemento(urir, datetime)
+
     resp = Response()
 
     if newDatetime != datetime:
         resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
     else:
         resp = show_uri(uri, newDatetime)
-
-    linkHeader = getLinkHeaderAbbreviatedTimeMap(urir, newDatetime)
-    linkHeader = linkHeader.replace('\n', ' ')
 
     resp.headers['Link'] = linkHeader
 
@@ -287,8 +293,14 @@ def queryTimeGate(urir):
         adt = ipwbConfig.getRFC1123OfNow()
 
     datetime14 = ipwbConfig.rfc1123ToDigits14(adt)
-    resp = showMemento(urir, datetime14)
+
+    (newDatetime, linkHeader, uri) = resolveMemento(urir, datetime14)
+
+    resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
+
+    resp.headers['Link'] = linkHeader
     resp.headers['Vary'] = 'Accept-Datetime'
+
     return resp
 
 
@@ -650,8 +662,8 @@ def show_uri(path, datetime=None):
         resp.headers['X-Headers-Generated-By'] = 'InterPlanetary Wayback'
 
     # Get TimeMap for Link response header
-    respWithLinkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
-    resp.headers['Link'] = respWithLinkHeader.replace('\n', ' ')
+    # respWithLinkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
+    # resp.headers['Link'] = respWithLinkHeader.replace('\n', ' ')
 
     return resp
 
