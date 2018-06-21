@@ -213,9 +213,20 @@ def showMemento(urir, datetime):
 
     uri = unsurt(closestLine.split(' ')[0])
     newDatetime = closestLine.split(' ')[1]
+
+    resp = Response()
+
     if newDatetime != datetime:
-        return redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
-    return show_uri(uri, newDatetime)
+        resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
+    else:
+        resp = show_uri(uri, newDatetime)
+
+    linkHeader = getLinkHeaderAbbreviatedTimeMap(urir, newDatetime)
+    linkHeader = linkHeader.replace('\n', ' ')
+
+    resp.headers['Link'] = linkHeader
+
+    return resp
 
 
 def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
