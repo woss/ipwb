@@ -276,7 +276,9 @@ def queryTimeGate(urir):
         adt = ipwbConfig.getRFC1123OfNow()
 
     datetime14 = ipwbConfig.rfc1123ToDigits14(adt)
-    return showMemento(urir, datetime14)
+    resp = showMemento(urir, datetime14)
+    resp.headers['Vary'] = 'Accept-Datetime'
+    return resp
 
 
 @app.route('/timemap/<regex("link|cdxj"):format>/<path:urir>')
