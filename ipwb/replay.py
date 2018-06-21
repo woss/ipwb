@@ -397,7 +397,7 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     tmData += '<{0}>; rel="timemap"; '.format(cdxjTMURI)
     tmData += 'type="application/cdxj+ors",\n'
 
-    tmData += '<{0}>; rel="timegate", '.format(tgURI)
+    tmData += '<{0}>; rel="timegate", \n'.format(tgURI)
 
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
