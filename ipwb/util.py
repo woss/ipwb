@@ -16,7 +16,6 @@ import site
 # Datetime conversion to rfc1123
 import locale
 import datetime
-import calendar
 import logging
 import platform
 
