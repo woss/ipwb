@@ -105,6 +105,13 @@ def indexFileAt(warcPaths, encryptionKey=None,
     cdxjLines = []
 
     if outfile:
+        outdir = os.path.dirname(outfile)
+        if not os.path.exists(outdir):
+            try:
+                os.makedirs(outdir)
+            except Exception as e:
+                logError(e)
+                logError('CDXJ output directory was not created')
         try:
             outputFile = open(outfile, 'a+')
             # Read existing non-meta lines (if any) to allow automatic merge
