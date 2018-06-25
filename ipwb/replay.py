@@ -349,7 +349,7 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     tm = generateLinkTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI, tgURI)
 
     # Fix base TM relation when viewing abbrev version in Link resp
-    tm = tm.replace('rel="self"', 'rel="timemap"')
+    tm = tm.replace('rel="self timemap"', 'rel="timemap"')
 
     # Only one memento in TimeMap
     if 'rel="first last memento"' in tm:
