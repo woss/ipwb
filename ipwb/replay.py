@@ -214,7 +214,6 @@ def resolveMemento(urir, datetime):
     newDatetime = closestLine.split(' ')[1]
 
     linkHeader = getLinkHeaderAbbreviatedTimeMap(urir, newDatetime)
-    linkHeader = linkHeader.replace('\n', ' ')
 
     return (newDatetime, linkHeader, uri)
 
@@ -353,7 +352,7 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
 
     # Only one memento in TimeMap
     if 'rel="first last memento"' in tm:
-        return tm
+        return tm.replace('\n', ' ').strip()
 
     tmLines = tm.split('\n')
     for idx, line in enumerate(tmLines):
@@ -384,9 +383,7 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
         if len(re.findall('rel=.*(next|prev|first|last)', line)) == 0:
             tmLines[idx] = ''
 
-    tm = '\n'.join(tmLines)
-
-    return tm
+    return ' '.join(filter(None, tmLines))
 
 
 def getProxiedURIT(uriT):
@@ -422,7 +419,7 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     tmData += '<{0}>; rel="timemap"; '.format(cdxjTMURI)
     tmData += 'type="application/cdxj+ors",\n'
 
-    tmData += '<{0}>; rel="timegate", \n'.format(tgURI)
+    tmData += '<{0}>; rel="timegate"'.format(tgURI)
 
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
@@ -437,11 +434,10 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
         elif len(cdxjLines) == 1:
             firstLastStr = 'first last '
 
-        tmData += '<{0}{1}/{2}>; rel="{3}memento"; datetime="{4}",\n'.format(
+        tmData += ',\n<{0}{1}/{2}>; rel="{3}memento"; datetime="{4}"'.format(
                 hostAndPort, datetime, unsurt(surtURI),
                 firstLastStr, dtRFC1123)
-    tmData = tmData[0:-2]  # Trim final , and LF
-    return tmData
+    return tmData + '\n'
 
 
 def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
@@ -483,7 +479,6 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
                    '"datetime"="{4}"}}\n').format(
                 hostAndPort, datetime, unsurt(surtURI),
                 firstLastStr, dtRFC1123)
-    tmData = tmData[0:-1]  # Trim final , and LF
     return tmData
 
 
@@ -699,7 +694,6 @@ def generateNoMementosInterface(path, datetime):
 
     resp = Response(msg, status=404)
     linkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
-    linkHeader = linkHeader.replace('\n', ' ')
 
     # By default, a TM has a self-reference URI-T
     linkHeader = linkHeader.replace('self timemap', 'timemap')
