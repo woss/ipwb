@@ -1,7 +1,7 @@
-var remainingTries = 0
+let remainingTries = 0
 
 function recheckDaemonStatus () {
-  var running = document.getElementById('status').innerHTML === 'Running'
+  const running = document.getElementById('status').innerHTML === 'Running'
   remainingTries = 10
 
   if (!running) {
@@ -11,7 +11,7 @@ function recheckDaemonStatus () {
 
 function checkStatus (resp) {
   if (remainingTries > 0) { // Top polling after 10 sec/tries
-    remainingTries
+    remainingTries -= 1
   }
   if (resp.indexOf('Not Running') > -1) {
     window.setTimeout(function () {

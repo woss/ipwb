@@ -2,9 +2,9 @@ function handleSubmit () {
   document.location += 'memento/*/' + document.getElementById('url').value
 }
 
-function shortestFirst(a, b) {
-  if (a.length < b.length) {return -1}
-  if (a.length > b.length) {return 1}
+function shortestFirst (a, b) {
+  if (a.length < b.length) { return -1 }
+  if (a.length > b.length) { return 1 }
   return 0
 }
 
@@ -44,20 +44,20 @@ function showURIs () {
   window.localStorage.setItem('showURIs', true)
 }
 
-function setUIExpandedState(urisObj) {
-  const urisHash  = calculateURIsHash(urisObj)
+function setUIExpandedState (urisObj) {
+  const urisHash = calculateURIsHash(urisObj)
   setURIsHash(urisHash)
 }
 
-function calculateURIsHash(urisObj) {
+function calculateURIsHash (urisObj) {
   return JSON.stringify(urisObj).hashCode()
 }
 
-function getURIsHash() {
+function getURIsHash () {
   return window.localStorage.getItem('urisHash')
 }
 
-function setURIsHash(hashIn) {
+function setURIsHash (hashIn) {
   return window.localStorage.setItem('urisHash', hashIn)
 }
 
@@ -69,12 +69,12 @@ String.prototype.hashCode = function () {
     return hash
   }
   for (i = 0; i < this.length; i++) {
-    chr   = this.charCodeAt(i)
-    hash  = ((hash << 5) - hash) + chr
-    hash |= 0; // Convert to 32bit integer
+    chr = this.charCodeAt(i)
+    hash = ((hash << 5) - hash) + chr
+    hash |= 0 // Convert to 32bit integer
   }
   return hash
-};
+}
 
 function addEventListeners () {
   let target = document.getElementById('memCountListLink')
@@ -119,7 +119,7 @@ function setShowAllButtonStatus () {
   const urimCount = document.getElementById('memCountInt').innerHTML
   const htmlFilesPlurality = document.getElementById('htmlPages').innerHTML
   if (urimCount === htmlFilesPlurality) {
-    document.getElementById('showEmbeddedURI').setAttribute('disabled','disabled')
+    document.getElementById('showEmbeddedURI').setAttribute('disabled', 'disabled')
   }
 }
 
@@ -192,11 +192,10 @@ function injectIPWBJS () {
 
 function getServiceWorkerVersion () {
   return fetch(self.location.href)
-  .then(function (resp) {
-    return Promise.resolve(resp.headers.get('Server').split('/')[1])
-  })
+    .then(function (resp) {
+      return Promise.resolve(resp.headers.get('Server').split('/')[1])
+    })
 }
-
 
 function reinstallServiceWorker () {
   console.log('Deleting old serviceWorker')
@@ -228,11 +227,12 @@ function installServiceWorker () {
     newInstallation = true
   }
 
-  navigator.serviceWorker.register('/serviceWorker.js').then(function(registration) {
-    console.log('ServiceWorker registration successful with scope: ', registration.scope)
-  }).catch(function(err) {
+  navigator.serviceWorker.register('/serviceWorker.js').then(
+    function (registration) {
+      console.log('ServiceWorker registration successful with scope: ', registration.scope)
+    }).catch(function (err) {
     console.log('ServiceWorker registration failed: ', err)
-  }).then(function(rr){
+  }).then(function (rr) {
     const dt = document.location.href.split('/')[3]
     const viewingMemento = dt.length === 14 && parseInt(dt, 10) + '' === dt
 

@@ -17,14 +17,16 @@ Reconstructive.init({
 })
 
 // Add any custom exclusions or modify or delete default ones
-//> reconstructive.exclusions
-//< {
-//<   notGet: f (event, config),
-//<   localResource: f (event, config)
-//< }
-Reconstructive.exclusions.replayRoot = (event, config) => event.request.url.replace(/\/+$/, '') == self.location.origin
-Reconstructive.exclusions.specialEndpint = function(event, config) {
-  return ['/webui/', '/daemon/', '/config/'].some(ep => event.request.url.startsWith(self.location.origin + ep))
+// > reconstructive.exclusions
+// < {
+// <   notGet: f (event, config),
+// <   localResource: f (event, config)
+// < }
+Reconstructive.exclusions.replayRoot = (event, config) =>
+  event.request.url.replace(/\/+$/, '') === self.location.origin
+Reconstructive.exclusions.specialEndpint = function (event, config) {
+  return ['/webui/', '/daemon/', '/config/'].some(
+    ep => event.request.url.startsWith(self.location.origin + ep))
 }
 
 // Pass a custom function to generate banner markup
@@ -42,7 +44,7 @@ self.addEventListener('activate', function (event) {
   console.log('Activating ServiceWorker.')
 })
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', function (event) {
   // Add any custom logic here to conditionally call the reroute function
-  Reconstructive.reroute(event);
+  Reconstructive.reroute(event)
 })
