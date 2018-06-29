@@ -160,33 +160,37 @@ Usage of sub-commands in ipwb can be accessed through providing the `-h` or `--h
 .. code-block:: bash
 
       $ ipwb index -h
-      usage: ipwb [-h] [-e] [-c] [--compressFirst] [--debug]
+      usage: ipwb [-h] [-e] [-c] [--compressFirst] [-o OUTFILE] [--debug]
                   index <warcPath> [index <warcPath> ...]
 
       Index a WARC file for replay in ipwb
 
       positional arguments:
-        index <warcPath>  Path to a WARC[.gz] file
+        index <warcPath>      Path to a WARC[.gz] file
 
       optional arguments:
-        -h, --help        show this help message and exit
-        -e                Encrypt WARC content prior to adding to IPFS
-        -c                Compress WARC content prior to adding to IPFS
-        --compressFirst   Compress data before encryption, where applicable
-        --debug           Convenience flag to help with testing and debugging
+        -h, --help            show this help message and exit
+        -e                    Encrypt WARC content prior to adding to IPFS
+        -c                    Compress WARC content prior to adding to IPFS
+        --compressFirst       Compress data before encryption, where applicable
+        -o OUTFILE, --outfile OUTFILE
+                              Path to an output CDXJ file, defaults to STDOUT
+        --debug               Convenience flag to help with testing and debugging
 
 .. code-block:: bash
 
       $ ipwb replay -h
-      usage: ipwb replay [-h] [index]
+      usage: ipwb replay [-h] [-P [<host:port>]] [index]
 
       Start the ipwb relay system
 
       positional arguments:
-        index       path, URI, or multihash of file to use for replay
+        index                 path, URI, or multihash of file to use for replay
 
       optional arguments:
-        -h, --help  show this help message and exit
+        -h, --help            show this help message and exit
+        -P [<host:port>], --proxy [<host:port>]
+                              Proxy URL
 
 
 Project History
