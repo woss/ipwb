@@ -19,10 +19,10 @@ let uris = []
 <body>
 <div id="wrapper">
   <div>
-  <h1><img src="./webui/logo.png" alt="ipwb" /></h1>
-  <form onsubmit="handleSubmit(); return false;">
-  <input type="text" placeholder="http://" id="url" />
-  </form>
+    <h1><img src="./webui/logo.png" alt="ipwb" /></h1>
+    <form onsubmit="handleSubmit(); return false;">
+      <input type="text" placeholder="http://" id="url" />
+    </form>
   </div>
   <footer>
   <p id="memCount"><a id="memCountListLink"><span id="memCountInt">MEMCOUNT</span></a> Memento<span id="plural">s</span> available</p>
@@ -30,7 +30,7 @@ let uris = []
     <summary>Options and Details...</summary>
       <div id="iframeWrapper"><label id="daemonStatusLabel">IPFS Daemon: </label><iframe src="daemon/status" id="daemonStatus"></iframe></div>
       <p><label>Archive Index(es): </label>INDEXSRC</p>
-      <p><label>Service Worker: </label><span id="serviceWorkerVersion">checking...</span><button id="reinstallServiceWorker">Reinstall Service Worker</button></p>
+      <p><label id="swLabel">Service Worker: </label><div><span id="serviceWorkerVersion">checking...</span><br /><button id="reinstallServiceWorker">Reinstall Service Worker</button></div></p>
       <p class="centered topSpace"><a id="webui" target="_blank">IPFS WebUI</a></p>
       <p class="centered"><a href="https://github.com/oduwsdl/ipwb/" target="_blank">IPWB Help</a></p>
   </details>
