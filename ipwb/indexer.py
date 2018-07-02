@@ -28,6 +28,8 @@ from pywb.warc.recordloader import ArchiveLoadFailed
 from ipfsapi.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 
+from six.moves import input
+
 from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
 
 # from warcio.archiveiterator import ArchiveIterator
@@ -290,7 +292,7 @@ def askUserForEncryptionKey():
         promptString = ''
         print(promptString, file=sys.stderr)
 
-    key = raw_input(promptString)
+    key = input(promptString)
 
     return key
 
