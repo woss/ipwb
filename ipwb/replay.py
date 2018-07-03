@@ -80,8 +80,11 @@ def showWebUI(path):
             if os.path.exists(iFileAbs):
                 iFile = iFileAbs  # Local file
 
+        (mCount, uniqueURIRs) = retrieveMemCount(iFile)
         content = content.replace(
-            'MEMCOUNT', str(retrieveMemCount(iFile)))
+            'MEMCOUNT', str(mCount))
+        content = content.replace(
+            'UNIQUE', str(uniqueURIRs))
 
         content = content.replace(
             'let uris = []',
@@ -836,21 +839,29 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
     print("Retrieving URI-Ms from {0}".format(cdxjFilePath))
     indexFileContents = getIndexFileContents(cdxjFilePath)
 
+    errReturn = (0, 0)
+
     if not indexFileContents:
-        return 0
+        return errReturn
     lines = indexFileContents.strip().split('\n')
 
     if not lines:
-        return 0
+        return errReturn
     mementoCount = 0
 
+    bucket = {}
     for i, l in enumerate(lines):
         validCDXJLine = ipwbConfig.isValidCDXJLine(l)
         metadataRecord = ipwbConfig.isCDXJMetadataRecord(l)
         if validCDXJLine and not metadataRecord:
             mementoCount += 1
+            surtURI = l.split()[0]
+            if surtURI not in bucket:
+                bucket[surtURI] = 1
+            else: # Unnecessary to keep count now, maybe useful later
+                bucket[surtURI] += 1
 
-    return mementoCount
+    return mementoCount, len(bucket.keys())
 
 
 def objectifyCDXJData(lines, onlyURI):
