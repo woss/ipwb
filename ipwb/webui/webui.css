@@ -37,4 +37,4 @@ details label {padding: 0; color: #8f1d27; width: 200px; text-align: right; disp
 details label#daemonStatusLabel {height: 10px; margin-top: 0; vertical-align: top;}
 details label#swLabel {height: 2.0em;}
 
-form input[type=submit] {width: 850px; clear: both; margin-top: 0.5em;}
+form input[type=submit] {display: block; clear: both; margin: 0.5em auto 0 auto;}
