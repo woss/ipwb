@@ -858,7 +858,7 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
             surtURI = l.split()[0]
             if surtURI not in bucket:
                 bucket[surtURI] = 1
-            else: # Unnecessary to keep count now, maybe useful later
+            else:  # Unnecessary to keep count now, maybe useful later
                 bucket[surtURI] += 1
 
     return mementoCount, len(bucket.keys())
