@@ -21,7 +21,8 @@ let uris = []
   <div>
     <h1><img src="./webui/logo.png" alt="ipwb" /></h1>
     <form onsubmit="handleSubmit(); return false;">
-      <input type="text" placeholder="http://" id="url" />
+      <input type="text" placeholder="http://example.com" id="url" aria-label="Enter a URI" />
+      <input type="submit" value="Search URL in the archive"/>
     </form>
   </div>
   <footer>
