@@ -153,6 +153,12 @@ def commandDaemon(cmd):
         return Response('bad command!')
 
 
+@app.route('/memento/*/')
+def showMementosForURIRs_sansJS():
+    urir = request.args.get('url')
+    return redirect('/memento/*/' + urir, code=301)
+
+
 @app.route('/memento/*/<path:urir>')
 def showMementosForURIRs(urir):
     urir = getCompleteURI(urir)
