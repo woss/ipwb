@@ -170,6 +170,7 @@ def showMementosForURIRs(urir):
 
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
+    print('ddd')
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     if len(cdxjLinesWithURIR) == 1:
@@ -188,6 +189,9 @@ def showMementosForURIRs(urir):
             msg += ('<li><a href="/{1}/{0}">{0} at {2}</a></li>'
                     .format(unsurt(fields[0]), dt14, dtrfc1123))
         msg += '</ul>'
+    else:  # No captures for URI-R
+        msg = generateNoMementosInterface_noDatetime(urir)
+
     return Response(msg)
 
 
@@ -211,6 +215,7 @@ def resolveMemento(urir, datetime):
 
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
+    print('eeeee')
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
@@ -266,7 +271,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
     print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     cdxjLinesWithURIR = []
-
+    print('radon')
     cdxjLineIndex = getCDXJLine_binarySearch(s, indexPath, True, True)  # get i
 
     if cdxjLineIndex is None:
@@ -317,7 +322,7 @@ def showTimeMap(urir, format):
     urir = getCompleteURI(urir)
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
-
+    print('aaa')
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
     tmContentType = ''
 
@@ -344,6 +349,7 @@ def showTimeMap(urir, format):
 def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
+    print('bbb')
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
     hostAndPort = ipwbConfig.getIPWBReplayConfig()
 
@@ -554,7 +560,7 @@ def show_uri(path, datetime=None):
         searchString = surtedURI
         if datetime is not None:
             searchString = surtedURI + ' ' + datetime
-
+        print('dukes')
         cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
         print('CDXJ Line: {0}'.format(cdxjLine))
 
@@ -672,9 +678,23 @@ def show_uri(path, datetime=None):
     return resp
 
 
+def generateNoMementosInterface_noDatetime(urir):
+    msg = '<h1>ERROR 404</h1>'
+    msg += 'No capture(s) found for {0}.'.format(urir)
+
+    msg += '''
+    <form method="get" action="/memento/*/" style="margin-top: 1.0em;">
+      <input type="text" value="{0}" id="url" name="url" aria-label="Enter a URI" />
+      <input type="submit" value="Search URL in the archive"/>
+    </form>'''.format(urir)
+
+    return msg
+
+
 def generateNoMementosInterface(path, datetime):
     msg = '<h1>ERROR 404</h1>'
     msg += 'No capture found for {0} at {1}.'.format(path, datetime)
+    print('ccc')
     linesWithSameURIR = getCDXJLinesWithURIR(path, None)
     print('CDXJ lines with URI-R at {0}'.format(path))
     print(linesWithSameURIR)
