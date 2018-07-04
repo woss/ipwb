@@ -20,8 +20,8 @@ let uris = []
 <div id="wrapper">
   <div>
     <h1><img src="./webui/logo.png" alt="ipwb" /></h1>
-    <form onsubmit="handleSubmit(); return false;">
-      <input type="text" placeholder="http://example.com" id="url" aria-label="Enter a URI" />
+    <form onsubmit="handleSubmit(); return false;" method="get" action="/memento/*/">
+      <input type="text" placeholder="http://example.com" id="url" name="url" aria-label="Enter a URI" />
       <input type="submit" value="Search URL in the archive"/>
     </form>
   </div>
