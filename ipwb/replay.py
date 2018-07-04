@@ -680,12 +680,12 @@ def generateNoMementosInterface_noDatetime(urir):
     msg = '<h1>ERROR 404</h1>'
     msg += 'No capture(s) found for {0}.'.format(urir)
 
-    msg += '''
-    <form method="get" action="/memento/*/" style="margin-top: 1.0em;">
-      <input type="text" value="{0}" id="url" 
-        name="url" aria-label="Enter a URI" />
-      <input type="submit" value="Search URL in the archive"/>
-    </form>'''.format(urir)
+    msg += ('<form method="get" action="/memento/*/" '
+            'style="margin-top: 1.0em;">'
+            '<input type="text" value="{0}" id="url"'
+            'name="url" aria-label="Enter a URI" />'
+            '<input type="submit" value="Search URL in the archive"/>'
+            '</form>').format(urir)
 
     return msg
 
