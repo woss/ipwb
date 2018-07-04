@@ -347,7 +347,7 @@ def showTimeMap(urir, format):
 def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbConfig.getIPWBReplayIndexPath()
-    print('bbb')
+
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
     hostAndPort = ipwbConfig.getIPWBReplayConfig()
 
