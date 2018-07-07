@@ -12,7 +12,7 @@ InterPlanetary Wayback (ipwb) facilitates permanence and collaboration in web ar
 
 InterPlanetary Wayback primarily consists of two scripts:
 
-- **ipwb/indexer.py** - archival indexing script that takes the path to a WARC input, extracts the HTTP headers, HTTP payload (response body), and relevant parts of the WARC-response record header from the WARC specified and creates byte string representations. The indexer then pushes the byte strings into IPFS using a locally running ipfs daemon then creates a `CDXJ`_ file with this metadata for `replay.py`.
+- **ipwb/indexer.py** - archival indexing script that takes the path to a WARC input, extracts the HTTP headers, HTTP payload (response body), and relevant parts of the WARC-response record header from the WARC specified and creates byte string representations. The indexer then pushes the byte strings into IPFS using a locally running IPFS daemon then creates a `CDXJ`_ file with this metadata for `replay.py`.
 - **ipwb/replay.py** - rudimentary replay script to resolve requests for archival content contained in IPFS for replay in the browser.
 
 A pictorial representation of the ipwb indexing and replay process:
@@ -69,7 +69,7 @@ In a separate terminal session (or the same if you started the daemon in the bac
       $ ipwb index ipwb/samples/warcs/salam-home.warc
 
 
-`indexer.py`, the default script called by the ipwb binary, parititions the WARC into WARC Records, extracts the WARC Response headers, HTTP response headers, and HTTP response body (payload). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g.,
+The ipwb indexer parititions the WARC into WARC Records and extracts the WARC Response headers, HTTP response headers, and the HTTP response bodies (payloads). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `stdout` by default but can be redirected to a file, e.g.,
 
 .. code-block:: bash
 
