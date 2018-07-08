@@ -289,8 +289,8 @@ def askUserForEncryptionKey():
     outputRedirected = os.fstat(0) != os.fstat(1)
     promptString = 'Enter a key for encryption: '
     if outputRedirected:  # Prevents prompt in redir output
+        logError(promptString, end='')
         promptString = ''
-        print(promptString, file=sys.stderr)
 
     key = input(promptString)
 
@@ -324,8 +324,8 @@ def showProgress(msg, i, n):
         print(finalMsg + spaces, file=sys.stderr, end='\r\n')
 
 
-def logError(errIn):
-    print(errIn, file=sys.stderr)
+def logError(errIn, end='\n'):
+    print(errIn, file=sys.stderr, end=end)
 
 
 def pullFromIPFS(hash):
