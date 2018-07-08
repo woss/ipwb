@@ -324,9 +324,11 @@ def showTimeMap(urir, format):
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
     tmContentType = ''
 
+
     hostAndPort = ipwbConfig.getIPWBReplayConfig()
+
     tgURI = 'http://{0}:{1}/timegate/{2}'.format(
-        'localhost',
+        hostAndPort[0],
         hostAndPort[1], urir)
 
     if format == 'link':
@@ -352,11 +354,11 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     hostAndPort = ipwbConfig.getIPWBReplayConfig()
 
     tgURI = 'http://{0}:{1}/timegate/{2}'.format(
-        'localhost',  # hostAndPort[0],
+        hostAndPort[0],
         hostAndPort[1], urir)
 
     tmURI = 'http://{0}:{1}/timemap/link/{2}'.format(
-        'localhost',  # hostAndPort[0],
+        hostAndPort[0],
         hostAndPort[1], urir)
     tm = generateLinkTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI, tgURI)
 
