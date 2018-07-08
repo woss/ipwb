@@ -37,7 +37,7 @@ from urlparse import urlsplit, urlunsplit  # N/A in Py3!
 
 import requests
 
-import util as ipwbConfig
+import util as ipwbUtils
 from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
 from util import INDEX_FILE
 from requests import ReadTimeout
@@ -70,7 +70,7 @@ def showWebUI(path):
     content = pkg_resources.resource_string(__name__, webuiPath)
 
     if 'index.html' in path:
-        iFile = ipwbConfig.getIPWBReplayIndexPath()
+        iFile = ipwbUtils.getIPWBReplayIndexPath()
 
         if iFile is None or iFile == '':
             iFile = pkg_resources.resource_filename(__name__, INDEX_FILE)
@@ -136,7 +136,7 @@ def commandDaemon(cmd):
     elif cmd == 'stop':
         try:
             installedIPFSVersion = IPFS_API.version()['Version']
-            if ipwbConfig.compareVersions(installedIPFSVersion, '0.4.10') < 0:
+            if ipwbUtils.compareVersions(installedIPFSVersion, '0.4.10') < 0:
                 raise UnsupportedIPFSVersions()
             IPFS_API.shutdown()
         except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as e:
@@ -163,10 +163,10 @@ def showMementosForURIRs_sansJS():
 def showMementosForURIRs(urir):
     urir = getCompleteURI(urir)
 
-    if ipwbConfig.isLocalHosty(urir):
+    if ipwbUtils.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
-    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+    indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
@@ -184,7 +184,7 @@ def showMementosForURIRs(urir):
         for line in cdxjLinesWithURIR:
             fields = line.split(' ', 2)
             dt14 = fields[1]
-            dtrfc1123 = ipwbConfig.digits14ToRFC1123(fields[1])
+            dtrfc1123 = ipwbUtils.digits14ToRFC1123(fields[1])
             msg += ('<li><a href="/{1}/{0}">{0} at {2}</a></li>'
                     .format(unsurt(fields[0]), dt14, dtrfc1123))
         msg += '</ul>'
@@ -207,10 +207,10 @@ def resolveMemento(urir, datetime):
     """ Request a URI-R at a supplied datetime from the CDXJ """
     urir = getCompleteURI(urir)
 
-    if ipwbConfig.isLocalHosty(urir):
+    if ipwbUtils.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
-    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+    indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
@@ -263,7 +263,7 @@ def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
 def getCDXJLinesWithURIR(urir, indexPath):
     """ Get all CDXJ records corresponding to a URI-R """
     if not indexPath:
-        indexPath = ipwbConfig.getIPWBReplayIndexPath()
+        indexPath = ipwbUtils.getIPWBReplayIndexPath()
     indexPath = getIndexFileFullPath(indexPath)
 
     print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
@@ -301,9 +301,9 @@ def getCDXJLinesWithURIR(urir, indexPath):
 def queryTimeGate(urir):
     adt = request.headers.get("Accept-Datetime")
     if adt is None:
-        adt = ipwbConfig.getRFC1123OfNow()
+        adt = ipwbUtils.getRFC1123OfNow()
 
-    datetime14 = ipwbConfig.rfc1123ToDigits14(adt)
+    datetime14 = ipwbUtils.rfc1123ToDigits14(adt)
 
     (newDatetime, linkHeader, uri) = resolveMemento(urir, datetime14)
 
@@ -319,12 +319,12 @@ def queryTimeGate(urir):
 def showTimeMap(urir, format):
     urir = getCompleteURI(urir)
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
-    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+    indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
     tmContentType = ''
 
-    hostAndPort = ipwbConfig.getIPWBReplayConfig()
+    hostAndPort = ipwbUtils.getIPWBReplayConfig()
 
     tgURI = 'http://{0}:{1}/timegate/{2}'.format(
         hostAndPort[0],
@@ -347,10 +347,10 @@ def showTimeMap(urir, format):
 
 def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
-    indexPath = ipwbConfig.getIPWBReplayIndexPath()
+    indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
-    hostAndPort = ipwbConfig.getIPWBReplayConfig()
+    hostAndPort = ipwbUtils.getIPWBReplayConfig()
 
     tgURI = 'http://{0}:{1}/timegate/{2}'.format(
         hostAndPort[0],
@@ -437,7 +437,7 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
 
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
-        dtRFC1123 = ipwbConfig.digits14ToRFC1123(datetime)
+        dtRFC1123 = ipwbUtils.digits14ToRFC1123(datetime)
         firstLastStr = ''
 
         if len(cdxjLines) > 1:
@@ -476,7 +476,7 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
 
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
-        dtRFC1123 = ipwbConfig.digits14ToRFC1123(datetime)
+        dtRFC1123 = ipwbUtils.digits14ToRFC1123(datetime)
         firstLastStr = ''
 
         if len(cdxjLines) > 1:
@@ -522,7 +522,7 @@ def all_exception_handler(error):
 # the future.
 @app.route('/config/<requestedSetting>')
 def getRequestedSetting(requestedSetting):
-    return Response(ipwbConfig.getIPFSAPIHostAndPort() + '/webui')
+    return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/webui')
 
 
 @app.route('/', defaults={'path': ''})
@@ -542,7 +542,7 @@ def show_uri(path, datetime=None):
         return getServiceWorker(path)
 
     daemonAddress = '{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT)
-    if not ipwbConfig.isDaemonAlive(daemonAddress):
+    if not ipwbUtils.isDaemonAlive(daemonAddress):
         errStr = ('IPFS daemon not running. '
                   'Start it using $ ipfs daemon on the command-line '
                   ' or from the <a href="/">'
@@ -554,7 +554,7 @@ def show_uri(path, datetime=None):
     try:
         surtedURI = surt.surt(
                      path, path_strip_trailing_slash_unless_empty=False)
-        indexPath = ipwbConfig.getIPWBReplayIndexPath()
+        indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
         searchString = surtedURI
         if datetime is not None:
@@ -665,7 +665,7 @@ def show_uri(path, datetime=None):
     newPayload = newPayload.replace('</html>', ipwbjsinject + '</html>')
     resp.set_data(newPayload)
 
-    resp.headers['Memento-Datetime'] = ipwbConfig.digits14ToRFC1123(datetime)
+    resp.headers['Memento-Datetime'] = ipwbUtils.digits14ToRFC1123(datetime)
 
     if header is None:
         resp.headers['X-Headers-Generated-By'] = 'InterPlanetary Wayback'
@@ -755,7 +755,7 @@ def extractResponseFromChunkedData(data):
 def generateDaemonStatusButton():
     text = 'Not Running'
     buttonText = 'Start'
-    if ipwbConfig.isDaemonAlive():
+    if ipwbUtils.isDaemonAlive():
         text = 'Running'
         buttonText = 'Stop'
 
@@ -793,7 +793,7 @@ def fetchRemoteCDXJFile(path):
         return dataFromIPFS
     else:  # http://, ftp://, smb://, file://
         print('Path contains a scheme, fetching remote file...')
-        fileContents = ipwbConfig.fetchRemoteFile(path)
+        fileContents = ipwbUtils.fetchRemoteFile(path)
         return fileContents
 
     # TODO: Check if valid CDXJ here before returning
@@ -836,10 +836,10 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
     uris = {}
     for i, l in enumerate(lines):
-        if not ipwbConfig.isValidCDXJLine(l):
+        if not ipwbUtils.isValidCDXJLine(l):
             continue
 
-        if ipwbConfig.isCDXJMetadataRecord(l):
+        if ipwbUtils.isCDXJMetadataRecord(l):
             continue
 
         cdxjFields = l.split(' ', 2)
@@ -877,8 +877,8 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
 
     bucket = {}
     for i, l in enumerate(lines):
-        validCDXJLine = ipwbConfig.isValidCDXJLine(l)
-        metadataRecord = ipwbConfig.isCDXJMetadataRecord(l)
+        validCDXJLine = ipwbUtils.isValidCDXJLine(l)
+        metadataRecord = ipwbUtils.isCDXJMetadataRecord(l)
         if validCDXJLine and not metadataRecord:
             mementoCount += 1
             surtURI = l.split()[0]
@@ -948,17 +948,17 @@ def getCDXJLine_binarySearch(
 
 
 def start(cdxjFilePath=INDEX_FILE, proxy=None):
-    hostPort = ipwbConfig.getIPWBReplayConfig()
+    hostPort = ipwbUtils.getIPWBReplayConfig()
     app.proxy = proxy
 
     if not hostPort:
-        ipwbConfig.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
-        hostPort = ipwbConfig.getIPWBReplayConfig()
+        ipwbUtils.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
+        hostPort = ipwbUtils.getIPWBReplayConfig()
 
-    if ipwbConfig.isDaemonAlive():
+    if ipwbUtils.isDaemonAlive():
         if cdxjFilePath == INDEX_FILE:
-            ipwbConfig.firstRun()
-        ipwbConfig.setIPWBReplayIndexPath(cdxjFilePath)
+            ipwbUtils.firstRun()
+        ipwbUtils.setIPWBReplayIndexPath(cdxjFilePath)
         app.cdxjFilePath = cdxjFilePath
     else:
         print('Sample data not pulled from IPFS.')
