@@ -155,7 +155,7 @@ accordingly. The provided docker image has designated `/data` directory,
 inside which there are `warc`, `cdxj`, and `ipfs` folders where host folders
 can be mounted separately or as a single mount point at the parent `/data`
 directory. Assuming that the host machine has a `/path/to/data` folder
-under which there are warc, cdxj, and ipfs folders and a WARC file at
+under which there are `warc`, `cdxj`, and `ipfs` folders and a WARC file at
 `/path/to/data/warc/custom.warc.gz`.
 
 ```
