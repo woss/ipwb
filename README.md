@@ -45,14 +45,14 @@ having it work on Python 3 as well (see
 
 The latest release of ipwb can be installed using pip:
 
-```bash
+```
 $ pip install ipwb
 ```
 
 The latest development version containing changes not yet released can
 be installed from source:
 
-```bash
+```
 $ git clone https://github.com/oduwsdl/ipwb
 $ cd ipwb
 $ pip install -r requirements.txt
@@ -67,7 +67,7 @@ IPFS](https://ipfs.io/docs/install/) page to accomplish this. In the
 future, we hope to make this more automated. Once ipfs is installed,
 start the daemon:
 
-```bash
+```
 $ ipfs daemon
 ```
 
@@ -76,7 +76,7 @@ starting the daemon, running the following prior to launching the daemon
 will change the API port to access to one of your choosing (here, shown
 to be 5002):
 
-```bash
+```
 $ ipfs config Addresses.API /ip4/127.0.0.1/tcp/5002
 ```
 
@@ -85,13 +85,13 @@ $ ipfs config Addresses.API /ip4/127.0.0.1/tcp/5002
 In a separate terminal session (or the same if you started the daemon in
 the background), instruct ipwb to push a WARC into IPFS:
 
-```bash
+```
 $ ipwb index (path to warc or warc.gz)
 ```
 
 ...for example, from the root of the ipwb repository:
 
-```bash
+```
 $ ipwb index ipwb/samples/warcs/salam-home.warc
 ```
 
@@ -103,7 +103,7 @@ response headers and payload, and these two bytes strings are pushed
 into IPFS. The resulting CDXJ data is written to stdout by default but
 can be redirected to a file, e.g.,
 
-```bash
+```
 $ ipwb index (path to warc or warc.gz) >> myArchiveIndex.cdxj
 ```
 
@@ -113,7 +113,7 @@ An archival replay system is also included with ipwb to re-experience
 the content disseminated to IPFS . The replay system can be launched
 using the provided sample data with:
 
-```bash
+```
 $ ipwb replay
 ```
 
@@ -121,14 +121,14 @@ A CDXJ index can also be provided and used by the ipwb replay system by
 specifying the path of the index file as a parameter to the replay
 system:
 
-```bash
+```
 $ ipwb replay <path/to/cdxj>
 ```
 
 ipwb also supports using an IPFS hash or any HTTP location as the source
 of the CDXJ:
 
-```bash
+```
 $ ipwb replay http://myDomain/files/myIndex.cdxj
 $ ipwb replay QmYwAPJzv5CZsnANOTaREALhashYgPpHdWEz79ojWnPbdG
 ```
@@ -140,7 +140,7 @@ a web browser, e.g., <http://localhost:5000/> by default.
 
 A pre-built Docker image is made available that can be run as following:
 
-```bash
+```
 $ docker container run -it --rm -p 5000:5000 oduwsdl/ipwb
 ```
 
@@ -158,7 +158,7 @@ directory. Assuming that the host machine has a `/path/to/data` folder
 under which there are warc, cdxj, and ipfs folders and a WARC file at
 `/path/to/data/warc/custom.warc.gz`.
 
-```bash
+```
 $ docker container run -it --rm -v /path/to/data:/data oduwsdl/ipwb ipwb index -o /data/cdxj/custom.cdxj /data/warc/custom.warc.gz
 $ docker container run -it --rm -v /path/to/data:/data -p 5000:5000 oduwsdl/ipwb ipwb replay /data/cdxj/custom.cdxj
 ```
@@ -170,7 +170,7 @@ separately.
 To build an image from the source, run the following command from the
 directory where the source code is checked out.
 
-```bash
+```
 $ docker image build -t ipwb .
 ```
 
@@ -179,7 +179,7 @@ $ docker image build -t ipwb .
 Usage of sub-commands in ipwb can be accessed through providing the `-h`
 or `--help` flag, like any of the below.
 
-```bash
+```
 $ ipwb -h
 usage: ipwb [-h] [-d DAEMON_ADDRESS] [-o OUTFILE] [-v] {index,replay} ...
 
@@ -201,7 +201,7 @@ ipwb commands:
     replay              Start the ipwb replay system
 ```
 
-```bash
+```
 $ ipwb index -h
 usage: ipwb [-h] [-e] [-c] [--compressFirst] [-o OUTFILE] [--debug]
             index <warcPath> [index <warcPath> ...]
@@ -221,7 +221,7 @@ optional arguments:
   --debug               Convenience flag to help with testing and debugging
 ```
 
-```bash
+```
 $ ipwb replay -h
 usage: ipwb replay [-h] [-P [<host:port>]] [index]
 
