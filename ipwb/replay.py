@@ -324,7 +324,6 @@ def showTimeMap(urir, format):
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
     tmContentType = ''
 
-
     hostAndPort = ipwbConfig.getIPWBReplayConfig()
 
     tgURI = 'http://{0}:{1}/timegate/{2}'.format(
