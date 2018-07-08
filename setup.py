@@ -3,7 +3,8 @@
 from setuptools import setup
 from ipwb import __version__
 
-long_description = open('README.rst').read()
+with open('README.md') as f:
+    long_description = f.read()
 desc = """InterPlanetary Wayback (ipwb): Web Archive integration with IPFS"""
 
 setup(
@@ -17,6 +18,7 @@ setup(
     packages=['ipwb'],
     license='MIT',
     long_description=long_description,
+    long_description_content_type="text/markdown",
     provides=[
         'ipwb'
     ],
