@@ -1,13 +1,12 @@
 [![image](https://raw.githubusercontent.com/oduwsdl/ipwb/master/docs/logo.png)](https://pypi.python.org/pypi/ipwb)
 
-InterPlanetary Wayback (ipwb)
------------------------------
+# InterPlanetary Wayback (ipwb)
 
-### Peer-To-Peer Permanence of Web Archives
+**Peer-To-Peer Permanence of Web Archives**
 
-![travis](https://travis-ci.org/oduwsdl/ipwb.svg?branch=master)
-![pypi](https://img.shields.io/pypi/v/ipwb.svg)
-![codecov](https://codecov.io/gh/oduwsdl/ipwb/branch/master/graph/badge.svg)
+[![Build Status](https://travis-ci.org/oduwsdl/ipwb.svg?branch=master)](https://travis-ci.org/oduwsdl/ipwb)
+[![pypi](https://img.shields.io/pypi/v/ipwb.svg)](https://pypi.org/project/ipwb)
+[![codecov](https://codecov.io/gh/oduwsdl/ipwb/branch/master/graph/badge.svg)](https://codecov.io/gh/oduwsdl/ipwb)
 
 InterPlanetary Wayback (ipwb) facilitates permanence and collaboration
 in web archives by disseminating the contents of
@@ -38,29 +37,29 @@ A pictorial representation of the ipwb indexing and replay process:
 
 ![image](https://raw.githubusercontent.com/oduwsdl/ipwb/master/docs/diagram_72.png)
 
-### Installing
+## Installing
 
 InterPlanetary Wayback requires Python 2.7+ though we are working on
 having it work on Python 3 as well (see
-[\#51](https://github.com/oduwsdl/ipwb/issues/51)).
+[#51](https://github.com/oduwsdl/ipwb/issues/51)).
 
 The latest release of ipwb can be installed using pip:
 
-``` {.sourceCode .bash}
+```
 $ pip install ipwb
 ```
 
 The latest development version containing changes not yet released can
 be installed from source:
 
-``` {.sourceCode .bash}
+```
 $ git clone https://github.com/oduwsdl/ipwb
 $ cd ipwb
 $ pip install -r requirements.txt
 $ pip install ./
 ```
 
-### Setup
+## Setup
 
 The InterPlanetary Filesystem (ipfs) daemon must be installed and
 running before starting ipwb. See the [Install
@@ -68,7 +67,7 @@ IPFS](https://ipfs.io/docs/install/) page to accomplish this. In the
 future, we hope to make this more automated. Once ipfs is installed,
 start the daemon:
 
-``` {.sourceCode .bash}
+```
 $ ipfs daemon
 ```
 
@@ -77,22 +76,22 @@ starting the daemon, running the following prior to launching the daemon
 will change the API port to access to one of your choosing (here, shown
 to be 5002):
 
-``` {.sourceCode .bash}
+```
 $ ipfs config Addresses.API /ip4/127.0.0.1/tcp/5002
 ```
 
-### Indexing
+## Indexing
 
 In a separate terminal session (or the same if you started the daemon in
 the background), instruct ipwb to push a WARC into IPFS:
 
-``` {.sourceCode .bash}
+```
 $ ipwb index (path to warc or warc.gz)
 ```
 
-\...for example, from the root of the ipwb repository:
+...for example, from the root of the ipwb repository:
 
-``` {.sourceCode .bash}
+```
 $ ipwb index ipwb/samples/warcs/salam-home.warc
 ```
 
@@ -104,17 +103,17 @@ response headers and payload, and these two bytes strings are pushed
 into IPFS. The resulting CDXJ data is written to stdout by default but
 can be redirected to a file, e.g.,
 
-``` {.sourceCode .bash}
+```
 $ ipwb index (path to warc or warc.gz) >> myArchiveIndex.cdxj
 ```
 
-### Replaying
+## Replaying
 
 An archival replay system is also included with ipwb to re-experience
 the content disseminated to IPFS . The replay system can be launched
 using the provided sample data with:
 
-``` {.sourceCode .bash}
+```
 $ ipwb replay
 ```
 
@@ -122,26 +121,26 @@ A CDXJ index can also be provided and used by the ipwb replay system by
 specifying the path of the index file as a parameter to the replay
 system:
 
-``` {.sourceCode .bash}
+```
 $ ipwb replay <path/to/cdxj>
 ```
 
 ipwb also supports using an IPFS hash or any HTTP location as the source
 of the CDXJ:
 
-``` {.sourceCode .bash}
+```
 $ ipwb replay http://myDomain/files/myIndex.cdxj
 $ ipwb replay QmYwAPJzv5CZsnANOTaREALhashYgPpHdWEz79ojWnPbdG
 ```
 
-Once started, the replay system\'s web interface can be accessed through
+Once started, the replay system's web interface can be accessed through
 a web browser, e.g., <http://localhost:5000/> by default.
 
-### Using Docker
+## Using Docker
 
 A pre-built Docker image is made available that can be run as following:
 
-``` {.sourceCode .bash}
+```
 $ docker container run -it --rm -p 5000:5000 oduwsdl/ipwb
 ```
 
@@ -151,36 +150,36 @@ be ready, then the replay will be accessible at <http://localhost:5000/>
 with a sample archived page.
 
 To index and replay your own WARC file, bind mount your data folders
-inside the container using -v (or \--volume) flag and run commands
-accordingly. The provided docker image has designated /data directory,
-inside which there are warc, cdxj, and ipfs folders where host folders
-can be mounted separately or as a single mount point at the parent /data
-directory. Assuming that the host machine has a /path/to/data folder
+inside the container using `-v` (or `--volume`) flag and run commands
+accordingly. The provided docker image has designated `/data` directory,
+inside which there are `warc`, `cdxj`, and `ipfs` folders where host folders
+can be mounted separately or as a single mount point at the parent `/data`
+directory. Assuming that the host machine has a `/path/to/data` folder
 under which there are warc, cdxj, and ipfs folders and a WARC file at
-/path/to/data/warc/custom.warc.gz.
+`/path/to/data/warc/custom.warc.gz`.
 
-``` {.sourceCode .bash}
+```
 $ docker container run -it --rm -v /path/to/data:/data oduwsdl/ipwb ipwb index -o /data/cdxj/custom.cdxj /data/warc/custom.warc.gz
 $ docker container run -it --rm -v /path/to/data:/data -p 5000:5000 oduwsdl/ipwb ipwb replay /data/cdxj/custom.cdxj
 ```
 
 If the host folder structure is something other than
-/some/path/{warc,cdxj,ipfs} then these volumes need to be mounted
+`/some/path/{warc,cdxj,ipfs}` then these volumes need to be mounted
 separately.
 
 To build an image from the source, run the following command from the
 directory where the source code is checked out.
 
-``` {.sourceCode .bash}
+```
 $ docker image build -t ipwb .
 ```
 
-### Help
+## Help
 
-Usage of sub-commands in ipwb can be accessed through providing the -h
-or \--help flag, like any of the below.
+Usage of sub-commands in ipwb can be accessed through providing the `-h`
+or `--help` flag, like any of the below.
 
-``` {.sourceCode .bash}
+```
 $ ipwb -h
 usage: ipwb [-h] [-d DAEMON_ADDRESS] [-o OUTFILE] [-v] {index,replay} ...
 
@@ -202,7 +201,7 @@ ipwb commands:
     replay              Start the ipwb replay system
 ```
 
-``` {.sourceCode .bash}
+```
 $ ipwb index -h
 usage: ipwb [-h] [-e] [-c] [--compressFirst] [-o OUTFILE] [--debug]
             index <warcPath> [index <warcPath> ...]
@@ -222,7 +221,7 @@ optional arguments:
   --debug               Convenience flag to help with testing and debugging
 ```
 
-``` {.sourceCode .bash}
+```
 $ ipwb replay -h
 usage: ipwb replay [-h] [-P [<host:port>]] [index]
 
@@ -237,7 +236,7 @@ optional arguments:
                         Proxy URL
 ```
 
-### Project History
+## Project History
 
 This repo contains the code for integrating
 [WARC](http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717)s and
@@ -259,11 +258,6 @@ also presented at:
     Archiving Conference (WAC) 2017](http://netpreserve.org/wac2017/) in
     London, England in June 2017.
 
-License
--------
+# License
 
 MIT
-
-> target
->
-> :   <https://travis-ci.org/oduwsdl/ipwb>
