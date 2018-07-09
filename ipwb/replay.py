@@ -531,8 +531,9 @@ def getRequestedSetting(requestedSetting):
 # The key here could either be 'header' or 'payload'.
 # Using the mutable 'message' dict instead of returning a value due to the
 # asynchronous nature of threads which is being utilized to call this function.
-def load_from_ipfs(digest, message, key):
+def loadFromIPFS(digest, message, key):
     message[key] = IPFS_API.cat(digest)
+
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -591,9 +592,9 @@ def show_uri(path, datetime=None):
     payload = None
     try:
         message = {'header': None, 'payload': None}
-        fetchHeader  = Thread(target=load_from_ipfs,
-                              args=(digests[-2], message, 'header'))
-        fetchPayload = Thread(target=load_from_ipfs,
+        fetchHeader = Thread(target=loadFromIPFS,
+                             args=(digests[-2], message, 'header'))
+        fetchPayload = Thread(target=loadFromIPFS,
                               args=(digests[-1], message, 'payload'))
         IPFSTIMEOUT = 10
         fetch_start = time.time()
@@ -601,7 +602,7 @@ def show_uri(path, datetime=None):
         fetchPayload.start()
         fetchHeader.join(IPFSTIMEOUT)
         fetchPayload.join(IPFSTIMEOUT - (time.time() - fetch_start))
-        header  = message['header']
+        header = message['header']
         payload = message['payload']
         if (time.time() - fetch_start) >= IPFSTIMEOUT:
             if payload is None:
