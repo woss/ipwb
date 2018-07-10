@@ -10,6 +10,9 @@ LABEL      app.name="InterPlanetary Wayback (IPWB)" \
            app.repo.url="https://github.com/oduwsdl/ipwb" \
            app.authors="Mat Kelly <@machawk1> and Sawood Alam <@ibnesayeed>"
 
+# Enable unbuffered STDOUT logging
+ENV        PYTHONUNBUFFERED=1
+
 # Create folders for WARC, CDXJ and IPFS stores
 RUN        mkdir -p /data/{warc,cdxj,ipfs}
 
