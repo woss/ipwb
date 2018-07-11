@@ -187,7 +187,6 @@ function makeAnAJAXRequest (address, successFunction, failFunction, errorFunctio
 
 function injectIPWBJS () {
   registerServiceWorker()
-  // TODO: Add ipwb replay banner
 }
 
 function getServiceWorkerVersion () {
