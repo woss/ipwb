@@ -47,12 +47,12 @@ var Reconstructive = (function() {
   /**
    * init - Customize configs by supplying an object.
    *        The supplied object is merged into the existing config.
-   *        Overwrites exisiting properties and adds any exta ones.
+   *        Overwrites existing properties and adds any extra ones.
    *        Logs the id of the module for debugging.
    *        Logs a warning if the supplied argument is not an object.
    *
    * @public
-   * @param  {objec} opts - An options object to customize the config object.
+   * @param  {object} opts - An options object to customize the config object.
    */
   function init(opts) {
     if(opts instanceof Object) {
