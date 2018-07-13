@@ -30,7 +30,7 @@ from ipfsapi.exceptions import ConnectionError
 
 from six.moves import input
 
-from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
+from util import IPFSAPI_HOST, IPFSAPI_PORT
 
 # from warcio.archiveiterator import ArchiveIterator
 
@@ -44,7 +44,7 @@ from __init__ import __version__ as ipwbVersion
 
 DEBUG = False
 
-IPFS_API = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
+IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
 
 
 # TODO: put this method definition below indexFileAt()

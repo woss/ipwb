@@ -27,9 +27,9 @@ from __init__ import __version__ as ipwbVersion
 from ipfsapi.exceptions import ConnectionError
 
 
-IPFSAPI_IP = 'localhost'
+IPFSAPI_HOST = 'localhost'
 IPFSAPI_PORT = 5001
-IPWBREPLAY_IP = 'localhost'  # 127.0.0.1
+IPWBREPLAY_HOST = 'localhost'
 IPWBREPLAY_PORT = 5000
 
 INDEX_FILE = 'samples/indexes/sample-encrypted.cdxj'
@@ -39,9 +39,9 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 
-def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_IP, IPFSAPI_PORT)):
+def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_HOST, IPFSAPI_PORT)):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    client = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
+    client = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
 
     try:
         # OSError if ipfs not installed, redundant of below
@@ -126,7 +126,7 @@ def isLocalHosty(uri):
 def setupIPWBInIPFSConfig():
     hostPort = getIPWBReplayConfig()
     if not hostPort:
-        setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
+        setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
 
 
 def retrieveMemCount():
@@ -258,7 +258,7 @@ def setIPWBReplayIndexPath(cdxj):
 def getIPWBReplayIndexPath():
     ipfsJSON = readIPFSConfig()
     if 'Ipwb' not in ipfsJSON:
-        setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
+        setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
         ipfsJSON = readIPFSConfig()
 
     if 'Index' in ipfsJSON['Ipwb']['Replay']:
