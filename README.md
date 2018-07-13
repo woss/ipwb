@@ -125,7 +125,7 @@ Usage of sub-commands in ipwb can be accessed through providing the `-h` or `--h
 
 ```
 $ ipwb -h
-usage: ipwb [-h] [-d DAEMON_ADDRESS] [-o OUTFILE] [-v] {index,replay} ...
+usage: ipwb [-h] [-d DAEMON_ADDRESS] [-v] {index,replay} ...
 
 InterPlanetary Wayback (ipwb)
 
@@ -133,8 +133,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -d DAEMON_ADDRESS, --daemon DAEMON_ADDRESS
                         Location of ipfs daemon (default 127.0.0.1:5001)
-  -o OUTFILE, --outfile OUTFILE
-                        Filename of newly created CDXJ index file
   -v, --version         Report the version of ipwb
 
 ipwb commands:
