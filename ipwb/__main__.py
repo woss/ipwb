@@ -131,11 +131,13 @@ def checkArgs(argsIn):
 
     argCount = len(argsIn)
     cmdList = ['index', 'replay']
+    baseParserFlagList = ['-d', '--daemon', '-v', '--version']
 
     # Various invocation error, used to show appropriate help
     cmdError_index = argCount == 2 and argsIn[1] == 'index'
     cmdError_noCommand = argCount == 1
-    cmdError_invalidCommand = argCount > 1 and argsIn[1] not in cmdList
+    cmdError_invalidCommand = argCount > 1 \
+        and argsIn[1] not in cmdList + baseParserFlagList
 
     if cmdError_noCommand or cmdError_invalidCommand:
         parser.print_help()
