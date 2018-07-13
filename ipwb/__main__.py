@@ -126,9 +126,6 @@ def checkArgs(argsIn):
         default='{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT),
         dest='daemon_address')
     parser.add_argument(
-        '-o', '--outfile',
-        help='Filename of newly created CDXJ index file')
-    parser.add_argument(
         '-v', '--version', help='Report the version of ipwb', action='version',
         version='InterPlanetary Wayback ' + ipwbVersion)
 
