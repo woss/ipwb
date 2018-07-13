@@ -137,8 +137,7 @@ def checkArgs(argsIn):
     cmdError_index = argCount == 2 and argsIn[1] == 'index'
     cmdError_noCommand = argCount == 1
     cmdError_invalidCommand = argCount > 1 \
-        and argsIn[1] not in cmdList \
-        and argsIn[1] not in baseParserFlagList
+        and argsIn[1] not in cmdList + baseParserFlagList
 
     if cmdError_noCommand or cmdError_invalidCommand:
         parser.print_help()
