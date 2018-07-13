@@ -1,50 +1,46 @@
 /* eslint-env serviceworker */
 
-// This makes a module available named "reconstructive"
+// This makes a class module available named "Reconstructive"
 importScripts('/reconstructive.js')
 
-// Customize configs
-// reconstructive.init({
+// Create a Reconstructive instance with optionally customized configurations
+// const rc = new Reconstructive({
 //   id: `${NAME}:${VERSION}`,
 //   urimPattern: `${self.location.origin}/memento/<datetime>/<urir>`,
 //   bannerElementLocation: `${self.location.origin}/reconstructive-banner.js`,
 //   showBanner: false,
 //   debug: false
 // });
-Reconstructive.init({
+const rc = new Reconstructive({
   showBanner: true,
   debug: true
 })
 
 // Add any custom exclusions or modify or delete default ones
-// > reconstructive.exclusions
+// > rc.exclusions;
 // < {
-// <   notGet: f (event, config),
-// <   localResource: f (event, config)
+// <   notGet: function(FetchEvent) => boolean,
+// <   bannerElement: function(FetchEvent) => boolean,
+// <   localResource: function(FetchEvent) => boolean
 // < }
-Reconstructive.exclusions.replayRoot = (event, config) =>
+rc.exclusions.replayRoot = (event, config) =>
   event.request.url.replace(/\/+$/, '') === self.location.origin
-Reconstructive.exclusions.specialEndpint = function (event, config) {
+rc.exclusions.specialEndpint = function (event, config) {
   return ['/webui/', '/daemon/', '/config/'].some(
     ep => event.request.url.startsWith(self.location.origin + ep))
 }
 
-// Pass a custom function to generate banner markup
-// reconstructive.bannerCreator(f (response, event, config) => string)
-// Or update the rewriting logic
-// reconstructive.updateRewriter(f (response, event, config) => Response)
-
 // This is not necessary, but can be useful for debugging or in future
-self.addEventListener('install', function (event) {
-  console.log('Installing ServiceWorker.')
+self.addEventListener('install', (event) => {
+  console.log('ServiceWorker installed')
 })
 
 // This is not necessary, but can be useful for debugging or in future
-self.addEventListener('activate', function (event) {
-  console.log('Activating ServiceWorker.')
+self.addEventListener('activate', (event) => {
+  console.log('ServiceWorker Activated')
 })
 
-self.addEventListener('fetch', function (event) {
-  // Add any custom logic here to conditionally call the reroute function
-  Reconstructive.reroute(event)
+self.addEventListener('fetch', (event) => {
+  // Add any custom logic here to conditionally call the reroute method
+  rc.reroute(event)
 })
