@@ -38,7 +38,7 @@ from urlparse import urlsplit, urlunsplit  # N/A in Py3!
 import requests
 
 import util as ipwbUtils
-from util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
+from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from util import INDEX_FILE
 from requests import ReadTimeout
 
@@ -52,7 +52,7 @@ from __init__ import __version__ as ipwbVersion
 app = Flask(__name__)
 app.debug = False
 
-IPFS_API = ipfsapi.Client(IPFSAPI_IP, IPFSAPI_PORT)
+IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
 
 
 @app.after_request
@@ -541,7 +541,7 @@ def show_uri(path, datetime=None):
     if path in localScripts:
         return getServiceWorker(path)
 
-    daemonAddress = '{0}:{1}'.format(IPFSAPI_IP, IPFSAPI_PORT)
+    daemonAddress = '{0}:{1}'.format(IPFSAPI_HOST, IPFSAPI_PORT)
     if not ipwbUtils.isDaemonAlive(daemonAddress):
         errStr = ('IPFS daemon not running. '
                   'Start it using $ ipfs daemon on the command-line '
@@ -567,7 +567,7 @@ def show_uri(path, datetime=None):
         print(sys.exc_info()[0])
         respString = ('{0} not found :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
-            path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
+            path, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
         return Response(respString)
     if cdxjLine is None:  # Resource not found in archives
         return generateNoMementosInterface(path, datetime)
@@ -601,7 +601,7 @@ def show_uri(path, datetime=None):
         print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
         respString = ('{0} not found in IPFS :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
-            path, IPWBREPLAY_IP, IPWBREPLAY_PORT)
+            path, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
         return Response(respString)
     except TypeError:
         print('A type error occurred')
@@ -952,7 +952,7 @@ def start(cdxjFilePath=INDEX_FILE, proxy=None):
     app.proxy = proxy
 
     if not hostPort:
-        ipwbUtils.setIPWBReplayConfig(IPWBREPLAY_IP, IPWBREPLAY_PORT)
+        ipwbUtils.setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
         hostPort = ipwbUtils.getIPWBReplayConfig()
 
     if ipwbUtils.isDaemonAlive():
@@ -966,7 +966,7 @@ def start(cdxjFilePath=INDEX_FILE, proxy=None):
 
     try:
         print('IPWB replay started on http://{0}:{1}'.format(
-            IPWBREPLAY_IP, IPWBREPLAY_PORT
+            IPWBREPLAY_HOST, IPWBREPLAY_PORT
         ))
         app.run(host='0.0.0.0', port=IPWBREPLAY_PORT)
     except gaierror:
@@ -975,7 +975,7 @@ def start(cdxjFilePath=INDEX_FILE, proxy=None):
         app.run()
     except socketerror:
         print('Address {0}:{1} already in use!'.format(
-            IPWBREPLAY_IP, IPWBREPLAY_PORT))
+            IPWBREPLAY_HOST, IPWBREPLAY_PORT))
         sys.exit()
 
 
