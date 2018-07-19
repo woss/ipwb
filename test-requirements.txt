@@ -1,4 +1,5 @@
 flake8>=3.4
 pytest>=3.6
 pytest-cov
+pycryptodome>=3.4.11
 pytest-flake8
