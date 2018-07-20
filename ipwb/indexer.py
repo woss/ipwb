@@ -270,7 +270,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 obj['encryption_key'] = encCompOpts.get('encryptionKey')
                 obj['encryption_method'] = 'aes'
                 obj['encryption_nonce'] = nonce
-            print(obj)
+
             objJSON = json.dumps(obj)
 
             cdxjLine = '{0} {1} {2}'.format(originaluri_surted,
