@@ -44,7 +44,6 @@ from requests import ReadTimeout
 
 from base64 import b64decode
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
 from Crypto.Util.Padding import pad
 
 import base64
@@ -636,8 +635,6 @@ def show_uri(path, datetime=None):
 
         paddedEncryptionKey = pad(keyString, AES.block_size)
         key = base64.b64encode(paddedEncryptionKey)
-
-        paddedEncryptionKey = base64.b64encode(pad(keyString, AES.block_size))
 
         nonce = b64decode(jObj['encryption_nonce'])
         cipher = AES.new(key, AES.MODE_CTR, nonce=nonce)
