@@ -630,7 +630,6 @@ def show_uri(path, datetime=None):
             if 'encryption_key' in jObj:
                 keyString = jObj['encryption_key']
             else:
-                print('no key found')
                 askForKey = ('Enter a path for file',
                              ' containing decryption key: \n> ')
                 keyString = raw_input(askForKey)
