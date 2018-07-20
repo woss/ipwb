@@ -83,7 +83,6 @@ def encrypt(hstr, payload, encryptionKey):
 
     hstrBytes = base64.b64encode(cipher.encrypt(hstr)).decode('utf-8')
 
-    #encodedPayload = base64.b64encode(payload)
     payloadBytes = base64.b64encode(cipher.encrypt(payload)).decode('utf-8')
     nonce = base64.b64encode(cipher.nonce).decode('utf-8')
 
@@ -241,7 +240,8 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                     payload = zlib.compress(payload, compressionLevel)
                 if encCompOpts.get('encryptionKey') is not None:
                     encryptionKey = encCompOpts.get('encryptionKey')
-                    (hstr, payload, nonce) = encrypt(hstr, payload, encryptionKey)
+                    (hstr, payload, nonce) = \
+                        encrypt(hstr, payload, encryptionKey)
 
             # print('Adding {0} to IPFS'.format(entry.get('url')))
             ipfsHashes = pushToIPFS(hstr, payload)
