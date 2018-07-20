@@ -28,6 +28,7 @@ from flask import Flask
 from flask import Response
 from flask import request
 from flask import redirect
+from flask import abort
 from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
@@ -36,6 +37,7 @@ from socket import error as socketerror
 from urlparse import urlsplit, urlunsplit  # N/A in Py3!
 
 import requests
+from requests.exceptions import HTTPError
 
 import util as ipwbUtils
 from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
@@ -608,21 +610,26 @@ def show_uri(path, datetime=None):
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
         return Response(respString)
-    except TypeError:
+    except TypeError as e:
         print('A type error occurred')
-        print(traceback.format_exc())
-        print(sys.exc_info()[0])
+        print(e)
+        abort(500)
+    except HTTPError as e:
+        print("Fetching from the IPFS failed")
+        print(e)
+        abort(503)
     except HashNotFoundError:
         if payload is None:
             print("Hashes not found")
-            return '', 404
+            abort(404)
         else:  # payload found but not header, fabricate header
             print("HTTP header not found, fabricating for resp replay")
             header = ''
     except Exception as e:
         print('Unknown exception occurred while fetching from ipfs.')
-        print(sys.exc_info()[0])
-        sys.exit()
+        print(e)
+        abort(500)
+
     if 'encryption_method' in jObj:
         keyString = None
         while keyString is None:
