@@ -37,7 +37,8 @@ from util import IPFSAPI_HOST, IPFSAPI_PORT
 import requests
 import datetime
 
-from Crypto.Cipher import XOR
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
 import base64
 
 from __init__ import __version__ as ipwbVersion
@@ -75,13 +76,16 @@ def pushToIPFS(hstr, payload):
 
 
 def encrypt(hstr, payload, encryptionKey):
-    hstr = XOR.new(encryptionKey).encrypt(hstr)
-    hstr = base64.b64encode(hstr)
+    paddedEncryptionKey = pad(encryptionKey, AES.block_size)
+    key = base64.b64encode(paddedEncryptionKey)
+    cipher = AES.new(key, AES.MODE_CTR)
 
-    payload = XOR.new(encryptionKey).encrypt(payload)
-    payload = base64.b64encode(payload)
+    hstrBytes = base64.b64encode(cipher.encrypt(hstr)).decode('utf-8')
 
-    return [hstr, payload]
+    payloadBytes = base64.b64encode(cipher.encrypt(payload)).decode('utf-8')
+    nonce = base64.b64encode(cipher.nonce).decode('utf-8')
+
+    return [hstrBytes, payloadBytes, nonce]
 
 
 def createIPFSTempPath():
@@ -218,11 +222,12 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             httpHeaderIPFSHash = ''
             payloadIPFSHash = ''
             retryCount = 0
+            nonce = ''
 
             if encCompOpts.get('encryptTHENCompress'):
                 if encCompOpts.get('encryptionKey') is not None:
                     key = encCompOpts.get('encryptionKey')
-                    (hstr, payload) = encrypt(hstr, payload, key)
+                    (hstr, payload, nonce) = encrypt(hstr, payload, key)
                 if encCompOpts.get('compressionLevel') is not None:
                     compressionLevel = encCompOpts.get('compressionLevel')
                     hstr = zlib.compress(hstr, compressionLevel)
@@ -234,7 +239,8 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                     payload = zlib.compress(payload, compressionLevel)
                 if encCompOpts.get('encryptionKey') is not None:
                     encryptionKey = encCompOpts.get('encryptionKey')
-                    (hstr, payload) = encrypt(hstr, payload, encryptionKey)
+                    (hstr, payload, nonce) = \
+                        encrypt(hstr, payload, encryptionKey)
 
             # print('Adding {0} to IPFS'.format(entry.get('url')))
             ipfsHashes = pushToIPFS(hstr, payload)
@@ -261,7 +267,9 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             }
             if encCompOpts.get('encryptionKey') is not None:
                 obj['encryption_key'] = encCompOpts.get('encryptionKey')
-                obj['encryption_method'] = 'xor'
+                obj['encryption_method'] = 'aes'
+                obj['encryption_nonce'] = nonce
+
             objJSON = json.dumps(obj)
 
             cdxjLine = '{0} {1} {2}'.format(originaluri_surted,

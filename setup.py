@@ -26,7 +26,7 @@ setup(
         'pywb==0.33.2',
         'ipfsapi',
         'flask',
-        'pycrypto'
+        'pycryptodome>=3.4.11'
     ],
     tests_require=[
         'pytest'
