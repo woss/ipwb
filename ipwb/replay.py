@@ -42,7 +42,10 @@ from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from util import INDEX_FILE
 from requests import ReadTimeout
 
-from Crypto.Cipher import XOR
+from base64 import b64decode
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+
 import base64
 
 from werkzeug.routing import BaseConverter
@@ -514,6 +517,8 @@ def showMementoAtDatetime(urir, datetime):
 @app.errorhandler(Exception)
 def all_exception_handler(error):
     print(error)
+    print(sys.exc_info())
+
     return 'Error', 500
 
 
@@ -618,7 +623,6 @@ def show_uri(path, datetime=None):
         print('Unknown exception occurred while fetching from ipfs.')
         print(sys.exc_info()[0])
         sys.exit()
-
     if 'encryption_method' in jObj:
         keyString = None
         while keyString is None:
@@ -629,14 +633,13 @@ def show_uri(path, datetime=None):
                              ' containing decryption key: \n> ')
                 keyString = raw_input(askForKey)
 
-        encryptionMethod = None
-        if jObj['encryption_method'] == 'xor':
-            encryptionMethod = XOR
+        paddedEncryptionKey = pad(keyString, AES.block_size)
+        key = base64.b64encode(paddedEncryptionKey)
 
-        pKey = encryptionMethod.new(keyString)
-        payload = pKey.decrypt(base64.b64decode(payload))
-        hKey = encryptionMethod.new(keyString)
-        header = hKey.decrypt(base64.b64decode(header))
+        nonce = b64decode(jObj['encryption_nonce'])
+        cipher = AES.new(key, AES.MODE_CTR, nonce=nonce)
+        header = cipher.decrypt(base64.b64decode(header))
+        payload = cipher.decrypt(base64.b64decode(payload))
 
     hLines = header.split('\n')
     hLines.pop(0)
