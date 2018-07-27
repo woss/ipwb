@@ -655,7 +655,7 @@ def show_uri(path, datetime=None):
     if 'status_code' in jObj:
         status = jObj['status_code']
 
-    resp = Response(payload, status=jObj['status_code'])
+    resp = Response(payload, status=status)
 
     for idx, hLine in enumerate(hLines):
         k, v = hLine.split(': ', 1)
