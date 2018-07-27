@@ -22,7 +22,7 @@ function showURIs () {
 
       let li = document.createElement('li')
       let a = document.createElement('a')
-      a.href = datetime + '/' + uri
+      a.href = 'memento/' + datetime + '/' + uri
       a.appendChild(document.createTextNode(uri))
       dt = document.createTextNode(' (' + datetime + ')')
 
