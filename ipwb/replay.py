@@ -222,9 +222,11 @@ def resolveMemento(urir, datetime):
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
+
     if closestLine is None:
         msg = '<h1>ERROR 404</h1>'
         msg += 'No capture found for {0} at {1}.'.format(urir, datetime)
+
         return Response(msg, status=404)
 
     uri = unsurt(closestLine.split(' ')[0])
@@ -237,9 +239,12 @@ def resolveMemento(urir, datetime):
 
 @app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
 def showMemento(urir, datetime):
-    (newDatetime, linkHeader, uri) = resolveMemento(urir, datetime)
+    resolvedMemento = resolveMemento(urir, datetime)
 
-    resp = Response()
+    # resolved to a 404, flask Response object returned instead of tuple
+    if isinstance(resolvedMemento, Response):
+        return resolvedMemento
+    (newDatetime, linkHeader, uri) = resolvedMemento
 
     if newDatetime != datetime:
         resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
