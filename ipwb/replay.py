@@ -651,7 +651,11 @@ def show_uri(path, datetime=None):
     hLines = header.split('\n')
     hLines.pop(0)
 
-    resp = Response(payload)
+    status = 200
+    if 'status_code' in jObj:
+        status = jObj['status_code']
+
+    resp = Response(payload, status=jObj['status_code'])
 
     for idx, hLine in enumerate(hLines):
         k, v = hLine.split(': ', 1)
@@ -663,7 +667,7 @@ def show_uri(path, datetime=None):
                 continue  # Data may have no actually been chunked
             resp.set_data(unchunkedPayload)
 
-        if k.lower() not in ["content-type", "content-encoding"]:
+        if k.lower() not in ["content-type", "content-encoding", "location"]:
             k = "X-Archive-Orig-" + k
 
         resp.headers[k] = v
@@ -683,6 +687,12 @@ def show_uri(path, datetime=None):
     # Get TimeMap for Link response header
     # respWithLinkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
     # resp.headers['Link'] = respWithLinkHeader.replace('\n', ' ')
+
+    if status[0] == '3':
+        # Bad assumption that the URI-M will contain \d14 but works for now.
+        uriBeforeURIR = request.url[:re.search(r'/\d{14}/', request.url).end()]
+        newURIM = uriBeforeURIR + resp.headers['Location']
+        resp.headers['location'] = newURIM
 
     return resp
 
