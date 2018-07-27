@@ -242,7 +242,7 @@ def showMemento(urir, datetime):
     resolvedMemento = resolveMemento(urir, datetime)
 
     # resolved to a 404, flask Response object returned instead of tuple
-    if type(resolvedMemento) is type(Response()):
+    if isinstance(resolvedMemento, Response):
         return resolvedMemento
     (newDatetime, linkHeader, uri) = resolvedMemento
 
