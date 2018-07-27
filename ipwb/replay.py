@@ -315,7 +315,11 @@ def queryTimeGate(urir):
 
     datetime14 = ipwbUtils.rfc1123ToDigits14(adt)
 
-    (newDatetime, linkHeader, uri) = resolveMemento(urir, datetime14)
+    resolvedMemento = resolveMemento(urir, datetime14)
+
+    if isinstance(resolvedMemento, Response):
+        return resolvedMemento
+    (newDatetime, linkHeader, uri) = resolvedMemento
 
     resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
 
