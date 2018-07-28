@@ -462,9 +462,9 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
         elif len(cdxjLines) == 1:
             firstLastStr = 'first last '
 
-        tmData += ',\n<{0}{1}/{2}>; rel="{3}memento"; datetime="{4}"'.format(
-                hostAndPort, datetime, unsurt(surtURI),
-                firstLastStr, dtRFC1123)
+        tmData += ',\n<{0}memento/{1}/{2}>; rel="{3}memento"; datetime="{4}"' \
+                  .format(hostAndPort, datetime, unsurt(surtURI), firstLastStr,
+                          dtRFC1123)
     return tmData + '\n'
 
 
@@ -502,7 +502,7 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
             firstLastStr = 'first last '
 
         tmData += ('{1} {{'
-                   '"uri": "{0}{1}/{2}", '
+                   '"uri": "{0}memento/{1}/{2}", '
                    '"rel": "{3}memento", '
                    '"datetime"="{4}"}}\n').format(
                 hostAndPort, datetime, unsurt(surtURI),
@@ -516,13 +516,6 @@ def getCompleteURI(uri):
     if qs != '':
         uri += '?' + qs
     return uri
-
-
-@app.route('/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
-def showMementoAtDatetime(urir, datetime):
-    urir = getCompleteURI(urir)
-    datetime = datetime.ljust(14, '0')
-    return redirect("/memento/{0}/{1}".format(datetime, urir), code=301)
 
 
 @app.errorhandler(Exception)
