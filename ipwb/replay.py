@@ -518,13 +518,6 @@ def getCompleteURI(uri):
     return uri
 
 
-@app.route('/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
-def showMementoAtDatetime(urir, datetime):
-    urir = getCompleteURI(urir)
-    datetime = datetime.ljust(14, '0')
-    return redirect("/memento/{0}/{1}".format(datetime, urir), code=301)
-
-
 @app.errorhandler(Exception)
 def all_exception_handler(error):
     print(error)
