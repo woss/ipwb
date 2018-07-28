@@ -629,7 +629,7 @@ def show_uri(path, datetime=None):
         abort(503)
     except HashNotFoundError:
         if payload is None:
-            print("Hashes not found")
+            print("Hashes not found:\n\t{0}\n\t{1}".format(digests[-1], digests[-2]))
             abort(404)
         else:  # payload found but not header, fabricate header
             print("HTTP header not found, fabricating for resp replay")

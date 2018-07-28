@@ -32,7 +32,7 @@ IPFSAPI_PORT = 5001
 IPWBREPLAY_HOST = 'localhost'
 IPWBREPLAY_PORT = 5000
 
-INDEX_FILE = 'samples/indexes/sample-encrypted.cdxj'
+INDEX_FILE = 'samples/indexes/salam-home.cdxj'
 SAMPLE_WARC = 'samples/warcs/salam-home.warc'
 
 log = logging.getLogger('werkzeug')
@@ -292,4 +292,4 @@ def firstRun():
     print('Executing first-run procedure on provided sample data.')
 
     indexer.indexFileAt(os.path.dirname(__file__) + '/' + SAMPLE_WARC,
-                                                    'radon', quiet=True)
+                                                    quiet=True)
