@@ -462,9 +462,9 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
         elif len(cdxjLines) == 1:
             firstLastStr = 'first last '
 
-        tmData += ',\n<{0}memento/{1}/{2}>; rel="{3}memento"; datetime="{4}"'.format(
-                hostAndPort, datetime, unsurt(surtURI),
-                firstLastStr, dtRFC1123)
+        tmData += ',\n<{0}memento/{1}/{2}>; rel="{3}memento"; datetime="{4}"' \
+                  .format(hostAndPort, datetime, unsurt(surtURI), firstLastStr,
+                          dtRFC1123)
     return tmData + '\n'
 
 
