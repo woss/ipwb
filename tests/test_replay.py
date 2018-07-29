@@ -120,6 +120,13 @@ def test_unit_commandDaemon():
     (False, '../../foo'),
     (False, '../../foo/bar.baz'),
     (False, '../../foo?a=b&c=d'),
+    (False, 'ftp://example.com'),
+    (False, 'httpd://example.com'),
+    (False, 'http//example.com'),
+    (False, 'http:/example.com'),
+    (False, 'http:example.com'),
+    (False, 'http.example.com'),
+    (False, 'http-bin.com'),
 ])
 def test_isUri(expected, input):
     assert expected == bool(replay.isUri(input))
