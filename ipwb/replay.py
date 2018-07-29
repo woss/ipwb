@@ -701,7 +701,7 @@ def show_uri(path, datetime=None):
 
 
 def isUri(str):
-    return re.match('^https?://', str, flags=re.IGNORECASE):
+    return re.match('^https?://', str, flags=re.IGNORECASE)
 
 
 def generateNoMementosInterface_noDatetime(urir):
