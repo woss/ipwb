@@ -92,4 +92,37 @@ def test_unit_commandDaemon():
         assert False
 
 
+@pytest.mark.parametrize("expected,input", [
+    (True, 'http://example.com'),
+    (True, 'https://example.com'),
+    (True, 'HTTP://EXAMPLE.COM'),
+    (True, 'HTTPS://EXAMPLE.COM'),
+    (True, 'http://example.com/'),
+    (True, 'http://example.com/foo.bar'),
+    (True, 'https://www.example.com/foo?a=b&c=d'),
+    (False, ''),
+    (False, 'foo'),
+    (False, 'foo/bar.baz'),
+    (False, 'foo?a=b&c=d'),
+    (False, '/'),
+    (False, '/foo'),
+    (False, '/foo/bar.baz'),
+    (False, '/foo?a=b&c=d'),
+    (False, './'),
+    (False, './foo'),
+    (False, './foo/bar.baz'),
+    (False, './foo?a=b&c=d'),
+    (False, '../'),
+    (False, '../foo'),
+    (False, '../foo/bar.baz'),
+    (False, '../foo?a=b&c=d'),
+    (False, '../../'),
+    (False, '../../foo'),
+    (False, '../../foo/bar.baz'),
+    (False, '../../foo?a=b&c=d'),
+])
+def test_isUri(expected, input):
+    assert expected == bool(replay.isUri(input))
+
+
 # TODO: Have unit tests for each function in replay.py
