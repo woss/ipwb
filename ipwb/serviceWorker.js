@@ -8,6 +8,7 @@ importScripts('/reconstructive.js')
 //   id: `${NAME}:${VERSION}`,
 //   urimPattern: `${self.location.origin}/memento/<datetime>/<urir>`,
 //   bannerElementLocation: `${self.location.origin}/reconstructive-banner.js`,
+//   bannerLogoLocation: '',
 //   showBanner: false,
 //   debug: false
 // });
@@ -21,6 +22,7 @@ const rc = new Reconstructive({
 // < {
 // <   notGet: function(FetchEvent) => boolean,
 // <   bannerElement: function(FetchEvent) => boolean,
+// <   bannerLogo: function(FetchEvent) => boolean,
 // <   localResource: function(FetchEvent) => boolean
 // < }
 rc.exclusions.replayRoot = (event, config) =>

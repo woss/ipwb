@@ -1,25 +1,31 @@
 /**
- * [Reconstructive](https://github.com/oduwsdl/reconstructive) is a ServiceWorker module for client-side reconstruction of composite mementos.
+ * [Reconstructive](https://github.com/oduwsdl/Reconstructive) is a [ServiceWorker](https://www.w3.org/TR/service-workers/) module for client-side reconstruction of composite mementos.
  * It reroutes embedded resource requests to their appropriate archival version without any URL rewriting.
  * It also provides functionality to add custom archival banners or rewrite hyperlinks on the client-side.
+ * Use it in a ServiceWorker as illustrated below:
+ *
+ * ```js
+ * importScripts('https://oduwsdl.github.io/Reconstructive/reconstructive.js');
+ * const rc = new Reconstructive();
+ * self.addEventListener('fetch', rc.reroute);
+ * ```
  *
  * @overview  Reconstructive is a module to be used in a ServiceWorker of an archival replay.
  * @author    Sawood Alam <ibnesayeed@gmail.com>
- * @version   0.5.0
  * @license   MIT
  * @copyright ODU Web Science / Digital Libraries Research Group 2017
  */
 class Reconstructive {
   /**
    * Creates a new Reconstructive instance with optional configurations.
-   * 
-   * @param {{id: string, urimPattern: string, bannerElementLocation: string, showBanner: boolean, debug: boolean}} [config] - Configuration options
+   *
+   * @param {{id: string, urimPattern: string, bannerElementLocation: string, bannerLogoLocation: string, showBanner: boolean, debug: boolean}} [config] - Configuration options
    */
   constructor(config) {
     /**
      * Name of the module.
      * Treated as a constant.
-     * 
+     *
      * @type {string}
      */
     this.NAME = 'Reconstructive';
@@ -27,10 +33,10 @@ class Reconstructive {
     /**
      * Version of the module.
      * Treated as a constant.
-     * 
+     *
      * @type {string}
      */
-    this.VERSION = '0.5.0';
+    this.VERSION = '0.6.0';
 
     /**
      * Identifier of the module, sent to the server as X-ServiceWorker header.
@@ -54,6 +60,15 @@ class Reconstructive {
      * @type {string}
      */
     this.bannerElementLocation = `${self.location.origin}/reconstructive-banner.js`;
+
+    /**
+     * The URL or absolute path of the logo image to appear in the banner.
+     * An empty value will render the default Reconstructive logo as inline SVG.
+     * Only necessary if showBanner is set to true.
+     *
+     * @type {string}
+     */
+    this.bannerLogoLocation = '';
 
     /**
      * Whether or not to show an archival banner.
@@ -81,7 +96,7 @@ class Reconstructive {
 
     /**
      * A private object with varius RegExp properties (possibly derived from other properties) for internal use.
-     * 
+     *
      * @private
      * @type    {{urimPattern: RegExp, absoluteReference: RegExp, bodyEnd: RegExp}}
      */
@@ -98,11 +113,12 @@ class Reconstructive {
      * Each member function is called with the fetch event as parameters.
      * If any member returns true, the fetch event is excluded from being rerouted.
      *
-     * @type {{notGet: function(event: FetchEvent): boolean, bannerElement: function(event: FetchEvent): boolean, localResource: function(event: FetchEvent): boolean}}
+     * @type {{notGet: function(event: FetchEvent): boolean, bannerElement: function(event: FetchEvent): boolean, bannerLogo: function(event: FetchEvent): boolean, localResource: function(event: FetchEvent): boolean}}
      */
     this.exclusions = {
       notGet: event => event.request.method !== 'GET',
       bannerElement: event => this.showBanner && event.request.url.endsWith(this.bannerElementLocation),
+      bannerLogo: event => this.showBanner && this.bannerLogoLocation && event.request.url.endsWith(this.bannerLogoLocation),
       localResource: event => !(this._regexps.urimPattern.test(event.request.url) || this._regexps.urimPattern.test(event.request.referrer))
     };
 
@@ -119,8 +135,8 @@ class Reconstructive {
    * @return {boolean}          - Should the request be rerouted?
    */
   shouldExclude(event) {
-    return Object.entries(this.exclusions).some(([exclusionName, exclusionFun]) => {
-      if (exclusionFun(event)) {
+    return Object.entries(this.exclusions).some(([exclusionName, exclusionFunc]) => {
+      if (exclusionFunc(event)) {
         this.debug && console.log('Exclusion found:', exclusionName, event.request.url);
         return true
       }
@@ -303,9 +319,47 @@ class Reconstructive {
    * @return {string}              - The banner markup
    */
   createBanner(response, event) {
+    let mementoDatetime = response.headers.get('Memento-Datetime') || '';
     const [datetime, urir] = this.extractDatetimeUrir(response.url);
-    return `<script src="${this.bannerElementLocation}"></script>
-            <reconstructive-banner urir="${urir}" datetime="${datetime}"></reconstructive-banner>`;
+    if (!mementoDatetime) {
+      mementoDatetime = new Date(`${datetime.slice(0, 4)}-${datetime.slice(4, 6)}-${datetime.slice(6, 8)}T${datetime.slice(8, 10)}:${datetime.slice(10, 12)}:${datetime.slice(12, 14)}Z`).toUTCString()
+    }
+    // TODO: Extract link parser in a method
+    let rels = {};
+    const links = response.headers.get('Link');
+    if (links) {
+      links.replace(/[\r\n]+/g, ' ')
+           .replace(/^\W+|\W+$/g, '')
+           .split(/\W+</)
+           .forEach(l => {
+             let segs = l.split(/\W*;\W*/);
+             let href = segs.shift();
+             let attributes = {};
+             segs.forEach(s => {
+               let [k, v] = s.split(/\W*=\W*/);
+               attributes[k] = v;
+             });
+             attributes['rel'].split(/\s+/)
+                              .forEach(r => {
+                                rels[r] = {href: href, datetime: attributes['datetime']};
+                              });
+           });
+    }
+    return `
+      <script src="${this.bannerElementLocation}"></script>
+      <reconstructive-banner logo-src="${this.bannerLogoLocation}"
+                             urir="${urir}"
+                             memento-datetime="${mementoDatetime}"
+                             first-urim="${rels.first && rels.first.href || ''}"
+                             first-datetime="${rels.first && rels.first.datetime || ''}"
+                             last-urim="${rels.last && rels.last.href || ''}"
+                             last-datetime="${rels.last && rels.last.datetime || ''}"
+                             prev-urim="${rels.prev && rels.prev.href || ''}"
+                             prev-datetime="${rels.prev && rels.prev.datetime || ''}"
+                             next-urim="${rels.next && rels.next.href || ''}"
+                             next-datetime="${rels.next && rels.next.datetime || ''}">
+      </reconstructive-banner>
+    `;
   }
 
   /**
@@ -322,7 +376,7 @@ class Reconstructive {
     this.debug && console.log('Rerouting requested', event);
     // Let the browser deal with the requests if it matches a rerouting exclusion.
     if (this.shouldExclude(event)) return;
-    // This condition will match if the request URL is not a URI-M.
+    // This condition will match if the request URL is a URI-M.
     if (this._regexps.urimPattern.test(event.request.url)) {
       let request = this.createRequest(event);
       event.respondWith(
