@@ -42,6 +42,7 @@ from requests.exceptions import HTTPError
 import util as ipwbUtils
 from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from util import INDEX_FILE
+from util import getEncryptionCounter
 from requests import ReadTimeout
 
 from base64 import b64decode
@@ -646,8 +647,10 @@ def show_uri(path, datetime=None):
         paddedEncryptionKey = pad(keyString, AES.block_size)
         key = base64.b64encode(paddedEncryptionKey)
 
+        counter = getEncryptionCounter(base64.b64decode(header)[:16])
+
         nonce = b64decode(jObj['encryption_nonce'])
-        cipher = AES.new(key, AES.MODE_CTR, nonce=nonce)
+        cipher = AES.new(key, AES.MODE_CTR, counter=counter, nonce=nonce)
         header = cipher.decrypt(base64.b64decode(header))
         payload = cipher.decrypt(base64.b64decode(payload))
 

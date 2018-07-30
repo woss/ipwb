@@ -31,7 +31,7 @@ from ipfsapi.exceptions import ConnectionError
 from six.moves import input
 
 from util import IPFSAPI_HOST, IPFSAPI_PORT
-
+from util import getEncryptionCounter
 # from warcio.archiveiterator import ArchiveIterator
 
 import requests
@@ -78,11 +78,15 @@ def pushToIPFS(hstr, payload):
 def encrypt(hstr, payload, encryptionKey):
     paddedEncryptionKey = pad(encryptionKey, AES.block_size)
     key = base64.b64encode(paddedEncryptionKey)
-    cipher = AES.new(key, AES.MODE_CTR)
+
+    seed = os.urandom(16)
+    counter = getEncryptionCounter(seed)
+
+    cipher = AES.new(key, AES.MODE_CTR, counter=counter)
 
     hstrBytes = base64.b64encode(cipher.encrypt(hstr)).decode('utf-8')
 
-    payloadBytes = base64.b64encode(cipher.encrypt(payload)).decode('utf-8')
+    payloadBytes = base64.b64encode(seed + cipher.encrypt(payload)).decode('utf-8')
     nonce = base64.b64encode(cipher.nonce).decode('utf-8')
 
     return [hstrBytes, payloadBytes, nonce]

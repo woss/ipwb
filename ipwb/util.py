@@ -23,6 +23,9 @@ import urllib2
 import json
 from __init__ import __version__ as ipwbVersion
 
+from Crypto.Util import Counter
+import binascii
+
 # from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import ConnectionError
 
@@ -278,6 +281,13 @@ def compareCurrentAndLatestIPWBVersions():
         return (None, None)
 
 
+def getEncryptionCounter(seed):
+    initialValue = int(binascii.hexlify(seed), 16)
+    counter = Counter.new(128, initial_value=initialValue)
+
+    return counter
+
+
 def firstRun():
     import indexer
     (current, latest) = compareCurrentAndLatestIPWBVersions()
@@ -290,6 +300,6 @@ def firstRun():
 
     # Ensure the sample WARC is in IPFS
     print('Executing first-run procedure on provided sample data.')
-
+    print(SAMPLE_WARC)
     indexer.indexFileAt(os.path.dirname(__file__) + '/' + SAMPLE_WARC,
                                                     quiet=True)
