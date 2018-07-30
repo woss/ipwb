@@ -20,7 +20,7 @@ RUN        mkdir -p /data/{warc,cdxj,ipfs}
 ENV        IPFS_PATH=/data/ipfs
 ARG        IPFS_VERSION=v0.4.17
 RUN        cd /tmp \
-           && wget https://dist.ipfs.io/go-ipfs/${IPFS_VERSION}/go-ipfs_${IPFS_VERSION}_linux-amd64.tar.gz \
+           && wget -q https://dist.ipfs.io/go-ipfs/${IPFS_VERSION}/go-ipfs_${IPFS_VERSION}_linux-amd64.tar.gz \
            && tar xvfz go-ipfs*.tar.gz \
            && mv go-ipfs/ipfs /usr/local/bin/ipfs \
            && rm -rf go-ipfs* \
