@@ -71,6 +71,15 @@ class Reconstructive {
     this.bannerLogoLocation = '';
 
     /**
+     * The URL or absolute path to link from the logo image in the banner.
+     * This should generally be set to the address of the homepage.
+     * Only necessary if showBanner is set to true.
+     *
+     * @type {string}
+     */
+    this.bannerLogoHref = '/';
+
+    /**
      * Whether or not to show an archival banner.
      * Defaults to false.
      *
@@ -113,12 +122,13 @@ class Reconstructive {
      * Each member function is called with the fetch event as parameters.
      * If any member returns true, the fetch event is excluded from being rerouted.
      *
-     * @type {{notGet: function(event: FetchEvent): boolean, bannerElement: function(event: FetchEvent): boolean, bannerLogo: function(event: FetchEvent): boolean, localResource: function(event: FetchEvent): boolean}}
+     * @type {{notGet: function(event: FetchEvent): boolean, bannerElement: function(event: FetchEvent): boolean, bannerLogo: function(event: FetchEvent): boolean, homePage: function(event: FetchEvent): boolean, localResource: function(event: FetchEvent): boolean}}
      */
     this.exclusions = {
       notGet: event => event.request.method !== 'GET',
       bannerElement: event => this.showBanner && event.request.url.endsWith(this.bannerElementLocation),
       bannerLogo: event => this.showBanner && this.bannerLogoLocation && event.request.url.endsWith(this.bannerLogoLocation),
+      homePage: event => this.showBanner && this.bannerLogoHref && event.request.url === this.bannerLogoHref,
       localResource: event => !(this._regexps.urimPattern.test(event.request.url) || this._regexps.urimPattern.test(event.request.referrer))
     };
 
@@ -348,6 +358,7 @@ class Reconstructive {
     return `
       <script src="${this.bannerElementLocation}"></script>
       <reconstructive-banner logo-src="${this.bannerLogoLocation}"
+                             home-href="${this.bannerLogoHref}"
                              urir="${urir}"
                              memento-datetime="${mementoDatetime}"
                              first-urim="${rels.first && rels.first.href || ''}"

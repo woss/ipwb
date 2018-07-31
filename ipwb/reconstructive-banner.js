@@ -6,6 +6,7 @@
  * ```html
  * <script src="reconstructive-banner.js"></script>
  * <reconstructive-banner logo-src=""
+ *                        home-href="/"
  *                        urir="https://example.com/"
  *                        memento-datetime="Mon, 06 Feb 2017 00:23:37 GMT"
  *                        first-urim="https://archive.host/memento/20170206002337/https://example.com/"
@@ -34,6 +35,7 @@ class ReconstructiveBanner extends HTMLElement {
   }
 
   connectedCallback() {
+    this.homeHref = this.getAttribute('home-href') || '/';
     this.logoSrc = this.getAttribute('logo-src') || 'data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PHBhdGggZD0iTTAgMyBhMyAzIDAgMCAxIDMtMyBoMiBsMyAzIGgtMyBhMiAyIDAgMCAwLTIgMiB2NiBhMiAyIDAgMCAwIDIgMiBoMSBsMyAzIGgtNiBhMyAzIDAgMCAxLTMtMyBaIiBmaWxsPSIjMUI0ODY5IiAvPjxwYXRoIGQ9Ik0xNiAxNiBoLTQgbC05LTkgaDYgYTIgMiAwIDAgMCAwLTQgaC0xIGwtMy0zIGg2IGEzIDMgMCAwIDEgMyAzIHY0IGEzIDMgMCAwIDEtMyAzIGgtMSBaIiBmaWxsPSIjRjI0NzM4IiAvPjwvc3ZnPg==';
     this.urir = this.getAttribute('urir') || '';
     this.mementoDatetime = this.getAttribute('memento-datetime') || '';
@@ -54,22 +56,27 @@ class ReconstructiveBanner extends HTMLElement {
       if (diff < 0) {
         return 'Capture from the future!';
       }
+      const minuteMilliseconds = 60000,
+            hourMilliseconds = 3600000,
+            dayMilliseconds = 86400000,
+            monthMilliseconds = 2629746000,
+            yearMilliseconds = 31622400000;
       let unit, quotient;
-      if (diff >= 31622400000) {
+      if (diff >= yearMilliseconds) {
         unit = 'year';
-        quotient = Math.round(diff / 31622400000);
-      } else if (diff >= 2629746000) {
+        quotient = Math.round(diff / yearMilliseconds);
+      } else if (diff >= monthMilliseconds) {
         unit = 'month';
-        quotient = Math.round(diff / 2629746000);
-      } else if (diff >= 86400000) {
+        quotient = Math.round(diff / monthMilliseconds);
+      } else if (diff >= dayMilliseconds) {
         unit = 'day';
-        quotient = Math.round(diff / 86400000);
-      } else if (diff >= 3600000) {
+        quotient = Math.round(diff / dayMilliseconds);
+      } else if (diff >= hourMilliseconds) {
         unit = 'hour';
-        quotient = Math.round(diff / 3600000);
+        quotient = Math.round(diff / hourMilliseconds);
       } else {
         unit = 'minute';
-        quotient = Math.round(diff / 60000);
+        quotient = Math.round(diff / minuteMilliseconds);
       }
       const diffStr = quotient == 1 ? `one ${unit}` : `${quotient} ${unit}s`;
       return `Captured ${diffStr} ago`;
@@ -79,6 +86,7 @@ class ReconstructiveBanner extends HTMLElement {
       <style>
         a[href=''] {
           pointer-events: none;
+          opacity: 0.4;
         }
         #wrapper {
           z-index: 99999999;
@@ -174,6 +182,7 @@ class ReconstructiveBanner extends HTMLElement {
           overflow: hidden;
           text-overflow: ellipsis;
           cursor: default;
+          user-select: none;
         }
         #next {
           grid-column: 5;
@@ -207,7 +216,9 @@ class ReconstructiveBanner extends HTMLElement {
       </style>
       <div id="wrapper" class="fab">
         <div id="container">
-          <img id="logo" class="branding" src="${this.logoSrc}" alt="Reconstructive Banner Logo">
+          <a id="home" title="Go to home" href="${this.homeHref}">
+            <img id="logo" class="branding" src="${this.logoSrc}" alt="Reconstructive Banner Logo">
+          </a>
           <form id="lookup">
             <input id="urir" class="url" value="${this.urir}">
           <form>
