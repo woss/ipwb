@@ -40,7 +40,9 @@ def startReplay(warcFilename):
                               '/samples/warcs/' + warcFilename)
     tempFilePath = '/tmp/' + ''.join(random.sample(
         string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
-    print('B2' + tempFilePath)
+
+    open(tempFilePath, 'a').close() # Create placeholder file for replay
+
     p = Process(target=replay.start, args=[tempFilePath])
     p.start()
     sleep(5)
