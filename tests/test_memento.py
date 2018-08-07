@@ -78,11 +78,6 @@ def getRelsFromURIMSinWARC(warc):
     return relsForURIMs
 
 
-@pytest.mark.skip(reason='not implemented')
-def test_mementoRelations_one():
-    pass
-
-
 @pytest.mark.mementoRelationOneCount
 def test_mementoRelations_one():
     relsForURIMs = getRelsFromURIMSinWARC('1memento.warc')
