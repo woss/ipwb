@@ -15,6 +15,7 @@ importScripts('/reconstructive.js')
 // });
 const rc = new Reconstructive({
   showBanner: true,
+  bannerLogoLocation: '/webui/logo.png',
   debug: true
 })
 
