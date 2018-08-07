@@ -237,6 +237,27 @@ def resolveMemento(urir, datetime):
     return (newDatetime, linkHeader, uri)
 
 
+@app.route('/cdxj/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
+def showCDXJForURIR(urir, datetime):
+    indexPath = ipwbUtils.getIPWBReplayIndexPath()
+
+    # Default response if no mementos for the datetime/URI-R exist
+    status = 404
+    respBody = ''
+
+    lines = getCDXJLinesWithURIR(urir, indexPath)
+
+    if len(lines) > 0:
+        closestLine = getCDXJLineClosestTo(datetime, lines)
+        closestDatetime = closestLine.split(' ', 2)[1]
+
+        if closestDatetime == datetime:
+            status = 200
+            respBody = closestLine
+
+    return Response(respBody, status=status, mimetype='application/cdxj+ors')
+
+
 @app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
 def showMemento(urir, datetime):
     resolvedMemento = resolveMemento(urir, datetime)
