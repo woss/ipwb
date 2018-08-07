@@ -276,6 +276,11 @@ def getCDXJLinesWithURIR(urir, indexPath):
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
     indexPath = getIndexFileFullPath(indexPath)
 
+    # Check that file exists prior to executing operations on it
+    if not os.path.isfile(indexPath):
+        print('The file at {0} does not exist.'.format(indexPath))
+        return []
+
     print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     cdxjLinesWithURIR = []
