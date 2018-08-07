@@ -972,11 +972,6 @@ def getCDXJLine_binarySearch(
         return lineFound
 
 
-def cdxjExists(pathOrHash):
-    getIndexFileFullPath(pathOrHash)
-    '''if not os.path.isfile(cdxjFilePath)'''
-
-
 def start(cdxjFilePath=INDEX_FILE, proxy=None):
     hostPort = ipwbUtils.getIPWBReplayConfig()
     app.proxy = proxy
