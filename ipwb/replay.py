@@ -807,7 +807,9 @@ def fetchRemoteCDXJFile(path):
             print("Trying to ipfs.cat('{0}')".format(path))
             dataFromIPFS = IPFS_API.cat(path)
         except hashNotInIPFS:
-            return ''
+            print(("The CDXJ at hash {0} could"
+                   " not be found in IPFS").format(path))
+            sys.exit()
         except Exception as e:
             print("An error occurred with ipfs.cat")
             print(sys.exc_info()[0])
@@ -970,6 +972,11 @@ def getCDXJLine_binarySearch(
         return lineFound
 
 
+def cdxjExists(pathOrHash):
+    getIndexFileFullPath(pathOrHash)
+    '''if not os.path.isfile(cdxjFilePath)'''
+
+
 def start(cdxjFilePath=INDEX_FILE, proxy=None):
     hostPort = ipwbUtils.getIPWBReplayConfig()
     app.proxy = proxy
@@ -987,10 +994,8 @@ def start(cdxjFilePath=INDEX_FILE, proxy=None):
         print('Sample data not pulled from IPFS.')
         print('Check that the IPFS daemon is running.')
 
-    # Check that supplied file exists
-    if not os.path.isfile(cdxjFilePath):
-        print('The CDX file at {0} does not exist.'.format(cdxjFilePath))
-        sys.exit()
+    # Perform checks for CDXJ file existence, TODO: reuse cached contents
+    app.cdxjFileContents = getIndexFileContents(cdxjFilePath)
 
     try:
         print('IPWB replay started on http://{0}:{1}'.format(
