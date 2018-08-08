@@ -179,7 +179,7 @@ def showMementosForURIRs(urir):
 
     if len(cdxjLinesWithURIR) == 1:
         fields = cdxjLinesWithURIR[0].split(' ', 2)
-        redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
+        redirectURI = '/memento/{1}/{0}'.format(unsurt(fields[0]), fields[1])
         return redirect(redirectURI, code=302)
 
     msg = ''
@@ -811,7 +811,9 @@ def fetchRemoteCDXJFile(path):
             print("Trying to ipfs.cat('{0}')".format(path))
             dataFromIPFS = IPFS_API.cat(path)
         except hashNotInIPFS:
-            return ''
+            print(("The CDXJ at hash {0} could"
+                   " not be found in IPFS").format(path))
+            sys.exit()
         except Exception as e:
             print("An error occurred with ipfs.cat")
             print(sys.exc_info()[0])
@@ -990,6 +992,9 @@ def start(cdxjFilePath=INDEX_FILE, proxy=None):
     else:
         print('Sample data not pulled from IPFS.')
         print('Check that the IPFS daemon is running.')
+
+    # Perform checks for CDXJ file existence, TODO: reuse cached contents
+    app.cdxjFileContents = getIndexFileContents(cdxjFilePath)
 
     try:
         print('IPWB replay started on http://{0}:{1}'.format(

@@ -12,14 +12,10 @@ import random
 import string
 import re
 import sys
-from multiprocessing import Process
-
-p = Process()
 
 
 def getURIMsFromTimeMapInWARC(warcFilename):
-    global p
-    startReplay(warcFilename)
+    ipwbTest.startReplay(warcFilename)
 
     tmURI = 'http://localhost:5000/timemap/link/memento.us/'
     tm = urllib2.urlopen(tmURI).read()
@@ -29,56 +25,28 @@ def getURIMsFromTimeMapInWARC(warcFilename):
         isAMemento = len(re.findall('rel=".*memento"', line)) > 0
         if isAMemento:
             urims.append(re.findall('<(.*)>', line)[0])
-    stopReplay()
+    ipwbTest.stopReplay()
 
     return urims
 
 
-def startReplay(warcFilename):
-    global p
-    pathOfWARC = os.path.join(os.path.dirname(moduleLocation) +
-                              '/samples/warcs/' + warcFilename)
-    tempFilePath = '/tmp/' + ''.join(random.sample(
-        string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
-    print('B2' + tempFilePath)
-    p = Process(target=replay.start, args=[tempFilePath])
-    p.start()
-    sleep(5)
-
-    cdxjList = indexer.indexFileAt(pathOfWARC, quiet=True)
-    cdxj = '\n'.join(cdxjList)
-
-    with open(tempFilePath, 'w') as f:
-        f.write(cdxj)
-
-
-def stopReplay():
-    global p
-    p.terminate()
-
-
 def getRelsFromURIMSinWARC(warc):
     urims = getURIMsFromTimeMapInWARC(warc)
-    startReplay(warc)
+    ipwbTest.startReplay(warc)
 
     # Get Link header values for each memento
     linkHeaders = []
     for urim in urims:
         linkHeaders.append(urllib2.urlopen(urim).info().getheader('Link'))
-    stopReplay()
+    ipwbTest.stopReplay()
 
     relsForURIMs = []
     for linkHeader in linkHeaders:
         relForURIM = ipwbTest.extractRelationEntriesFromLinkTimeMap(linkHeader)
         relsForURIMs.append(relForURIM)
 
-    stopReplay()
+    ipwbTest.stopReplay()
     return relsForURIMs
-
-
-@pytest.mark.skip(reason='not implemented')
-def test_mementoRelations_one():
-    pass
 
 
 @pytest.mark.mementoRelationOneCount
