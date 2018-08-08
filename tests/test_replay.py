@@ -3,11 +3,37 @@ import pytest
 import testUtil as ipwbTest
 from ipwb import replay
 from time import sleep
+
+import requests
+
 import urllib2
 
 # Successful retrieval
 # Accurate retrieval
 # Comprehensive retrieval of sub-resources
+
+
+@pytest.mark.parametrize("warc,lookup,status,location", [
+    ('salam-home.warc', 'memento/*/cs.odu.edu/~salam/', 302,
+     'http://localhost:5000/memento/20160305192247/cs.odu.edu/~salam/'),
+    ('1memento.warc', 'memento/*/memento.us', 302,
+     'http://localhost:5000/memento/20130202100000/memento.us/'),
+    ('2mementos.warc', 'memento/*/memento.us', 200, None),
+    ('salam-home.warc', 'memento/*/?url=cs.odu.edu/~salam/', 301,
+     'http://localhost:5000/memento/*/cs.odu.edu/~salam/'),
+    ('1memento.warc', 'memento/*/?url=memento.us', 301,
+     'http://localhost:5000/memento/*/memento.us'),
+    ('2mementos.warc', 'memento/*/?url=memento.us', 301,
+     'http://localhost:5000/memento/*/memento.us'),
+
+])
+def test_replay_search(warc, lookup, status, location):
+    ipwbTest.startReplay(warc)
+
+    resp = requests.get('http://localhost:5000/{}'.format(lookup),
+                        allow_redirects=False)
+    assert resp.status_code == status
+    assert resp.headers.get('location') == location
 
 
 @pytest.mark.skip(reason='not implemented')
@@ -90,6 +116,5 @@ def test_unit_commandDaemon():
         assert e.code == 404
     except Exception as e:
         assert False
-
 
 # TODO: Have unit tests for each function in replay.py

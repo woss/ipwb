@@ -3,6 +3,16 @@ import random
 import string
 import re
 
+from time import sleep
+
+from ipwb import replay
+from ipwb import indexer
+from ipwb import __file__ as moduleLocation
+
+from multiprocessing import Process
+
+p = Process()
+
 
 def createUniqueWARC():
     lines = []
@@ -38,6 +48,31 @@ def countCDXJEntries(cdxjData):
         if line[0] != '!':  # Exclude metadata from count
             urimCount += 1
     return urimCount
+
+
+def startReplay(warcFilename):
+    global p
+    pathOfWARC = os.path.join(os.path.dirname(moduleLocation) +
+                              '/samples/warcs/' + warcFilename)
+    tempFilePath = '/tmp/' + ''.join(random.sample(
+        string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
+
+    open(tempFilePath, 'a').close()  # Create placeholder file for replay
+
+    p = Process(target=replay.start, args=[tempFilePath])
+    p.start()
+    sleep(5)
+
+    cdxjList = indexer.indexFileAt(pathOfWARC, quiet=True)
+    cdxj = '\n'.join(cdxjList)
+
+    with open(tempFilePath, 'w') as f:
+        f.write(cdxj)
+
+
+def stopReplay():
+    global p
+    p.terminate()
 
 
 def extractRelationEntriesFromLinkTimeMap(tm):
