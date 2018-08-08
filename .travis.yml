@@ -15,7 +15,7 @@ install:
 script:
   - pycodestyle
   - ipfs init
-  - ipfs daemon & sleep 10; pytest
+  - ipfs daemon & sleep 10
   - py.test --cov=./
 dist: trusty
 after_success:
