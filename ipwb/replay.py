@@ -691,13 +691,17 @@ def show_uri(path, datetime=None):
     # respWithLinkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
     # resp.headers['Link'] = respWithLinkHeader.replace('\n', ' ')
 
-    if status[0] == '3':
+    if status[0] == '3' and isUri(resp.headers.get('Location')):
         # Bad assumption that the URI-M will contain \d14 but works for now.
         uriBeforeURIR = request.url[:re.search(r'/\d{14}/', request.url).end()]
         newURIM = uriBeforeURIR + resp.headers['Location']
-        resp.headers['location'] = newURIM
+        resp.headers['Location'] = newURIM
 
     return resp
+
+
+def isUri(str):
+    return re.match('^https?://', str, flags=re.IGNORECASE)
 
 
 def generateNoMementosInterface_noDatetime(urir):
