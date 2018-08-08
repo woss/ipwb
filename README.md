@@ -118,6 +118,8 @@ To build an image from the source, run the following command from the directory 
 $ docker image build -t oduwsdl/ipwb .
 ```
 
+The image building process also performs tests, so it might take a while to build the image. However, it ensures that an image will not be created with failing tests.
+
 ## Help
 
 Usage of sub-commands in ipwb can be accessed through providing the `-h` or `--help` flag, like any of the below.
