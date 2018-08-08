@@ -118,7 +118,11 @@ To build an image from the source, run the following command from the directory 
 $ docker image build -t oduwsdl/ipwb .
 ```
 
-The image building process also performs tests, so it might take a while to build the image. However, it ensures that an image will not be created with failing tests.
+By default the image building process also performs tests, so it might take a while to build the image. It ensures that an image will not be created with failing tests. However, it is possible to skip tests by supplying a build-arg `--build-arg SKIPTEST=true` as illustrated below:
+
+```
+$ docker image build --build-arg SKIPTEST=true -t oduwsdl/ipwb .
+```
 
 ## Help
 
