@@ -179,7 +179,7 @@ def showMementosForURIRs(urir):
 
     if len(cdxjLinesWithURIR) == 1:
         fields = cdxjLinesWithURIR[0].split(' ', 2)
-        redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
+        redirectURI = '/memento/{1}/{0}'.format(unsurt(fields[0]), fields[1])
         return redirect(redirectURI, code=302)
 
     msg = ''
