@@ -7,4 +7,3 @@ tox.ini
 LICENSE
 Dockerfile
 docs
-test*

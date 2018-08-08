@@ -1,6 +1,6 @@
 # Use Python 2.7 as default, but facilitate change at build time
 ARG        PYTHON_TAG=2.7
-FROM       python:${PYTHON_TAG}
+FROM       python:${PYTHON_TAG} AS base
 
 # Add some metadata
 LABEL      app.name="InterPlanetary Wayback (IPWB)" \
@@ -9,6 +9,10 @@ LABEL      app.name="InterPlanetary Wayback (IPWB)" \
            app.license.url="https://github.com/oduwsdl/ipwb/blob/master/LICENSE" \
            app.repo.url="https://github.com/oduwsdl/ipwb" \
            app.authors="Mat Kelly <@machawk1> and Sawood Alam <@ibnesayeed>"
+
+# Add a custom entrypoint script
+COPY       entrypoint.sh /usr/local/bin/
+RUN        chmod a+x /usr/local/bin/entrypoint.sh
 
 # Enable unbuffered STDOUT logging
 ENV        PYTHONUNBUFFERED=1
@@ -32,14 +36,29 @@ RUN        apt update && apt install -y locales \
            && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
            && locale-gen
 
-# Add a custom entrypoint script
-COPY       entrypoint.sh /usr/local/bin/
-RUN        chmod a+x /usr/local/bin/entrypoint.sh
-
-# Copy source files and install IPWB
+# Install basic requirements
 WORKDIR    /ipwb
 COPY       requirements.txt ./
 RUN        pip install -r requirements.txt
+
+
+# Testing stage
+FROM base AS test
+
+# Install necessary test requirements
+COPY       test-requirements.txt ./
+RUN        pip install -r test-requirements.txt
+
+# Perform tests
+COPY       . ./
+RUN        pycodestyle
+RUN        ipfs daemon & while ! curl -s localhost:5001 > /dev/null; do sleep 1; done && py.test --cov=./
+
+
+# Final production image
+FROM base
+
+# Install IPWB from the source code
 COPY       . ./
 RUN        python setup.py install
 
