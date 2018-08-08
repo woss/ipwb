@@ -35,6 +35,8 @@ def test_replay_search(warc, lookup, status, location):
     assert resp.status_code == status
     assert resp.headers.get('location') == location
 
+    ipwbTest.stopReplay()
+
 
 @pytest.mark.skip(reason='not implemented')
 def test_retrieveWARCRecord_fromIPFSHash():
