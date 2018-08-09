@@ -4,7 +4,6 @@ import argparse
 import string  # For generating a temp file for stdin
 import random  # For generating a temp file for stdin
 from __init__ import __version__ as ipwbVersion
-from util import INDEX_FILE
 
 # ipwb modules
 import replay
@@ -15,6 +14,7 @@ from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
 
 
 def main():
+    util.checkForUpdate()
     args = checkArgs(sys.argv)
 
 

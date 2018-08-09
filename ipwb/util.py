@@ -33,7 +33,6 @@ IPWBREPLAY_HOST = 'localhost'
 IPWBREPLAY_PORT = 5000
 
 INDEX_FILE = 'samples/indexes/salam-home.cdxj'
-SAMPLE_WARC = 'samples/warcs/salam-home.warc'
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -278,8 +277,7 @@ def compareCurrentAndLatestIPWBVersions():
         return (None, None)
 
 
-def firstRun():
-    import indexer
+def checkForUpdate():
     (current, latest) = compareCurrentAndLatestIPWBVersions()
 
     if current != latest and current is not None:
@@ -287,9 +285,3 @@ def firstRun():
               ' Please run pip install --upgrade ipwb.')
         print('* Latest version: {0}'.format(latest))
         print('* Installed version: {0}'.format(current))
-
-    # Ensure the sample WARC is in IPFS
-    print('Executing first-run procedure on provided sample data.')
-
-    indexer.indexFileAt(os.path.dirname(__file__) + '/' + SAMPLE_WARC,
-                                                    quiet=True)
