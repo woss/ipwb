@@ -976,7 +976,7 @@ def getCDXJLine_binarySearch(
         return lineFound
 
 
-def start(cdxjFilePath=INDEX_FILE, proxy=None):
+def start(cdxjFilePath, proxy=None):
     hostPort = ipwbUtils.getIPWBReplayConfig()
     app.proxy = proxy
 
@@ -985,8 +985,6 @@ def start(cdxjFilePath=INDEX_FILE, proxy=None):
         hostPort = ipwbUtils.getIPWBReplayConfig()
 
     if ipwbUtils.isDaemonAlive():
-        if cdxjFilePath == INDEX_FILE:
-            ipwbUtils.firstRun()
         ipwbUtils.setIPWBReplayIndexPath(cdxjFilePath)
         app.cdxjFilePath = cdxjFilePath
     else:
@@ -1010,9 +1008,6 @@ def start(cdxjFilePath=INDEX_FILE, proxy=None):
             IPWBREPLAY_HOST, IPWBREPLAY_PORT))
         sys.exit()
 
-
-if __name__ == "__main__":
-    start()
 
 # Read in URI, convert to SURT
 #  surt(uriIn)

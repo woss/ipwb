@@ -72,13 +72,7 @@ $ ipwb index (path to warc or warc.gz) >> myArchiveIndex.cdxj
 
 ## Replaying
 
-An archival replay system is also included with ipwb to re-experience the content disseminated to IPFS . The replay system can be launched using the provided sample data with:
-
-```
-$ ipwb replay
-```
-
-A CDXJ index can also be provided and used by the ipwb replay system by specifying the path of the index file as a parameter to the replay system:
+An archival replay system is also included with ipwb to re-experience the content disseminated to IPFS. A CDXJ index needs to be provided and used by the ipwb replay system by specifying the path of the index file as a parameter to the replay system:
 
 ```
 $ ipwb replay <path/to/cdxj>

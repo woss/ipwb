@@ -1,9 +1,9 @@
 import sys
+import os
 import argparse
 import string  # For generating a temp file for stdin
 import random  # For generating a temp file for stdin
 from __init__ import __version__ as ipwbVersion
-from util import INDEX_FILE
 
 # ipwb modules
 import replay
@@ -14,6 +14,7 @@ from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
 
 
 def main():
+    util.checkForUpdate()
     args = checkArgs(sys.argv)
 
 
@@ -33,8 +34,10 @@ def checkArgs_index(args):
 
 
 def checkArgs_replay(args):
+    suppliedIndexParameter = hasattr(args, 'index') and args.index is not None
     likelyPiping = not sys.stdin.isatty()
-    if likelyPiping:
+
+    if not suppliedIndexParameter and likelyPiping:
         cdxjIn = ''.join(sys.stdin.readlines())
 
         # Write data to temp file (sub-optimal)
@@ -43,6 +46,7 @@ def checkArgs_replay(args):
         with open(tempFilePath, 'w') as f:
             f.write(cdxjIn)
         args.index = tempFilePath
+        suppliedIndexParameter = True
 
     proxy = None
     if hasattr(args, 'proxy') and args.proxy is not None:
@@ -50,10 +54,12 @@ def checkArgs_replay(args):
         proxy = args.proxy
 
     # TODO: add any other sub-arguments for replay here
-    if hasattr(args, 'index') and args.index is not None:
+    if suppliedIndexParameter:
         replay.start(cdxjFilePath=args.index, proxy=proxy)
     else:
-        replay.start(proxy=proxy)
+        # TODO: call replayParser.print_help()
+        print('Please supply a CDXJ file as an argument.')
+        sys.exit()
 
 
 def checkArgs(argsIn):
@@ -65,7 +71,8 @@ def checkArgs(argsIn):
         description='InterPlanetary Wayback (ipwb)', prog="ipwb")
     subparsers = parser.add_subparsers(
         title="ipwb commands",
-        description="Invoke using \"ipwb <command>\", e.g., ipwb replay")
+        description=("Invoke using \"ipwb <command>\""
+                     ", e.g., ipwb replay <cdxjFile>"))
 
     indexParser = subparsers.add_parser(
         'index',

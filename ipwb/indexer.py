@@ -370,8 +370,3 @@ class TextRecordParser(DefaultRecordParser):
     def create_record_iter(self, raw_iter):
         raw_iter.INC_RECORD = ''
         return super(TextRecordParser, self).create_record_iter(raw_iter)
-
-
-if __name__ == '__main__':
-    checkArgs(sys.argv)
-    main()
