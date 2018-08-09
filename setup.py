@@ -24,12 +24,15 @@ setup(
     ],
     install_requires=[
         'pywb==0.33.2',
-        'ipfsapi',
-        'flask',
+        'ipfsapi>=0.4.2',
+        'Flask==0.12.2',
         'pycryptodome>=3.4.11'
     ],
     tests_require=[
-        'pytest'
+        'flake8>=3.4',
+        'pytest>=3.6',
+        'pytest-cov',
+        'pytest-flake8'
     ],
     entry_points="""
         [console_scripts]
