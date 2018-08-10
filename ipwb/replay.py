@@ -78,54 +78,52 @@ def allowed_file(filename):
     return '.' in filename and filename.lower().endswith(ALLOWED_EXTENSIONS)
 
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/upload', methods=['POST'])
 def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            warcPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(warcPath)
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        warcPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(warcPath)
 
-            cdxjPath = '/tmp/' + ''.join(random.sample(
-                string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
-            combinedcdxjPath = '/tmp/' + ''.join(random.sample(
-                string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
+        cdxjPath = '/tmp/' + ''.join(random.sample(
+            string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
+        combinedcdxjPath = '/tmp/' + ''.join(random.sample(
+            string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
 
-            # TODO: Check if semaphore lock exists, alert user if so, wait
-            # Index file, produce new.cdxj
-            print('Indexing file from uploaded WARC at {0} to {1}'.format(
-                warcPath, cdxjPath))
-            indexer.indexFileAt(warcPath, outfile=cdxjPath)
-            print('index created at {0}'.format(cdxjPath))
+        # TODO: Check if semaphore lock exists, alert user if so, wait
+        # Index file, produce new.cdxj
+        print('Indexing file from uploaded WARC at {0} to {1}'.format(
+            warcPath, cdxjPath))
+        indexer.indexFileAt(warcPath, outfile=cdxjPath)
+        print('index created at {0}'.format(cdxjPath))
 
-            # TODO: Create semaphore lock
-            # Join current.cdxj w/ new.cdxj, write to combined.cdxj
-            print('* Prior index file: ' + app.cdxjFilePath)
-            print('* Index file of new WARC: ' + cdxjPath)
-            print('* Combined index file (to-write): ' + combinedcdxjPath)
-            ipwbUtils.joinCDXJFiles(
-                app.cdxjFilePath, cdxjPath, combinedcdxjPath)
-            print('Setting ipwb replay index variables')
+        # TODO: Create semaphore lock
+        # Join current.cdxj w/ new.cdxj, write to combined.cdxj
+        print('* Prior index file: ' + app.cdxjFilePath)
+        print('* Index file of new WARC: ' + cdxjPath)
+        print('* Combined index file (to-write): ' + combinedcdxjPath)
+        ipwbUtils.joinCDXJFiles(
+            app.cdxjFilePath, cdxjPath, combinedcdxjPath)
+        print('Setting ipwb replay index variables')
 
-            # Set replay.index to path of combined.cdxj
-            ipwbUtils.setIPWBReplayIndexPath(combinedcdxjPath)
-            app.cdxjFilePath = combinedcdxjPath
-            app.cdxjFileContents = getIndexFileContents(combinedcdxjPath)
+        # Set replay.index to path of combined.cdxj
+        ipwbUtils.setIPWBReplayIndexPath(combinedcdxjPath)
+        app.cdxjFilePath = combinedcdxjPath
+        app.cdxjFileContents = getIndexFileContents(combinedcdxjPath)
 
-            # TODO: Release semaphore lock
+        # TODO: Release semaphore lock
 
-            return redirect('/')
-    return 'Upload failed, send POST'
+        return redirect('/')
 
 
 @app.route('/webui/<path:path>')
