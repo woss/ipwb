@@ -31,6 +31,7 @@ from ipfsapi.exceptions import ConnectionError
 from six.moves import input
 
 from util import IPFSAPI_HOST, IPFSAPI_PORT
+from util import generateCDXJMetadata
 
 # from warcio.archiveiterator import ArchiveIterator
 
@@ -276,18 +277,6 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                                             timestamp, objJSON)
             cdxjLines.append(cdxjLine)  # + '\n'
         return cdxjLines
-
-
-def generateCDXJMetadata(cdxjLines=None):
-    metadata = ['!context ["http://tools.ietf.org/html/rfc7089"]']
-    metaVals = {
-        'generator': "InterPlanetary Wayback v.{0}".format(ipwbVersion),
-        'created_at': '{0}'.format(datetime.datetime.now().isoformat())
-    }
-    metaVals = '!meta {0}'.format(json.dumps(metaVals))
-    metadata.append(metaVals)
-
-    return metadata
 
 
 def askUserForEncryptionKey():

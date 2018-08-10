@@ -17,6 +17,7 @@ let uris = []
 </script>
 </head>
 <body>
+
 <div id="wrapper">
   <div>
     <h1><img src="./webui/logo.png" alt="ipwb" /></h1>
@@ -35,6 +36,15 @@ let uris = []
       <p class="centered topSpace"><a id="webui" target="_blank">IPFS WebUI</a></p>
       <p class="centered"><a href="https://github.com/oduwsdl/ipwb/" target="_blank">IPWB Help</a></p>
   </details>
+      <div style="margin: auto; background-color: #eee; border: 1px solid #999; width: 400px;">
+          <label style="width: 100%; background-color: #999; display: block;">Upload WARC</label>
+        <form method="post" action="/upload" enctype="multipart/form-data">
+          <input type="file" name="file" style="display: inline-block;">
+          <input type="submit" value="Upload" style="display: inline-block;">
+        </form>
+      </div>
+
+
   </footer>
     <div id="uris" class="hidden">
     <h3 id="urisHeader"><abbr title="Uniform Resource Identifiers">URIs</abbr> locally available</h3>

@@ -18,6 +18,7 @@ import locale
 import datetime
 import logging
 import platform
+import shutil
 
 import urllib2
 import json
@@ -68,6 +69,48 @@ def logError(errIn):
 def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
     # Also, be sure to mind the meta headers starting with @/#, etc.
     return True
+
+
+def generateCDXJMetadata(cdxjLines=None):
+    metadata = ['!context ["http://tools.ietf.org/html/rfc7089"]']
+    metaVals = {
+        'generator': "InterPlanetary Wayback v.{0}".format(ipwbVersion),
+        'created_at': '{0}'.format(datetime.datetime.now().isoformat())
+    }
+    metaVals = '!meta {0}'.format(json.dumps(metaVals))
+    metadata.append(metaVals)
+
+    return metadata
+
+
+def joinCDXJFiles(cdxjPath1, cdxjPath2, outputFilePath):
+    # CDXJ2 takes precedence in surt uri and datetimes identity
+
+    # Join two files quickly
+    with open(outputFilePath, 'wb') as wfd:
+        for f in [cdxjPath1, cdxjPath2]:
+            with open(f, 'rb') as fd:
+                shutil.copyfileobj(fd, wfd, 1024 * 1024 * 10)
+
+    cdxjLines = ''
+    with open(outputFilePath, 'r') as wfd:
+        cdxjLines = wfd.read().split('\n')
+
+        # De-dupe and sort, needed for CDXJ adherence (pulled from indexer.py)
+        cdxjLines = list(set(cdxjLines))
+        cdxjLines.sort()
+
+        cdxjLines[:] = [line for line in cdxjLines
+                        if len(line) > 0 and line[0] != '!']
+
+        # Prepend metadata
+        cdxjMetadataLines = generateCDXJMetadata(cdxjLines)
+        cdxjLines = cdxjMetadataLines + cdxjLines
+
+        cdxjLines = '\n'.join(cdxjLines)
+
+    with open(outputFilePath, 'w') as wfd:
+        wfd.write(cdxjLines)
 
 
 def isValidCDXJLine(cdxjLine):

@@ -19,6 +19,8 @@ import pkg_resources
 import surt
 import re
 import signal
+import random
+import string
 
 from pywb.utils.canonicalize import unsurt
 
@@ -40,6 +42,8 @@ import util as ipwbUtils
 from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from util import INDEX_FILE
 
+import indexer
+
 from base64 import b64decode
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
@@ -50,7 +54,15 @@ from werkzeug.routing import BaseConverter
 from __init__ import __version__ as ipwbVersion
 
 
+from flask import flash, url_for
+from werkzeug.utils import secure_filename
+from flask import send_from_directory
+
+UPLOAD_FOLDER = '/tmp'
+ALLOWED_EXTENSIONS = set(['warc', 'warc.gz'])
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
 
 IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
@@ -60,6 +72,62 @@ IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
 def setServerHeader(response):
     response.headers['Server'] = 'InterPlanetary Wayback Replay/' + ipwbVersion
     return response
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            warcPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(warcPath)
+
+            cdxjPath = '/tmp/' + ''.join(random.sample(
+                string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
+            combinedcdxjPath = '/tmp/' + ''.join(random.sample(
+                string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
+
+            # Check if semaphore lock exists
+            # Index file, produce new.cdxj
+            print('Indexing file from uploaded WARC at {0} to {1}'.format(
+                warcPath, cdxjPath))
+            indexer.indexFileAt(warcPath, outfile=cdxjPath)
+            print('index created at {0}'.format(cdxjPath))
+
+            # Create semaphore
+            # Join current.cdxj w/ new.cdxj, write to combined.cdxj
+            print('* Prior index file: ' + app.cdxjFilePath)
+            print('* Index file of new WARC: ' + cdxjPath)
+            print('* Combined index file (to-write): ' + combinedcdxjPath)
+            ipwbUtils.joinCDXJFiles(
+                app.cdxjFilePath, cdxjPath, combinedcdxjPath)
+            print('Setting ipwb replay index variables')
+
+            ipwbUtils.setIPWBReplayIndexPath(combinedcdxjPath)
+            app.cdxjFilePath = combinedcdxjPath
+            app.cdxjFileContents = getIndexFileContents(combinedcdxjPath)
+
+            # Set replay.index to path of combined.cdxj
+            # Release lock
+            # Restart replay system?
+
+            return redirect('/')
+    return 'Upload failed, send POST'
 
 
 @app.route('/webui/<path:path>')
