@@ -59,7 +59,7 @@ from werkzeug.utils import secure_filename
 from flask import send_from_directory
 
 UPLOAD_FOLDER = '/tmp'
-ALLOWED_EXTENSIONS = set(['warc', 'warc.gz'])
+ALLOWED_EXTENSIONS = ('warc', 'warc.gz')
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -75,8 +75,7 @@ def setServerHeader(response):
 
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.lower().endswith(ALLOWED_EXTENSIONS)
 
 
 @app.route('/upload', methods=['GET', 'POST'])
