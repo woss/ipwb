@@ -95,6 +95,8 @@ def upload_file():
         warcPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(warcPath)
 
+        random.seed()
+
         cdxjPath = '/tmp/' + ''.join(random.sample(
             string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
         combinedcdxjPath = '/tmp/' + ''.join(random.sample(
