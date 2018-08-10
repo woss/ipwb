@@ -65,6 +65,7 @@ def checkArgs_replay(args):
         print('> ipwb replay /path/to/your/index.cdxj\n')
 
         args.onError()
+        sys.exit()
 
 
 def checkArgs(argsIn):
