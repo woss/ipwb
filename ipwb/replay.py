@@ -15,34 +15,30 @@ import os
 import ipfsapi
 import json
 import subprocess
-from subprocess import check_output
 import pkg_resources
 import surt
 import re
-import traceback
 import signal
-from pywb.utils.binsearch import iter_exact
+
 from pywb.utils.canonicalize import unsurt
-# from pywb.utils.canonicalize import canonicalize as surt
+
 from flask import Flask
 from flask import Response
 from flask import request
 from flask import redirect
 from flask import abort
-from requests.exceptions import ConnectionError
+
 from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
 from urlparse import urlsplit, urlunsplit  # N/A in Py3!
 
-import requests
 from requests.exceptions import HTTPError
 
 import util as ipwbUtils
 from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from util import INDEX_FILE
-from requests import ReadTimeout
 
 from base64 import b64decode
 from Crypto.Cipher import AES
