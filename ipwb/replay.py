@@ -75,7 +75,7 @@ def setServerHeader(response):
 
 
 def allowed_file(filename):
-    return '.' in filename and filename.lower().endswith(ALLOWED_EXTENSIONS)
+    return filename.lower().endswith(ALLOWED_EXTENSIONS)
 
 
 @app.route('/upload', methods=['POST'])
