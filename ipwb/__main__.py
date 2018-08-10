@@ -61,8 +61,10 @@ def checkArgs_replay(args):
     if suppliedIndexParameter:
         replay.start(cdxjFilePath=args.index, proxy=proxy)
     else:
-        # TODO: call replayParser.print_help()
-        print('Please supply a CDXJ file as an argument.')
+        print('ERROR: An index file must be specified if not piping, e.g.,')
+        print('> ipwb replay /path/to/your/index.cdxj\n')
+
+        args.onError()
         sys.exit()
 
 
@@ -129,7 +131,8 @@ def checkArgs(argsIn):
         help='Proxy URL',
         metavar='<host:port>',
         nargs='?')
-    replayParser.set_defaults(func=checkArgs_replay)
+    replayParser.set_defaults(func=checkArgs_replay,
+                              onError=replayParser.print_help)
 
     parser.add_argument(
         '-d', '--daemon',
