@@ -59,7 +59,7 @@ from werkzeug.utils import secure_filename
 from flask import send_from_directory
 
 UPLOAD_FOLDER = '/tmp'
-ALLOWED_EXTENSIONS = ('warc', 'warc.gz')
+ALLOWED_EXTENSIONS = ('.warc', '.warc.gz')
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
