@@ -102,14 +102,14 @@ def upload_file():
             combinedcdxjPath = '/tmp/' + ''.join(random.sample(
                 string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
 
-            # Check if semaphore lock exists
+            # TODO: Check if semaphore lock exists, alert user if so, wait
             # Index file, produce new.cdxj
             print('Indexing file from uploaded WARC at {0} to {1}'.format(
                 warcPath, cdxjPath))
             indexer.indexFileAt(warcPath, outfile=cdxjPath)
             print('index created at {0}'.format(cdxjPath))
 
-            # Create semaphore
+            # TODO: Create semaphore lock
             # Join current.cdxj w/ new.cdxj, write to combined.cdxj
             print('* Prior index file: ' + app.cdxjFilePath)
             print('* Index file of new WARC: ' + cdxjPath)
@@ -118,13 +118,12 @@ def upload_file():
                 app.cdxjFilePath, cdxjPath, combinedcdxjPath)
             print('Setting ipwb replay index variables')
 
+            # Set replay.index to path of combined.cdxj
             ipwbUtils.setIPWBReplayIndexPath(combinedcdxjPath)
             app.cdxjFilePath = combinedcdxjPath
             app.cdxjFileContents = getIndexFileContents(combinedcdxjPath)
 
-            # Set replay.index to path of combined.cdxj
-            # Release lock
-            # Restart replay system?
+            # TODO: Release semaphore lock
 
             return redirect('/')
     return 'Upload failed, send POST'
