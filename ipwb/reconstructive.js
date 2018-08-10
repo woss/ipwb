@@ -104,7 +104,7 @@ class Reconstructive {
     }
 
     /**
-     * A private object with varius RegExp properties (possibly derived from other properties) for internal use.
+     * A private object with various RegExp properties (possibly derived from other properties) for internal use.
      *
      * @private
      * @type    {{urimPattern: RegExp, absoluteReference: RegExp, bodyEnd: RegExp}}
@@ -342,7 +342,7 @@ class Reconstructive {
            .replace(/^\W+|\W+$/g, '')
            .split(/\W+</)
            .forEach(l => {
-             let segs = l.split(/\W*;\W*/);
+             let segs = l.split(/[>\s'"]*;\W*/);
              let href = segs.shift();
              let attributes = {};
              segs.forEach(s => {
