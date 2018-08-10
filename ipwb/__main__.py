@@ -39,6 +39,10 @@ def checkArgs_replay(args):
 
     if not suppliedIndexParameter and likelyPiping:
         cdxjIn = ''.join(sys.stdin.readlines())
+        if len(cdxjIn) == 0:  # Daemon was no running, so nothing was indexed
+            print(('ERROR: The IPFS daemon must be running to pipe input from'
+                  ' the indexer to the replay system.'))
+            sys.exit()
 
         # Write data to temp file (sub-optimal)
         tempFilePath = '/tmp/' + ''.join(random.sample(
