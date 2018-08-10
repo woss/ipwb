@@ -98,9 +98,9 @@ def upload_file():
         random.seed()
 
         cdxjPath = '/tmp/' + ''.join(random.sample(
-            string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
+            string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
         combinedcdxjPath = '/tmp/' + ''.join(random.sample(
-            string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
+            string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
 
         # TODO: Check if semaphore lock exists, alert user if so, wait
         # Index file, produce new.cdxj
