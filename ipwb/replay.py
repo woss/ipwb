@@ -186,7 +186,7 @@ def showMementosForURIRs(urir):
             fields = line.split(' ', 2)
             dt14 = fields[1]
             dtrfc1123 = ipwbUtils.digits14ToRFC1123(fields[1])
-            msg += ('<li><a href="/{1}/{0}">{0} at {2}</a></li>'
+            msg += ('<li><a href="/memento/{1}/{0}">{0} at {2}</a></li>'
                     .format(unsurt(fields[0]), dt14, dtrfc1123))
         msg += '</ul>'
     else:  # No captures for URI-R
