@@ -111,7 +111,7 @@ def indexFileAt(warcPaths, encryptionKey=None,
     cdxjLines = []
 
     if outfile:
-        outdir = os.path.dirname(outfile)
+        outdir = os.path.dirname(os.path.abspath(outfile))
         if not os.path.exists(outdir):
             try:
                 os.makedirs(outdir)
