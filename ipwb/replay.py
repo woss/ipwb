@@ -114,7 +114,7 @@ def upload_file():
         print('* Prior index file: ' + app.cdxjFilePath)
         print('* Index file of new WARC: ' + cdxjPath)
         print('* Combined index file (to-write): ' + combinedcdxjPath)
-        ipwbUtils.joinCDXJFiles(
+        indexer.joinCDXJFiles(
             app.cdxjFilePath, cdxjPath, combinedcdxjPath)
         print('Setting ipwb replay index variables')
 
@@ -406,6 +406,7 @@ def showTimeMap(urir, format):
         hostAndPort[0],
         hostAndPort[1], urir)
 
+    tm = ''  # Initialize for usage beyond below conditionals
     if format == 'link':
         tm = generateLinkTimeMapFromCDXJLines(
             cdxjLinesWithURIR, s, request.url, tgURI)
@@ -927,10 +928,10 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
     uris = {}
     for i, l in enumerate(lines):
-        if not ipwbUtils.isValidCDXJLine(l):
+        if not indexer.isValidCDXJLine(l):
             continue
 
-        if ipwbUtils.isCDXJMetadataRecord(l):
+        if indexer.isCDXJMetadataRecord(l):
             continue
 
         cdxjFields = l.split(' ', 2)
@@ -968,8 +969,8 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
 
     bucket = {}
     for i, l in enumerate(lines):
-        validCDXJLine = ipwbUtils.isValidCDXJLine(l)
-        metadataRecord = ipwbUtils.isCDXJMetadataRecord(l)
+        validCDXJLine = indexer.isValidCDXJLine(l)
+        metadataRecord = indexer.isCDXJMetadataRecord(l)
         if validCDXJLine and not metadataRecord:
             mementoCount += 1
             surtURI = l.split()[0]
