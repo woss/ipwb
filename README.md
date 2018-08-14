@@ -186,6 +186,7 @@ This repo contains the code for integrating [WARC](http://www.iso.org/iso/catalo
 - The [Theory and Practice on Digital Libraries (TPDL) 2016](http://www.tpdl2016.org/) in Hannover, Germany in September 2016.
 - The [Archives Unleashed 4.0: Web Archive Datathon]() in London, England in June 2017.
 - The [International Internet Preservation Consortium (IIPC) Web Archiving Conference (WAC) 2017](http://netpreserve.org/wac2017/) in London, England in June 2017.
+- The [Decentralized Web Summit 2018's](https://www.decentralizedweb.net/) IPFS Lab Day in San Francisco, CA in August 2018.
 
 # License
 
