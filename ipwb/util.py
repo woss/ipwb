@@ -18,7 +18,6 @@ import locale
 import datetime
 import logging
 import platform
-import shutil
 
 import urllib2
 import json

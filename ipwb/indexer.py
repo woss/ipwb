@@ -36,6 +36,7 @@ from util import IPFSAPI_HOST, IPFSAPI_PORT
 
 import requests
 import datetime
+import shutil
 
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
