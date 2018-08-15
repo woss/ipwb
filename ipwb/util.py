@@ -97,15 +97,7 @@ def compareVersions(versionA, versionB):
 
 
 def isCDXJMetadataRecord(cdxjLine):
-    if len(cdxjLine) == 0:
-        return False
-
-    validCDXJMetadataFields = ['!meta', '!context']
-    if '!context' in cdxjLine or '!meta' in cdxjLine:
-        firstField = cdxjLine.split(' ', 1)[0]
-        return firstField in validCDXJMetadataFields
-
-    return False
+    return cdxjLine.strip()[:1] == '!'
 
 
 def isLocalHosty(uri):
