@@ -40,6 +40,8 @@ import util as ipwbUtils
 from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from util import INDEX_FILE
 
+import indexer
+
 from base64 import b64decode
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
@@ -50,7 +52,15 @@ from werkzeug.routing import BaseConverter
 from __init__ import __version__ as ipwbVersion
 
 
+from flask import flash, url_for
+from werkzeug.utils import secure_filename
+from flask import send_from_directory
+
+UPLOAD_FOLDER = '/tmp'
+ALLOWED_EXTENSIONS = ('.warc', '.warc.gz')
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
 
 IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
@@ -60,6 +70,42 @@ IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
 def setServerHeader(response):
     response.headers['Server'] = 'InterPlanetary Wayback Replay/' + ipwbVersion
     return response
+
+
+def allowed_file(filename):
+    return filename.lower().endswith(ALLOWED_EXTENSIONS)
+
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        warcPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(warcPath)
+
+        # TODO: Check if semaphore lock exists, log it if so, wait for the lock
+        # to be released, and create a new lock
+
+        print('Indexing file from uploaded WARC at {0} to {1}'.format(
+            warcPath, app.cdxjFilePath))
+        indexer.indexFileAt(warcPath, outfile=app.cdxjFilePath)
+        print('Index updated at {0}'.format(app.cdxjFilePath))
+
+        app.cdxjFileContents = getIndexFileContents(app.cdxjFilePath)
+
+        # TODO: Release semaphore lock
+
+        return redirect('/')
 
 
 @app.route('/webui/<path:path>')
@@ -340,6 +386,7 @@ def showTimeMap(urir, format):
         hostAndPort[0],
         hostAndPort[1], urir)
 
+    tm = ''  # Initialize for usage beyond below conditionals
     if format == 'link':
         tm = generateLinkTimeMapFromCDXJLines(
             cdxjLinesWithURIR, s, request.url, tgURI)

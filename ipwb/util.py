@@ -83,14 +83,9 @@ def isValidCDXJLine(cdxjLine):
     except ValueError:  # Not valid JSON
         return False
     except NameError:
-        metadataRecord = isCDXJMetadataRecord(cdxjLine)
-        return metadataRecord
+        return isCDXJMetadataRecord(cdxjLine)
     except Exception as e:
         return False
-
-
-def sanitizecdxjLine(cdxjLine):
-    return cdxjLine
 
 
 # Compare versions of software, <0 if a<b, 0 if ==, >1 if b>a
@@ -101,15 +96,7 @@ def compareVersions(versionA, versionB):
 
 
 def isCDXJMetadataRecord(cdxjLine):
-    if len(cdxjLine) == 0:
-        return False
-
-    validCDXJMetadataFields = ['!meta', '!context']
-    if '!context' in cdxjLine or '!meta' in cdxjLine:
-        firstField = cdxjLine.split(' ', 1)[0]
-        return firstField in validCDXJMetadataFields
-
-    return False
+    return cdxjLine.strip()[:1] == '!'
 
 
 def isLocalHosty(uri):
@@ -132,7 +119,7 @@ def retrieveMemCount():
     with open(INDEX_FILE, 'r') as cdxjFile:
         for i, l in enumerate(cdxjFile):
             pass
-        return i+1
+        return i + 1
 
 
 def setLocale():

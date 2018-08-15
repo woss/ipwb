@@ -44,9 +44,10 @@ def checkArgs_replay(args):
                   ' the indexer to the replay system.'))
             sys.exit()
 
+        random.seed()
         # Write data to temp file (sub-optimal)
         tempFilePath = '/tmp/' + ''.join(random.sample(
-              string.ascii_uppercase + string.digits * 6, 6)) + '.cdxj'
+              string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
         with open(tempFilePath, 'w') as f:
             f.write(cdxjIn)
         args.index = tempFilePath
