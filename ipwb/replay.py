@@ -175,9 +175,6 @@ def commandDaemon(cmd):
         return generateDaemonStatusButton()
     elif cmd == 'start':
         subprocess.Popen(['ipfs', 'daemon'])
-        # retString = 'Failed to start IPFS daemon'
-        # if 'Daemon is ready' in check_output():
-        #  retString = 'IPFS daemon started'
         return Response('IPFS daemon starting...')
 
     elif cmd == 'stop':
@@ -187,11 +184,10 @@ def commandDaemon(cmd):
                 raise UnsupportedIPFSVersions()
             IPFS_API.shutdown()
         except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as e:
-            # go-ipfs < 0.4.10
-            if os.name == 'nt':
-                subprocess.call(['taskkill', '/im', 'ipfs.exe', '/F'])
-            else:
+            if os.name != 'nt':  # Big hammer
                 subprocess.call(['killall', 'ipfs'])
+            else:
+                subprocess.call(['taskkill', '/im', 'ipfs.exe', '/F'])
 
         return Response('IPFS daemon stopping...')
     else:
