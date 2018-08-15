@@ -188,6 +188,23 @@ This repo contains the code for integrating [WARC](http://www.iso.org/iso/catalo
 - The [International Internet Preservation Consortium (IIPC) Web Archiving Conference (WAC) 2017](http://netpreserve.org/wac2017/) in London, England in June 2017.
 - The [Decentralized Web Summit 2018's](https://www.decentralizedweb.net/) IPFS Lab Day in San Francisco, CA in August 2018.
 
+### Citing Project
+> Mat Kelly, Sawood Alam, Michael L. Nelson, and Michele C. Weigle. InterPlanetary Wayback: Peer-To-Peer Permanence of Web Archives. In _Proceedings of the 20th International Conference on Theory and Practice of Digital Libraries_, pages 411–416, Hamburg, Germany, June 2016.
+
+```
+@INPROCEEDINGS {ipwb-tpdl2016,
+  AUTHOR = {Mat Kelly and Sawood Alam and Michael L. Nelson and Michele C. Weigle},
+  TITLE = {InterPlanetary Wayback: Peer-To-Peer Permanence of Web Archives},
+  BOOKTITLE = {Proceedings of the 20th International Conference on Theory and Practice of Digital Libraries},
+  YEAR = {2016},
+  ADDRESS = {Hamburg, Germany},
+  MONTH = {June},
+  PDF = {http://www.cs.odu.edu/~mkelly/papers/2016_tpdl_ipwb.pdf},
+  PAGES = {411--416},
+  DOI = {10.1007/978-3-319-43997-6_35}
+}
+```
+
 # License
 
 MIT
