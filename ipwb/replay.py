@@ -99,7 +99,7 @@ def upload_file():
         indexer.indexFileAt(warcPath, outfile=app.cdxjFilePath)
         print('Index updated at {0}'.format(app.cdxjFilePath))
 
-        app.cdxjFileContents = getIndexFileContents(combinedcdxjPath)
+        app.cdxjFileContents = getIndexFileContents(app.cdxjFilePath)
 
         # TODO: Release semaphore lock
 
