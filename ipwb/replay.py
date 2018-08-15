@@ -95,33 +95,17 @@ def upload_file():
         warcPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(warcPath)
 
-        random.seed()
-
-        cdxjPath = '/tmp/' + ''.join(random.sample(
-            string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
-        combinedcdxjPath = '/tmp/' + ''.join(random.sample(
-            string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
-
         # TODO: Check if semaphore lock exists, alert user if so, wait
         # Index file, produce new.cdxj
-        print('Indexing file from uploaded WARC at {0} to {1}'.format(
-            warcPath, cdxjPath))
-        indexer.indexFileAt(warcPath, outfile=cdxjPath)
-        print('index created at {0}'.format(cdxjPath))
+        #print('Indexing file from uploaded WARC at {0} to {1}'.format(
+        #    warcPath, cdxjPath))
+        indexer.indexFileAt(warcPath, outfile=app.cdxjFilePath)
+        print('Index updated at {0}'.format(app.cdxjFilePath))
 
         # TODO: Create semaphore lock
         # Join current.cdxj w/ new.cdxj, write to combined.cdxj
-        print('* Prior index file: ' + app.cdxjFilePath)
-        print('* Index file of new WARC: ' + cdxjPath)
-        print('* Combined index file (to-write): ' + combinedcdxjPath)
-        indexer.joinCDXJFiles(
-            app.cdxjFilePath, cdxjPath, combinedcdxjPath)
-        print('Setting ipwb replay index variables')
 
-        # Set replay.index to path of combined.cdxj
-        ipwbUtils.setIPWBReplayIndexPath(combinedcdxjPath)
-        app.cdxjFilePath = combinedcdxjPath
-        app.cdxjFileContents = getIndexFileContents(combinedcdxjPath)
+        print('Setting ipwb replay index variables')
 
         # TODO: Release semaphore lock
 
@@ -1053,9 +1037,6 @@ def start(cdxjFilePath, proxy=None):
     else:
         print('Sample data not pulled from IPFS.')
         print('Check that the IPFS daemon is running.')
-
-    # Perform checks for CDXJ file existence, TODO: reuse cached contents
-    app.cdxjFileContents = getIndexFileContents(cdxjFilePath)
 
     try:
         print('IPWB replay started on http://{0}:{1}'.format(
