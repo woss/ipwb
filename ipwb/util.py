@@ -70,11 +70,42 @@ def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
     return True
 
 
+def isValidCDXJLine(cdxjLine):
+    try:
+        (surtURI, datetime, jsonData) = cdxjLine.split(' ', 2)
+
+        json.loads(jsonData)
+        validDatetime = len(datetime) == 14
+
+        validSURT = True  # TODO: check valid SURT URI
+
+        return validSURT and validDatetime
+    except ValueError:  # Not valid JSON
+        return False
+    except NameError:
+        metadataRecord = isCDXJMetadataRecord(cdxjLine)
+        return metadataRecord
+    except Exception as e:
+        return False
+
+
 # Compare versions of software, <0 if a<b, 0 if ==, >1 if b>a
 def compareVersions(versionA, versionB):
     def normalize(v):
         return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split(".")]
     return cmp(normalize(versionA), normalize(versionB))
+
+
+def isCDXJMetadataRecord(cdxjLine):
+    if len(cdxjLine) == 0:
+        return False
+
+    validCDXJMetadataFields = ['!meta', '!context']
+    if '!context' in cdxjLine or '!meta' in cdxjLine:
+        firstField = cdxjLine.split(' ', 1)[0]
+        return firstField in validCDXJMetadataFields
+
+    return False
 
 
 def isLocalHosty(uri):

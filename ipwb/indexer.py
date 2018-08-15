@@ -171,37 +171,6 @@ def indexFileAt(warcPaths, encryptionKey=None,
         print('\n'.join(cdxjLines))
 
 
-def isCDXJMetadataRecord(cdxjLine):
-    if len(cdxjLine) == 0:
-        return False
-
-    validCDXJMetadataFields = ['!meta', '!context']
-    if '!context' in cdxjLine or '!meta' in cdxjLine:
-        firstField = cdxjLine.split(' ', 1)[0]
-        return firstField in validCDXJMetadataFields
-
-    return False
-
-
-def isValidCDXJLine(cdxjLine):
-    try:
-        (surtURI, datetime, jsonData) = cdxjLine.split(' ', 2)
-
-        json.loads(jsonData)
-        validDatetime = len(datetime) == 14
-
-        validSURT = True  # TODO: check valid SURT URI
-
-        return validSURT and validDatetime
-    except ValueError:  # Not valid JSON
-        return False
-    except NameError:
-        metadataRecord = isCDXJMetadataRecord(cdxjLine)
-        return metadataRecord
-    except Exception as e:
-        return False
-
-
 def sanitizecdxjLine(cdxjLine):
     return cdxjLine
 

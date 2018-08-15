@@ -908,10 +908,10 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
     uris = {}
     for i, l in enumerate(lines):
-        if not indexer.isValidCDXJLine(l):
+        if not ipwbUtils.isValidCDXJLine(l):
             continue
 
-        if indexer.isCDXJMetadataRecord(l):
+        if ipwbUtils.isCDXJMetadataRecord(l):
             continue
 
         cdxjFields = l.split(' ', 2)
@@ -949,8 +949,8 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
 
     bucket = {}
     for i, l in enumerate(lines):
-        validCDXJLine = indexer.isValidCDXJLine(l)
-        metadataRecord = indexer.isCDXJMetadataRecord(l)
+        validCDXJLine = ipwbUtils.isValidCDXJLine(l)
+        metadataRecord = ipwbUtils.isCDXJMetadataRecord(l)
         if validCDXJLine and not metadataRecord:
             mementoCount += 1
             surtURI = l.split()[0]
