@@ -184,7 +184,7 @@ This repo contains the code for integrating [WARC](http://www.iso.org/iso/catalo
 - The [Joint Conference on Digital Libraries 2016](http://www.jcdl2016.org/) in Newark, NJ in June 2016.
 - The [Web Archiving and Digital Libraries (WADL) 2016 workshop](http://fox.cs.vt.edu/wadl2016.html) in Newark, NJ in June 2016.
 - The [Theory and Practice on Digital Libraries (TPDL) 2016](http://www.tpdl2016.org/) in Hannover, Germany in September 2016.
-- The [Archives Unleashed 4.0: Web Archive Datathon]() in London, England in June 2017.
+- The [Archives Unleashed 4.0: Web Archive Datathon](https://archivesunleashed.com/call-for-participation-au4/) in London, England in June 2017.
 - The [International Internet Preservation Consortium (IIPC) Web Archiving Conference (WAC) 2017](http://netpreserve.org/wac2017/) in London, England in June 2017.
 - The [Decentralized Web Summit 2018's](https://www.decentralizedweb.net/) IPFS Lab Day in San Francisco, CA in August 2018.
 
