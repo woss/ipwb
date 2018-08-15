@@ -95,15 +95,13 @@ def upload_file():
         warcPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(warcPath)
 
-        # TODO: Check if semaphore lock exists, alert user if so, wait
+        # TODO: Check if semaphore lock exists, log it if so, wait for the lock
+        # to be released, and create a new lock
 
         indexer.indexFileAt(warcPath, outfile=app.cdxjFilePath)
         print('Index updated at {0}'.format(app.cdxjFilePath))
 
-        # TODO: Create semaphore lock
-        # Join current.cdxj w/ new.cdxj, write to combined.cdxj
-
-        print('Setting ipwb replay index variables')
+        app.cdxjFileContents = getIndexFileContents(combinedcdxjPath)
 
         # TODO: Release semaphore lock
 
@@ -1035,6 +1033,9 @@ def start(cdxjFilePath, proxy=None):
     else:
         print('Sample data not pulled from IPFS.')
         print('Check that the IPFS daemon is running.')
+
+    # Perform checks for CDXJ file existence, TODO: reuse cached contents
+    app.cdxjFileContents = getIndexFileContents(cdxjFilePath)
 
     try:
         print('IPWB replay started on http://{0}:{1}'.format(
