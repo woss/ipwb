@@ -96,6 +96,8 @@ def upload_file():
         # TODO: Check if semaphore lock exists, log it if so, wait for the lock
         # to be released, and create a new lock
 
+        print('Indexing file from uploaded WARC at {0} to {1}'.format(
+            warcPath, app.cdxjFilePath))
         indexer.indexFileAt(warcPath, outfile=app.cdxjFilePath)
         print('Index updated at {0}'.format(app.cdxjFilePath))
 
