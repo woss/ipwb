@@ -19,8 +19,6 @@ import pkg_resources
 import surt
 import re
 import signal
-import random
-import string
 
 from pywb.utils.canonicalize import unsurt
 
