@@ -83,8 +83,7 @@ def isValidCDXJLine(cdxjLine):
     except ValueError:  # Not valid JSON
         return False
     except NameError:
-        metadataRecord = isCDXJMetadataRecord(cdxjLine)
-        return metadataRecord
+        return isCDXJMetadataRecord(cdxjLine)
     except Exception as e:
         return False
 
