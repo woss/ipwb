@@ -6,10 +6,8 @@ h1 img {height: 2.0em;}
 abbr:hover {cursor: help;}
 .hidden {display: none;}
 #uriList {list-style-type: none; text-align: left; margin: auto;}
-a#memCountListLink {border-bottom: 1px dotted black;}
+a#memCountListLink {border-bottom: 1px dotted black; cursor: pointer;}
 a#memCountListLink.activated {border-bottom: 2px solid #009900;}
-a#memCountListLink.activated:hover {cursor: default;}
-a#memCountListLink:hover {cursor: pointer;}
 p.centered {text-align: center;}
 p.topSpace {margin-top: 1.0em;}
 
