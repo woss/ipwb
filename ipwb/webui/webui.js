@@ -100,7 +100,14 @@ function addEventListeners () {
 
   let showAllInListingButton = document.getElementById('showEmbeddedURI')
   showAllInListingButton.onclick = function showAllURIs () {
-    document.getElementById('uriList').classList.add('forceDisplay')
+    const uriList = document.getElementById('uriList')
+    if (this.innerHTML === this.dataset.defaultvalue) {
+      this.innerHTML = this.dataset.activatedvalue
+      uriList.classList.add('forceDisplay')
+    } else {
+      this.innerHTML = this.dataset.defaultvalue
+      uriList.classList.remove('forceDisplay')
+    }
   }
 
   getIPFSWebUIAddress()
