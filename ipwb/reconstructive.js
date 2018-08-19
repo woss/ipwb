@@ -19,7 +19,7 @@ class Reconstructive {
   constructor(config) {
     this.NAME = 'Reconstructive';
 
-    this.VERSION = '0.6.3';
+    this.VERSION = '0.7.0';
 
     this.id = `${this.NAME}:${this.VERSION}`;
 
