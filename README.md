@@ -17,6 +17,12 @@ A pictorial representation of the ipwb indexing and replay process:
 
 ![image](https://raw.githubusercontent.com/oduwsdl/ipwb/master/docs/diagram_72.png)
 
+An important aspect of archival replay systems is rewriting various resource references for proper memento reconstruction so that they are dereferenced properly from the archive from around the same datetime as of the root memento and not from the live site (in which case the resource might have changed or gone missing). Many archival replay systems perform server-side rewriting, but it has its limitations when URIs are generated using JavaScript. To handle this we use [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) for rerouting requests on the client-side when they are dereferenced to avoid any server-side rewiring. For this, we have implemented a separate library, [Reconstructive](https://oduwsdl.github.io/Reconstructive/), which is reusable and extendable by any archival replay system.
+
+Another important feature of archival replays is the inclusion of an archival banner in mementos. The purpose of an archival banner is to highlight that a replayed page is a memento and not a live page, to provide metadata about the memento and the archive, and to facilitate additional interactivity. Many archival banners used in different web archival replay systems are obtrusive in nature and have issues like style leakage. To eliminate both of these issues we have implemented a [Custom HTML Element](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [<reconstructive-banner>](https://oduwsdl.github.io/Reconstructive/docs/class/Reconstructive/reconstructive-banner.js~ReconstructiveBanner.html) as part of the [Reconstructive](https://oduwsdl.github.io/Reconstructive/) library and used in the ipwb.
+
+Both *Service Worker* and *Custom Element* APIs are new and only supported in modern web browsers. So, we expect the replay to function properly in only the modern browsers.
+
 ## Installing
 
 InterPlanetary Wayback requires Python 2.7+ though we are working on having it work on Python 3 as well (see [#51](https://github.com/oduwsdl/ipwb/issues/51)).

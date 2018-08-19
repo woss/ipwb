@@ -1,6 +1,13 @@
 /**
  * [ReconstructiveBanner](https://oduwsdl.github.io/Reconstructive/reconstructive-banner.js) implements `<reconstructive-banner>` [Custom Element](https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements).
  * It is an unobtrusive archival replay banner to make [mementos](http://mementoweb.org/about/) interactive and surface on-demand metadata about the archived resource.
+ * The banner houses a customizable branding logo that links to the replay home.
+ * It provides a pre-populated text input to navigate the replay to a different URI-R.
+ * A brief phrase describes the age of the current memento.
+ * Navigational links to the first, last, previous, and next mementos are also provided when present.
+ * In its default floating action bar (FAB) mode it auto-hides after a set duration of inactivity if the banner is not in focus and reappears on any user activity on the page such as scroll, mousemove, or keypress.
+ * It provides controls to expand, collapse, or completely close the banner.
+ * The expanded mode has much more real estate available to house detailed archival metadata and visualizations.
  * Use it in an HTML page as illustrated below:
  *
  * ```html
@@ -26,60 +33,76 @@
  * @copyright ODU Web Science / Digital Libraries Research Group 2017
  */
 class ReconstructiveBanner extends HTMLElement {
-  /**
-   * Creates a new ReconstructiveBanner instance and attaches a Shadow DOM.
-   */
   constructor() {
     super();
-    this.shadow = this.attachShadow({mode: 'closed'});
+
+    this.shadow = this.attachShadow({ mode: 'closed' });
   }
 
   connectedCallback() {
+    this.LOGO = 'data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PHBhdGggZD0iTTAgMyBhMyAzIDAgMCAxIDMtMyBoMiBsMyAzIGgtMyBhMiAyIDAgMCAwLTIgMiB2NiBhMiAyIDAgMCAwIDIgMiBoMSBsMyAzIGgtNiBhMyAzIDAgMCAxLTMtMyBaIiBmaWxsPSIjMUI0ODY5IiAvPjxwYXRoIGQ9Ik0xNiAxNiBoLTQgbC05LTkgaDYgYTIgMiAwIDAgMCAwLTQgaC0xIGwtMy0zIGg2IGEzIDMgMCAwIDEgMyAzIHY0IGEzIDMgMCAwIDEtMyAzIGgtMSBaIiBmaWxsPSIjRjI0NzM4IiAvPjwvc3ZnPg==';
+
+    this.logoSrc = this.getAttribute('logo-src') || this.LOGO;
+
     this.homeHref = this.getAttribute('home-href') || '/';
-    this.logoSrc = this.getAttribute('logo-src') || 'data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PHBhdGggZD0iTTAgMyBhMyAzIDAgMCAxIDMtMyBoMiBsMyAzIGgtMyBhMiAyIDAgMCAwLTIgMiB2NiBhMiAyIDAgMCAwIDIgMiBoMSBsMyAzIGgtNiBhMyAzIDAgMCAxLTMtMyBaIiBmaWxsPSIjMUI0ODY5IiAvPjxwYXRoIGQ9Ik0xNiAxNiBoLTQgbC05LTkgaDYgYTIgMiAwIDAgMCAwLTQgaC0xIGwtMy0zIGg2IGEzIDMgMCAwIDEgMyAzIHY0IGEzIDMgMCAwIDEtMyAzIGgtMSBaIiBmaWxsPSIjRjI0NzM4IiAvPjwvc3ZnPg==';
+
     this.urir = this.getAttribute('urir') || '';
+
     this.mementoDatetime = this.getAttribute('memento-datetime') || '';
+
     this.firstUrim = this.getAttribute('first-urim') || '';
+
     this.firstDatetime = this.getAttribute('first-datetime') || '';
+
     this.lastUrim = this.getAttribute('last-urim') || '';
+
     this.lastDatetime = this.getAttribute('last-datetime') || '';
+
     this.prevUrim = this.getAttribute('prev-urim') || '';
+
     this.prevDatetime = this.getAttribute('prev-datetime') || '';
+
     this.nextUrim = this.getAttribute('next-urim') || '';
+
     this.nextDatetime = this.getAttribute('next-datetime') || '';
 
-    this.timeDiff = (() => {
-      const diff = Date.now() - new Date(this.mementoDatetime);
+    this.focused = false;
+
+    this.autoHideDelay = 2000;
+
+    this.displayDatetime = (() => {
+      let datetime = { relative: this.mementoDatetime, absolute: this.mementoDatetime };
+      const mementoDatetimeObj = new Date(this.mementoDatetime);
+      const diff = Date.now() - mementoDatetimeObj;
       if (isNaN(diff)) {
-        return '';
+        return datetime;
       }
+      let [mementoDate, mementoTime] = mementoDatetimeObj.toISOString().split(/[T\.]/);
+      datetime.absolute = `Captured on ${mementoDate} at ${mementoTime} UTC`;
       if (diff < 0) {
-        return 'Capture from the future!';
+        datetime.relative = 'Capture from the future!';
+        return datetime;
       }
-      const minuteMilliseconds = 60000,
-            hourMilliseconds = 3600000,
-            dayMilliseconds = 86400000,
-            monthMilliseconds = 2629746000,
-            yearMilliseconds = 31622400000;
-      let unit, quotient;
-      if (diff >= yearMilliseconds) {
-        unit = 'year';
-        quotient = Math.round(diff / yearMilliseconds);
-      } else if (diff >= monthMilliseconds) {
-        unit = 'month';
-        quotient = Math.round(diff / monthMilliseconds);
-      } else if (diff >= dayMilliseconds) {
-        unit = 'day';
-        quotient = Math.round(diff / dayMilliseconds);
-      } else if (diff >= hourMilliseconds) {
-        unit = 'hour';
-        quotient = Math.round(diff / hourMilliseconds);
-      } else {
-        unit = 'minute';
-        quotient = Math.round(diff / minuteMilliseconds);
+      const datetimeUnits = ['year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond'];
+      let datetimeParts = new Date(diff).toISOString().split(/\D/).map(x => parseInt(x));
+      datetimeParts[0] -= 1970;
+      datetimeParts[1] -= 1;
+      datetimeParts[2] -= 1;
+      let primaryUnit, secondaryUnit, primaryQuotient, secondaryQuotient;
+      for (let i = 0; i < datetimeUnits.length - 1; i++) {
+        if (datetimeParts[i] == 0) {
+          continue;
+        }
+        [primaryUnit, secondaryUnit] = datetimeUnits.slice(i, i + 2);
+        [primaryQuotient, secondaryQuotient] = datetimeParts.slice(i, i + 2);
+        break;
       }
-      const diffStr = quotient == 1 ? `one ${unit}` : `${quotient} ${unit}s`;
-      return `Captured ${diffStr} ago`;
+      let diffStr = `${primaryQuotient} ${primaryUnit}${primaryQuotient != 1 ? 's' : ''}`;
+      if (secondaryQuotient > 0) {
+        diffStr += ` and ${secondaryQuotient} ${secondaryUnit}${secondaryQuotient != 1 ? 's' : ''}`;
+      }
+      datetime.relative = `Captured ${diffStr} ago`;
+      return datetime;
     })();
 
     const template = `
@@ -185,6 +208,15 @@ class ReconstructiveBanner extends HTMLElement {
           cursor: default;
           user-select: none;
         }
+        .relative {
+          cursor: help;
+        }
+        .precision .relative, .absolute {
+          display: none;
+        }
+        .precision .absolute {
+          display: initial;
+        }
         #next {
           grid-column: 5;
           grid-row: 2;
@@ -229,7 +261,10 @@ class ReconstructiveBanner extends HTMLElement {
           <a id="prev" class="icon" title="${this.prevDatetime}" href="${this.prevUrim}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M8 28v-24h4v11l10-10v22l-10-10v11z"></path></svg>
           </a>
-          <p id="current" class="time" title="${this.mementoDatetime}">${this.timeDiff}</p>
+          <p id="current" class="datetime" title="${this.mementoDatetime}">
+            <span class="relative">${this.displayDatetime.relative}</span>
+            <span class="absolute">${this.displayDatetime.absolute}</span>
+          </p>
           <a id="next" class="icon" title="${this.nextDatetime}" href="${this.nextUrim}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M24 4v24h-4v-11l-10 10v-22l10 10v-11z"></path></svg>
           </a>
@@ -256,15 +291,14 @@ class ReconstructiveBanner extends HTMLElement {
     const container = this.shadow.getElementById('container');
     const wrapper = this.shadow.getElementById('wrapper');
 
-    this.focused = false;
     container.onmouseover = () => this.focused = true;
     container.onmouseout = () => this.focused = false;
     let focusTimer;
     const resetTimer = () => {
       wrapper.classList.remove('hidden');
       clearTimeout(focusTimer);
-      focusTimer = setTimeout(() => !this.focused && wrapper.classList.contains('fab') && wrapper.classList.add('hidden'), 2000);
-    }
+      focusTimer = setTimeout(() => !this.focused && wrapper.classList.contains('fab') && wrapper.classList.add('hidden'), this.autoHideDelay);
+    };
     window.addEventListener('load', resetTimer);
     window.addEventListener('mousemove', resetTimer);
     window.addEventListener('mousedown', resetTimer);
@@ -291,11 +325,16 @@ class ReconstructiveBanner extends HTMLElement {
       }
     };
 
+    const datetimeDisplay = this.shadow.getElementById('current');
+    datetimeDisplay.onclick = e => {
+      datetimeDisplay.classList.toggle('precision');
+    };
+
     this.shadow.getElementById('lookup').onsubmit = e => {
       e.preventDefault();
       const urir = this.shadow.getElementById('urir').value;
       if (urir) {
-        window.location = window.location.href.replace(this.urir, urir)
+        window.location = window.location.href.replace(this.urir, urir);
       }
     };
   }
