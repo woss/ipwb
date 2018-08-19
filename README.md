@@ -93,6 +93,12 @@ $ ipwb replay QmYwAPJzv5CZsnANOTaREALhashYgPpHdWEz79ojWnPbdG
 
 Once started, the replay system's web interface can be accessed through a web browser, e.g., <http://localhost:5000/> by default.
 
+To run it under a domain name other than `localhost`, the easiest approach is to use a reverse proxy that supports HTTPS. The replay system utilizes [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) for URL rerouting/rewriting to prevent [live leakage (zombies)](http://ws-dl.blogspot.com/2012/10/2012-10-10-zombies-in-archives.html). However, for security reason many web browsers have mandated HTTPS for the Service Worker API with only exception if the domain is `localhost`. [Caddy Server](https://caddyserver.com/) and [Traefik](https://traefik.io/) can be used as a reverse-proxy server and are very easy to setup. They come with built-in HTTPS support and manage (install and update) TLS certificates transparently and automatically from [Let's Encrypt](https://letsencrypt.org/). However, any web server proxy that has HTTPS support on the front-end will work. To make ipwb replay aware of the proxy, use `--proxy` or `-P` flag to supply the proxy URL. This way the replay will yield the supplied proxy URL as a prefix when generating various fully qualified domain name (FQDN) URIs or absolute URIs (for example, those in the TimeMap or Link header) instead of the default `http://localhost:5000`. This can be necessary when the service is running in a private network or a container and only exposed via a reverse-proxy. Suppose a reverse-proxy server is running and ready to forward all traffic on the `https://ipwb.example.com` to the ipwb replay server then the replay can be started as following:
+
+```
+$ ipwb replay --proxy=https://ipwb.example.com <path/to/cdxj>
+```
+
 ## Using Docker
 
 A pre-built Docker image is made available that can be run as following:
