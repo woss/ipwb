@@ -1,0 +1,9 @@
+.git
+.gitignore
+.gitattributes
+.coveragerc
+.travis.yml
+tox.ini
+LICENSE
+Dockerfile
+docs

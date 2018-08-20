@@ -3,7 +3,8 @@
 from setuptools import setup
 from ipwb import __version__
 
-long_description = open('README.rst').read()
+with open('README.md') as f:
+    long_description = f.read()
 desc = """InterPlanetary Wayback (ipwb): Web Archive integration with IPFS"""
 
 setup(
@@ -17,18 +18,23 @@ setup(
     packages=['ipwb'],
     license='MIT',
     long_description=long_description,
+    long_description_content_type="text/markdown",
     provides=[
         'ipwb'
     ],
     install_requires=[
-        'pywb',
-        'ipfsapi',
-        'flask',
-        'pycrypto',
+        'pywb==0.33.2',
+        'ipfsapi>=0.4.2',
+        'Flask==0.12.2',
+        'pycryptodome>=3.4.11',
+        'requests>=2.19.1',
         'six'
     ],
     tests_require=[
-        'pytest'
+        'flake8>=3.4',
+        'pytest>=3.6',
+        'pytest-cov',
+        'pytest-flake8'
     ],
     entry_points="""
         [console_scripts]
@@ -36,6 +42,9 @@ setup(
     """,
     package_data={
         'ipwb': [
+            'serviceWorker.js',
+            'reconstructive.js',
+            'reconstructive-banner.js',
             'webui/*.*',
             'webui/favicons/*.*',
             'samples/indexes/*.*',
@@ -44,7 +53,7 @@ setup(
     },
     keywords='http web archives ipfs distributed odu wayback memento',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
 
         'Environment :: Web Environment',
 
@@ -64,4 +73,5 @@ setup(
     ]
 )
 
-# Publish to pypi: python setup.py sdist upload -r pypi
+# Publish to pypi:
+#   rm -rf dist; python setup.py sdist bdist_wheel; twine upload dist/*

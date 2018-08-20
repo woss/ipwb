@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+InterPlanetary Wayback indexer
+
+This script reads a WARC file and returns a CDXJ representative of its
+ contents. In doing so, it extracts all archived HTTP responses from
+ warc-response records, separates the HTTP header from the body, pushes each
+ into IPFS, and retains the hashes. These hashes are then used to populate the
+ JSON block corresponding to the archived URI.
+"""
 
 from __future__ import print_function
 import sys
@@ -9,6 +18,7 @@ import ipfsapi
 import argparse
 import zlib
 import surt
+import ntpath
 
 from io import BytesIO
 from pywb.warc.archiveiterator import DefaultRecordParser
@@ -18,21 +28,25 @@ from pywb.warc.recordloader import ArchiveLoadFailed
 from ipfsapi.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 
+from six.moves import input
+
+from util import IPFSAPI_HOST, IPFSAPI_PORT
+
 # from warcio.archiveiterator import ArchiveIterator
 
 import requests
 import datetime
+import shutil
 
-from Crypto.Cipher import XOR
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
 import base64
 
 from .__init__ import __version__ as ipwbVersion
 
-IP = '127.0.0.1'
-PORT = '5001'
 DEBUG = False
 
-IPFS_API = ipfsapi.Client(IP, PORT)
+IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
 
 
 # TODO: put this method definition below indexFileAt()
@@ -50,8 +64,9 @@ def pushToIPFS(hstr, payload):
         except NewConnectionError as e:
             print('IPFS daemon is likely not running.')
             print('Run "ipfs daemon" in another terminal session.')
+
             sys.exit()
-        except:
+        except Exception as e:  # TODO: Do not use bare except
             attemptCount = '{0}/{1}'.format(retryCount + 1, ipfsRetryCount)
             logError('IPFS failed to add, ' +
                      'retrying attempt {0}'.format(attemptCount))
@@ -62,13 +77,16 @@ def pushToIPFS(hstr, payload):
 
 
 def encrypt(hstr, payload, encryptionKey):
-    hstr = XOR.new(encryptionKey).encrypt(hstr)
-    hstr = base64.b64encode(hstr)
+    paddedEncryptionKey = pad(encryptionKey, AES.block_size)
+    key = base64.b64encode(paddedEncryptionKey)
+    cipher = AES.new(key, AES.MODE_CTR)
 
-    payload = XOR.new(encryptionKey).encrypt(payload)
-    payload = base64.b64encode(payload)
+    hstrBytes = base64.b64encode(cipher.encrypt(hstr)).decode('utf-8')
 
-    return [hstr, payload]
+    payloadBytes = base64.b64encode(cipher.encrypt(payload)).decode('utf-8')
+    nonce = base64.b64encode(cipher.nonce).decode('utf-8')
+
+    return [hstrBytes, payloadBytes, nonce]
 
 
 def createIPFSTempPath():
@@ -81,7 +99,7 @@ def createIPFSTempPath():
 
 def indexFileAt(warcPaths, encryptionKey=None,
                 compressionLevel=None, encryptTHENCompress=True,
-                quiet=False, debug=False):
+                quiet=False, outfile=None, debug=False):
     global DEBUG
     DEBUG = debug
 
@@ -93,24 +111,43 @@ def indexFileAt(warcPaths, encryptionKey=None,
 
     cdxjLines = []
 
+    if outfile:
+        outdir = os.path.dirname(os.path.abspath(outfile))
+        if not os.path.exists(outdir):
+            try:
+                os.makedirs(outdir)
+            except Exception as e:
+                logError(e)
+                logError('CDXJ output directory was not created')
+        try:
+            outputFile = open(outfile, 'a+')
+            # Read existing non-meta lines (if any) to allow automatic merge
+            cdxjLines = [l.strip() for l in outputFile if l[:1] != '!']
+        except IOError as e:
+            logError(e)
+            logError('Writing generated CDXJ to STDOUT instead')
+            outfile = None
+
     if encryptionKey is not None and len(encryptionKey) == 0:
         encryptionKey = askUserForEncryptionKey()
+        if encryptionKey == '':
+            encryptionKey = None
+            logError('Blank key entered, encryption disabled')
 
     encryptionAndCompressionSetting = {
-      'encryptTHENCompress': encryptTHENCompress,
-      'encryptionKey': encryptionKey,
-      'compressionLevel': compressionLevel
+        'encryptTHENCompress': encryptTHENCompress,
+        'encryptionKey': encryptionKey,
+        'compressionLevel': compressionLevel
     }
 
     for warcPath in warcPaths:
         warcFileFullPath = warcPath
 
-        with open(warcFileFullPath, 'rb') as warc:
-            try:
-                cdxjLines += getCDXJLinesFromFile(
-                                 warc, **encryptionAndCompressionSetting)
-            except ArchiveLoadFailed:
-                logError(warcPath + ' is not a valid WARC file.')
+        try:
+            cdxjLines += getCDXJLinesFromFile(
+                warcFileFullPath, **encryptionAndCompressionSetting)
+        except ArchiveLoadFailed:
+            logError(warcPath + ' is not a valid WARC file.')
 
     # De-dupe and sort, needed for CDXJ adherence
     cdxjLines = list(set(cdxjLines))
@@ -122,94 +159,132 @@ def indexFileAt(warcPaths, encryptionKey=None,
 
     if quiet:
         return cdxjLines
-    print('\n'.join(cdxjLines))
+
+    if outfile:
+        # Truncate existing CDXJ file contents (if any) before writing to it
+        outputFile.seek(0)
+        outputFile.truncate()
+        for line in cdxjLines:
+            outputFile.write(line + "\n")
+        outputFile.close()
+    else:
+        print('\n'.join(cdxjLines))
 
 
-def getCDXJLinesFromFile(fh, **encCompOpts):
+def sanitizecdxjLine(cdxjLine):
+    return cdxjLine
+
+
+def getCDXJLinesFromFile(warcPath, **encCompOpts):
     textRecordParserOptions = {
-      'cdxj': True,
-      'include_all': False,
-      'surt_ordered': False}
+        'cdxj': True,
+        'include_all': False,
+        'surt_ordered': False}
     iter = TextRecordParser(**textRecordParserOptions)
 
-    cdxjLines = []
-    # Throws pywb.warc.recordloader.ArchiveLoadFailed if not a warc
-    for entry in iter(fh):
-        # Only consider WARC resps records from reqs for web resources
-        ''' TODO: Change conditional to return on non-HTTP responses
-                  to reduce branch depth'''
-        if entry.record.rec_type != 'response' or \
-           entry.get('mime') in ('text/dns', 'text/whois'):
-            continue
+    recordCount = 0
+    with open(warcPath, 'rb') as fhForCounting:
+        iterForCounting = TextRecordParser(**textRecordParserOptions)
+        recordCount = 0
+        try:
+            for i in iterForCounting(fhForCounting):
+                recordCount += 1
+                # recordCount = sum(1 for _ in iterForCounting(fhForCounting))
+        except ArchiveLoadFailed:
+            print('Encountered a bad WARC record.', file=sys.stderr)
 
-        hdrs = entry.record.status_headers
-        hstr = hdrs.protocol + ' ' + hdrs.statusline
-        for h in hdrs.headers:
-            hstr += "\n" + ': '.join(h)
+    with open(warcPath, 'rb') as fh:
+        cdxjLines = []
+        recordsProcessed = 0
+        # Throws pywb.warc.recordloader.ArchiveLoadFailed if not a warc
+        for entry in iter(fh):
+            msg = 'Processing WARC records in ' + ntpath.basename(warcPath)
+            showProgress(msg, recordsProcessed, recordCount)
 
-        statusCode = hdrs.statusline.split()[0]
+            recordsProcessed += 1
+            # Only consider WARC resps records from reqs for web resources
+            ''' TODO: Change conditional to return on non-HTTP responses
+                      to reduce branch depth'''
+            if entry.record.rec_type != 'response' or \
+               entry.get('mime') in ('text/dns', 'text/whois'):
+                continue
 
-        if not entry.buffer:
-            return
+            hdrs = entry.record.status_headers
+            hstr = hdrs.protocol + ' ' + hdrs.statusline
+            for h in hdrs.headers:
+                hstr += "\n" + ': '.join(h)
+            try:
+                statusCode = hdrs.statusline.split()[0]
+            except Exception as e:  # TODO: Do not use bare except
+                break
 
-        entry.buffer.seek(0)
-        payload = entry.buffer.read()
+            if not entry.buffer:
+                return
 
-        httpHeaderIPFSHash = ''
-        payloadIPFSHash = ''
-        retryCount = 0
+            entry.buffer.seek(0)
+            payload = entry.buffer.read()
 
-        if encCompOpts.get('encryptTHENCompress'):
-            if encCompOpts.get('encryptionKey') is not None:
-                (hstr, payload) = encrypt(hstr, payload,
-                                          encCompOpts.get('encryptionKey'))
-            if encCompOpts.get('compressionLevel') is not None:
-                hstr = zlib.compress(hstr, encCompOpts.get('compressionLevel'))
-                payload = zlib.compress(payload,
-                                        encCompOpts.get('compressionLevel'))
-        else:
-            if encCompOpts.get('compressionLevel') is not None:
-                hstr = zlib.compress(hstr,
-                                     encCompOpts.get('compressionLevel'))
-                payload = zlib.compress(payload,
-                                        encCompOpts.get('compressionLevel'))
-            if encCompOpts.get('encryptionKey') is not None:
-                (hstr, payload) = encrypt(hstr, payload,
-                                          encCompOpts.get('encryptionKey'))
+            httpHeaderIPFSHash = ''
+            payloadIPFSHash = ''
+            retryCount = 0
+            nonce = ''
 
-        # print('Adding {0} to IPFS'.format(entry.get('url')))
-        ipfsHashes = pushToIPFS(hstr, payload)
+            if encCompOpts.get('encryptTHENCompress'):
+                if encCompOpts.get('encryptionKey') is not None:
+                    key = encCompOpts.get('encryptionKey')
+                    (hstr, payload, nonce) = encrypt(hstr, payload, key)
+                if encCompOpts.get('compressionLevel') is not None:
+                    compressionLevel = encCompOpts.get('compressionLevel')
+                    hstr = zlib.compress(hstr, compressionLevel)
+                    payload = zlib.compress(payload, compressionLevel)
+            else:
+                if encCompOpts.get('compressionLevel') is not None:
+                    compressionLevel = encCompOpts.get('compressionLevel')
+                    hstr = zlib.compress(hstr, compressionLevel)
+                    payload = zlib.compress(payload, compressionLevel)
+                if encCompOpts.get('encryptionKey') is not None:
+                    encryptionKey = encCompOpts.get('encryptionKey')
+                    (hstr, payload, nonce) = \
+                        encrypt(hstr, payload, encryptionKey)
 
-        if ipfsHashes is None:
-            logError('Skipping ' + entry.get('url'))
+            # print('Adding {0} to IPFS'.format(entry.get('url')))
+            ipfsHashes = pushToIPFS(hstr, payload)
 
-            continue
+            if ipfsHashes is None:
+                logError('Skipping ' + entry.get('url'))
 
-        (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
+                continue
 
-        uri = surt.surt(entry.get('url'),
-                        path_strip_trailing_slash_unless_empty=False)
-        timestamp = entry.get('timestamp')
-        mime = entry.get('mime')
+            (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
 
-        obj = {
-            'locator': 'urn:ipfs/{0}/{1}'.format(
-              httpHeaderIPFSHash, payloadIPFSHash),
-            'status_code': statusCode,
-            'mime_type': mime
+            originaluri = entry.get('url')
+            originaluri_surted = \
+                surt.surt(originaluri,
+                          path_strip_trailing_slash_unless_empty=False)
+            timestamp = entry.get('timestamp')
+            mime = entry.get('mime')
+            obj = {
+                'locator': 'urn:ipfs/{0}/{1}'.format(
+                    httpHeaderIPFSHash, payloadIPFSHash),
+                'status_code': statusCode,
+                'mime_type': mime,
+                'original_uri': originaluri
             }
-        if encCompOpts.get('encryptionKey') is not None:
-            obj['encryption_key'] = encCompOpts.get('encryptionKey')
-            obj['encryption_method'] = 'xor'
-        objJSON = json.dumps(obj)
+            if encCompOpts.get('encryptionKey') is not None:
+                obj['encryption_key'] = encCompOpts.get('encryptionKey')
+                obj['encryption_method'] = 'aes'
+                obj['encryption_nonce'] = nonce
 
-        cdxjLine = '{0} {1} {2}'.format(uri, timestamp, objJSON)
-        cdxjLines.append(cdxjLine)  # + '\n'
-    return cdxjLines
+            objJSON = json.dumps(obj)
+
+            cdxjLine = '{0} {1} {2}'.format(originaluri_surted,
+                                            timestamp, objJSON)
+            cdxjLines.append(cdxjLine)  # + '\n'
+        return cdxjLines
 
 
 def generateCDXJMetadata(cdxjLines=None):
-    metadata = ['!context ["http://oduwsdl.github.io/contexts/cdxj"]']
+    metadata = ['!context ["http://tools.ietf.org/html/rfc7089"]']
     metaVals = {
         'generator': "InterPlanetary Wayback v.{0}".format(ipwbVersion),
         'created_at': '{0}'.format(datetime.datetime.now().isoformat())
@@ -227,10 +302,11 @@ def askUserForEncryptionKey():
     outputRedirected = os.fstat(0) != os.fstat(1)
     promptString = 'Enter a key for encryption: '
     if outputRedirected:  # Prevents prompt in redir output
+        logError(promptString, end='')
         promptString = ''
-        print(promptString, file=sys.stderr)
 
-    key = raw_input(promptString)
+    key = input(promptString)
+
     return key
 
 
@@ -250,8 +326,19 @@ def verifyFileExists(warcPath):
     sys.exit()
 
 
-def logError(errIn):
-    print(errIn, file=sys.stderr)
+def showProgress(msg, i, n):
+    line = '{0}: {1}/{2}'.format(msg, i, n)
+    print(line, file=sys.stderr, end='\r')
+    # Clear status line, show complete msg
+    if i == n - 1:
+        finalMsg = msg + ' complete'
+        spaceDelta = len(finalMsg) - len(msg)
+        spaces = '' * spaceDelta if spaceDelta > 0 else ''
+        print(finalMsg + spaces, file=sys.stderr, end='\r\n')
+
+
+def logError(errIn, end='\n'):
+    print(errIn, file=sys.stderr, end=end)
 
 
 def pullFromIPFS(hash):
@@ -285,7 +372,6 @@ class TextRecordParser(DefaultRecordParser):
     def create_payload_buffer(self, entry):
         return BytesIO()
 
-
-if __name__ == '__main__':
-    checkArgs(sys.argv)
-    main()
+    def create_record_iter(self, raw_iter):
+        raw_iter.INC_RECORD = ''
+        return super(TextRecordParser, self).create_record_iter(raw_iter)
