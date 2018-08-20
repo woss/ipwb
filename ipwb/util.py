@@ -3,13 +3,13 @@ from __future__ import print_function
 from os.path import expanduser
 from os.path import basename
 
+import six
 import os
 from os import devnull
 import json
 import sys
 import requests
 import ipfsapi
-import exceptions
 import subprocess
 import re
 import site
@@ -25,6 +25,9 @@ from __init__ import __version__ as ipwbVersion
 
 # from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import ConnectionError
+
+if six.PY2:
+    import exceptions
 
 
 IPFSAPI_HOST = 'localhost'

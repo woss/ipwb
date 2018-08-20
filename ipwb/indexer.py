@@ -42,7 +42,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 import base64
 
-from __init__ import __version__ as ipwbVersion
+from .__init__ import __version__ as ipwbVersion
 
 DEBUG = False
 

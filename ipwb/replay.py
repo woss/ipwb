@@ -34,18 +34,18 @@ from socket import gaierror
 from socket import error as socketerror
 from urlparse import urlsplit, urlunsplit  # N/A in Py3!
 
-from requests.exceptions import HTTPError
+from requests import ReadTimeout
+from requests.exceptions impor HTTPError
 
-import util as ipwbUtils
-from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
-from util import INDEX_FILE
+from . import util as ipwbConfig
+from .util import IPFSAPI_IP, IPFSAPI_PORT, IPWBREPLAY_IP, IPWBREPLAY_PORT
+from .util import INDEX_FILE
 
 import indexer
 
 from base64 import b64decode
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
-
 import base64
 
 from werkzeug.routing import BaseConverter
@@ -128,6 +128,8 @@ def showWebUI(path):
                 iFile = iFileAbs  # Local file
 
         (mCount, uniqueURIRs) = retrieveMemCount(iFile)
+        content = content.decode("utf-8")  # Content was a byte-like object
+
         content = content.replace(
             'MEMCOUNT', str(mCount))
         content = content.replace(
@@ -609,7 +611,6 @@ def show_uri(path, datetime=None):
             searchString = surtedURI + ' ' + datetime
 
         cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
-        print('CDXJ Line: {0}'.format(cdxjLine))
 
     except Exception as e:
         print(sys.exc_info()[0])
@@ -647,6 +648,7 @@ def show_uri(path, datetime=None):
 
     except ipfsapi.exceptions.TimeoutError:
         print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
+
         respString = ('{0} not found in IPFS :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
@@ -862,6 +864,7 @@ def fetchRemoteCDXJFile(path):
     else:  # http://, ftp://, smb://, file://
         print('Path contains a scheme, fetching remote file...')
         fileContents = ipwbUtils.fetchRemoteFile(path)
+
         return fileContents
 
     # TODO: Check if valid CDXJ here before returning
@@ -937,6 +940,7 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
 
     if not indexFileContents:
         return errReturn
+
     lines = indexFileContents.strip().split('\n')
 
     if not lines:
@@ -944,6 +948,7 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
     mementoCount = 0
 
     bucket = {}
+
     for i, l in enumerate(lines):
         validCDXJLine = ipwbUtils.isValidCDXJLine(l)
         metadataRecord = ipwbUtils.isCDXJMetadataRecord(l)
@@ -956,6 +961,7 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
                 bucket[surtURI] += 1
 
     return mementoCount, len(bucket.keys())
+
 
 
 def objectifyCDXJData(lines, onlyURI):
