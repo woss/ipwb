@@ -38,6 +38,8 @@ import requests
 import datetime
 import shutil
 
+from bs4 import BeautifulSoup
+
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 import base64
@@ -224,6 +226,16 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             entry.buffer.seek(0)
             payload = entry.buffer.read()
 
+            title = None
+            try:
+                ctype = hdrs.get_header('Content-Type')
+                if ctype and ctype.lower().startswith('text/html'):
+                    title = BeautifulSoup(payload, 'html.parser').title.text
+                    title = ' '.join(title.split()) or None
+            except Exception as e:
+                print('Failed to extract title', file=sys.stderr)
+                print(e, file=sys.stderr)
+
             httpHeaderIPFSHash = ''
             payloadIPFSHash = ''
             retryCount = 0
@@ -274,6 +286,8 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 obj['encryption_key'] = encCompOpts.get('encryptionKey')
                 obj['encryption_method'] = 'aes'
                 obj['encryption_nonce'] = nonce
+            if title is not None:
+                obj['title'] = title
 
             objJSON = json.dumps(obj)
 
