@@ -42,9 +42,8 @@ setup(
     package_data={
         'ipwb': [
             'assets/*.*',
+            'assets/favicons/*.*',
             'templates/*.*',
-            'webui/*.*',
-            'webui/favicons/*.*',
             'samples/indexes/*.*',
             'samples/warcs/*.*'
           ]

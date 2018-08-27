@@ -1,37 +1,37 @@
 <html>
 <head>
 <title>InterPlanetary Wayback (ipwb)</title>
-<link rel="stylesheet" href="./webui/webui.css" />
-<script src="./webui/webui.js"></script>
-<link rel="apple-touch-icon" sizes="180x180" href="./webui/favicons/apple-touch-icon.png">
-<link rel="icon" type="image/png" href="./webui/favicons/favicon-32x32.png" sizes="32x32">
-<link rel="icon" type="image/png" href="./webui/favicons/favicon-16x16.png" sizes="16x16">
-<link rel="manifest" href="./webui/favicons/manifest.json">
-<link rel="mask-icon" href="./webui/favicons/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="stylesheet" href="/ipwbassets/webui.css" />
+<script src="/ipwbassets/webui.js"></script>
+<link rel="apple-touch-icon" sizes="180x180" href="/ipwbassets/favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/ipwbassets/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/ipwbassets/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/ipwbassets/favicons/manifest.json">
+<link rel="mask-icon" href="/ipwbassets/favicons/safari-pinned-tab.svg" color="#5bbad5">
 <meta name="apple-mobile-web-app-title" content="ipwb">
 <meta name="application-name" content="ipwb">
 <meta name="theme-color" content="#ffffff">
 
 <script>
-let uris = []
+let uris = {{ uris|safe }}
 </script>
 </head>
 <body>
 
 <div id="wrapper">
   <div>
-    <h1><img src="./webui/logo.png" alt="ipwb" /></h1>
+    <h1><img src="/ipwbassets/logo.png" alt="ipwb" /></h1>
     <form onsubmit="handleSubmit(); return false;" method="get" action="/memento/*/">
       <input type="text" placeholder="http://example.com" id="url" name="url" aria-label="Enter a URI" />
       <input type="submit" value="Search URL in the archive"/>
     </form>
   </div>
   <footer>
-  <p id="memCount"><a id="memCountListLink"><span id="memCountInt">MEMCOUNT</span></a> Memento<span id="plural">s</span> available</p>
+  <p id="memCount"><a id="memCountListLink"><span id="memCountInt">{{ summary.urimCount}}</span></a> Memento<span id="plural">s</span> available</p>
   <details>
     <summary>Options and Details...</summary>
       <div id="iframeWrapper"><label id="daemonStatusLabel">IPFS Daemon: </label><iframe src="daemon/status" id="daemonStatus"></iframe></div>
-      <p><label>Archive Index(es): </label>INDEXSRC</p>
+      <p><label>Archive Index(es): </label>{{ summary.indexPath }}</p>
       <p><label class="twoRowLabel">Service Worker: </label><div><span id="serviceWorkerVersion">checking...</span><br /><button id="reinstallServiceWorker">Reinstall Service Worker</button></div></p>
       <p><form method="post" action="/upload" enctype="multipart/form-data">
         <label class="twoRowLabel">Upload WARC</label>
@@ -49,7 +49,7 @@ let uris = []
   </footer>
     <div id="uris" class="hidden">
     <h3 id="urisHeader"><abbr title="Uniform Resource Identifiers">URIs</abbr> locally available</h3>
-    <h4 id="htmlCountHeader">MEMCOUNT mementos of UNIQUE resources with <span id="htmlPages">0</span>
+    <h4 id="htmlCountHeader">{{ summary.urimCount }} mementos of {{ summary.urirCount }} resources with <span id="htmlPages">0</span>
         HTML page<span id="htmlPagesPlurality">s</span> listed
         <button id="showEmbeddedURI" data-defaultValue="Show All" data-activatedValue="Show Only HTML Pages">Show All</button></h4>
     <ul id="uriList"></ul>

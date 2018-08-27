@@ -16,7 +16,7 @@ importScripts('/ipwbassets/reconstructive.js')
 const rc = new Reconstructive({
   bannerElementLocation: '/ipwbassets/reconstructive-banner.js',
   showBanner: true,
-  bannerLogoLocation: '/webui/logo.png',
+  bannerLogoLocation: '/ipwbassets/logo.png',
   debug: true
 })
 
@@ -29,7 +29,7 @@ const rc = new Reconstructive({
 // <   localResource: function(FetchEvent) => boolean
 // < }
 rc.exclusions.specialEndpint = function (event, config) {
-  return ['/webui/', '/daemon/', '/config/'].some(
+  return ['/ipwbassets/', '/daemon/', '/config/'].some(
     ep => event.request.url.startsWith(self.location.origin + ep))
 }
 
