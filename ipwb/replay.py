@@ -801,8 +801,9 @@ def generateDaemonStatusButton():
         buttonText = 'Stop'
 
     statusPageHTML = '<html id="status{0}" class="status">'.format(buttonText)
-    statusPageHTML += ('<head><base href="/ipwbassets/" /><link rel="stylesheet" '
-                       'type="text/css" href="webui.css" />'
+    statusPageHTML += ('<head><base href="/ipwbassets/" />'
+                       '<link rel="stylesheet" type="text/css" '
+                       'href="webui.css" />'
                        '<script src="webui.js"></script>'
                        '<script src="daemonController.js"></script>'
                        '</head><body>')
