@@ -134,12 +134,8 @@ function setShowURIsVisibility () {
 }
 
 function setPlurality () {
-  const urimCount = document.getElementById('memCountInt').innerHTML
   const htmlFilesPlurality = document.getElementById('htmlPages').innerHTML
 
-  if (urimCount === '1') {
-    document.getElementById('plural').classList.add('hidden')
-  }
   if (htmlFilesPlurality === '1') {
     document.getElementById('htmlPagesPlurality').classList.add('hidden')
   }

@@ -68,6 +68,11 @@ app.debug = False
 IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
 
 
+@app.context_processor
+def formatters():
+    return {'pluralize': lambda x, s, p: "{} {}".format(x, s if x == 1 else p)}
+
+
 @app.after_request
 def setServerHeader(response):
     response.headers['Server'] = 'InterPlanetary Wayback Replay/' + ipwbVersion
