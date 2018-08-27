@@ -1,7 +1,7 @@
 /* eslint-env serviceworker */
 
 // This makes a class module available named "Reconstructive"
-importScripts('/reconstructive.js')
+importScripts('/ipwbassets/reconstructive.js')
 
 // Create a Reconstructive instance with optionally customized configurations
 // const rc = new Reconstructive({
@@ -14,6 +14,7 @@ importScripts('/reconstructive.js')
 //   debug: false
 // });
 const rc = new Reconstructive({
+  bannerElementLocation: '/ipwbassets/reconstructive-banner.js',
   showBanner: true,
   bannerLogoLocation: '/webui/logo.png',
   debug: true

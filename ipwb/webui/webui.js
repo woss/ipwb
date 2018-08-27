@@ -253,7 +253,7 @@ function installServiceWorker () {
     newInstallation = true
   }
 
-  navigator.serviceWorker.register('/serviceWorker.js').then(
+  navigator.serviceWorker.register('/ipwbassets/serviceWorker.js', {scope: '/'}).then(
     function (registration) {
       console.log('ServiceWorker registration successful with scope: ', registration.scope)
     }).catch(function (err) {
