@@ -27,6 +27,7 @@ from flask import Response
 from flask import request
 from flask import redirect
 from flask import abort
+from flask import render_template
 
 from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
@@ -571,6 +572,27 @@ def all_exception_handler(error):
 @app.route('/config/<requestedSetting>')
 def getRequestedSetting(requestedSetting):
     return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/webui')
+
+
+@app.route('/admin', strict_slashes=False)
+def showAdmin():
+    ipfsEndpoint = '{0}:{1}'.format(IPFSAPI_HOST, IPFSAPI_PORT)
+    status = {'ipwbVersion': ipwbVersion,
+              'ipfsEndpoint': ipfsEndpoint,
+              'ipfsAlive': ipwbUtils.isDaemonAlive(ipfsEndpoint)}
+    # TODO: Calculate actual URI-R/M counts
+    indexes = [{'path': ipwbUtils.getIPWBReplayIndexPath(),
+                'enabled': True,
+                'urimCount': '#URI-M',
+                'urirCount': '#URI-R'}]
+    # TODO: Calculate actual values
+    summary = {'urimCount': '#URI-M',
+               'urirCount': '#URI-R',
+               'htmlCount': '#HTML',
+               'earliest': 'Date1',
+               'latest': 'Date2'}
+    return render_template('admin.html', status=status, indexes=indexes,
+                           summary=summary)
 
 
 @app.route('/', defaults={'path': ''})

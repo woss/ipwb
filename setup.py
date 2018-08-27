@@ -44,12 +44,14 @@ setup(
             'serviceWorker.js',
             'reconstructive.js',
             'reconstructive-banner.js',
+            'templates/*.*',
             'webui/*.*',
             'webui/favicons/*.*',
             'samples/indexes/*.*',
             'samples/warcs/*.*'
           ]
     },
+    zip_safe=False,
     keywords='http web archives ipfs distributed odu wayback memento',
     classifiers=[
         'Development Status :: 3 - Alpha',

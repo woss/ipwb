@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Admin | InterPlanetary Wayback (ipwb)</title>
+  </head>
+  <body>
+    <h1><img src="./webui/logo.png" alt="ipwb" style="height: 50px; vertical-align: middle;" /> | ADMIN</h1>
+    <nav>
+      <a href="/" rel="noreferrer">Home</a>
+    </nav>
+    <section>
+      <h2>Status</h2>
+      <dl>
+        <dt>IPWB Version</dt>
+        <dd>{{ status.ipwbVersion }}</dd>
+        <dt>IPFS Endpoint</dt>
+        <dd>{{ status.ipfsEndpoint }} (<a href="#" rel="noreferrer">Change</a> | <a href="#" rel="noreferrer">Web UI</a>)</dd>
+        <dt>IPFS Status</dt>
+        <dd>
+        {% if status.ipfsAlive %}
+          <span class="running">Running</span>
+          <button type="button" name="stop">Stop</button>
+        {% else %}
+          <span class="running">Stopped</span>
+          <button type="button" name="run">Run</button>
+        {% endif %}
+        </dd>
+      </dl>
+    </section>
+    <section>
+      <h2>Index</h2>
+      <ul>
+      {% for idx in indexes %}
+        <li>
+          <input type="checkbox">
+          {% if idx.enabled %}
+          [<a href="#" rel="noreferrer">Disable</a>]
+          {% else %}
+          [<a href="#" rel="noreferrer">Enable</a>]
+          {% endif %}
+          <a href="#" rel="noreferrer">{{ idx.path }}</a> ({{ idx.urimCount }} / {{ idx.urirCount }})
+        </li>
+      {% endfor %}
+    </ul>
+      <button type="button" name="merge">Merge Selected</button>
+      <button type="button" name="cdxj">Upload a CDXJ File</button>
+    </section>
+    <section>
+      <h2>Collection</h2>
+      <p>{{ summary.urimCount }} mementos of {{ summary.urirCount }} resources with {{ summary.htmlCount }} HTML pages between {{ summary.earliest }} and {{ summary.latest }}</p>
+      <button type="button" name="cdxj">Upload WARC File</button>
+      <p>TODO: Paginated list of mementos with option to filter and sort</p>
+    </section>
+  </body>
+</html>
