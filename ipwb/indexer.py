@@ -232,7 +232,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 if ctype and ctype.lower().startswith('text/html'):
                     title = BeautifulSoup(payload, 'html.parser').title
                     if title is not None:
-                        title = ' '.join(title.text.split())
+                        title = ' '.join(title.text.split()) or None
             except Exception as e:
                 print('Failed to extract title', file=sys.stderr)
                 print(e, file=sys.stderr)
