@@ -524,7 +524,7 @@ def all_exception_handler(error):
 # the future.
 @app.route('/config/<requestedSetting>')
 def getRequestedSetting(requestedSetting):
-    return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/webui')
+    return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/ipwbassets')
 
 
 @app.route('/admin', strict_slashes=False)
