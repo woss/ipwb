@@ -7,3 +7,6 @@ tox.ini
 LICENSE
 Dockerfile
 docs
+dist
+build
+ipwb.egg-info

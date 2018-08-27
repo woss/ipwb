@@ -56,6 +56,7 @@ from __init__ import __version__ as ipwbVersion
 from flask import flash, url_for
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
+from flask import make_response
 
 UPLOAD_FOLDER = '/tmp'
 ALLOWED_EXTENSIONS = ('.warc', '.warc.gz')
@@ -109,59 +110,11 @@ def upload_file():
         return redirect('/')
 
 
-@app.route('/webui/<path:path>')
-def showWebUI(path):
-    """ Handle requests for the IPWB replay Web interface and requests
-        for initializing the replay ServiceWorker.
-    """
-    webuiPath = '/'.join(('webui', path)).replace('ipwb.replay', 'ipwb')
-    content = pkg_resources.resource_string(__name__, webuiPath)
-
-    if 'index.html' in path:
-        iFile = ipwbUtils.getIPWBReplayIndexPath()
-
-        if iFile is None or iFile == '':
-            iFile = pkg_resources.resource_filename(__name__, INDEX_FILE)
-
-        if not os.path.isabs(iFile):  # Convert rel to abs path
-            iFileAbs = pkg_resources.resource_filename(__name__, iFile)
-            if os.path.exists(iFileAbs):
-                iFile = iFileAbs  # Local file
-
-        (mCount, uniqueURIRs) = retrieveMemCount(iFile)
-        content = content.replace(
-            'MEMCOUNT', str(mCount))
-        content = content.replace(
-            'UNIQUE', str(uniqueURIRs))
-
-        content = content.replace(
-            'let uris = []',
-            'let uris = {0}'.format(getURIsAndDatetimesInCDXJ(iFile)))
-        content = content.replace('INDEXSRC', iFile)
-
-    fileExtension = os.path.splitext(path)[1]
-
-    mimeType = 'text/html'
-
-    if fileExtension == '.js':
-        mimeType = 'application/javascript'
-    elif fileExtension == '.css':
-        mimeType = 'text/css'
-
-    resp = Response(content, mimetype=mimeType)
-    resp.headers['Service-Worker-Allowed'] = '/'
-
-    return resp
-
-
-def getServiceWorker(path):
-    """ Get the ServiceWorker code and return corresponding
-        HTTP response information for the Worker
-    """
-    path = ('/' + path).replace('ipwb.replay', 'ipwb')
-    content = pkg_resources.resource_string(__name__, path)
-    resp = Response(content, mimetype='application/javascript')
-    resp.headers['Service-Worker-Allowed'] = '/'
+@app.route('/ipwbassets/<path:path>')
+def serveAssets(path):
+    resp = make_response(send_from_directory('assets', path))
+    if path == 'serviceWorker.js':
+        resp.headers['Service-Worker-Allowed'] = '/'
     return resp
 
 
@@ -571,7 +524,7 @@ def all_exception_handler(error):
 # the future.
 @app.route('/config/<requestedSetting>')
 def getRequestedSetting(requestedSetting):
-    return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/webui')
+    return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/ipwbassets')
 
 
 @app.route('/admin', strict_slashes=False)
@@ -595,21 +548,21 @@ def showAdmin():
                            summary=summary)
 
 
-@app.route('/', defaults={'path': ''})
+@app.route('/', strict_slashes=False)
+def showLandingPage():
+    iFile = ipwbUtils.getIPWBReplayIndexPath()
+    (mCount, uniqueURIRs) = retrieveMemCount(iFile)
+    summary = {'indexPath': iFile,
+               'urimCount': mCount,
+               'urirCount': uniqueURIRs}
+    uris = getURIsAndDatetimesInCDXJ(iFile)
+    return render_template('index.html', summary=summary, uris=uris)
+
+
+# TODO: Do we need this route?
 @app.route('/<path:path>')
 def show_uri(path, datetime=None):
     global IPFS_API
-
-    if len(path) == 0:
-        return showWebUI('index.html')
-
-    # TODO: Use a better approach to serve static contents
-    # instead of using the same logic for every JS file as the SW script
-    localScripts = ['serviceWorker.js',
-                    'reconstructive.js',
-                    'reconstructive-banner.js']
-    if path in localScripts:
-        return getServiceWorker(path)
 
     daemonAddress = '{0}:{1}'.format(IPFSAPI_HOST, IPFSAPI_PORT)
     if not ipwbUtils.isDaemonAlive(daemonAddress):
@@ -738,7 +691,7 @@ def show_uri(path, datetime=None):
 
     # Add ipwb header for additional SW logic
     newPayload = resp.get_data()
-    ipwbjsinject = """<script src="/webui/webui.js"></script>
+    ipwbjsinject = """<script src="/ipwbassets/webui.js"></script>
                       <script>injectIPWBJS()</script>"""
     newPayload = newPayload.replace('</html>', ipwbjsinject + '</html>')
     resp.set_data(newPayload)
@@ -848,8 +801,9 @@ def generateDaemonStatusButton():
         buttonText = 'Stop'
 
     statusPageHTML = '<html id="status{0}" class="status">'.format(buttonText)
-    statusPageHTML += ('<head><base href="/webui/" /><link rel="stylesheet" '
-                       'type="text/css" href="webui.css" />'
+    statusPageHTML += ('<head><base href="/ipwbassets/" />'
+                       '<link rel="stylesheet" type="text/css" '
+                       'href="webui.css" />'
                        '<script src="webui.js"></script>'
                        '<script src="daemonController.js"></script>'
                        '</head><body>')
