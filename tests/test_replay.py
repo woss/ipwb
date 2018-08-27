@@ -114,7 +114,7 @@ def test_unit_commandDaemon():
     sleep(10)
     try:
         urllib2.urlopen('http://localhost:5001')
-    except urllib2.HTTPError, e:
+    except urllib2.HTTPError as e:
         assert e.code == 404
     except Exception as e:
         assert False
