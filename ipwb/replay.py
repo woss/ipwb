@@ -70,8 +70,7 @@ IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
 
 @app.context_processor
 def formatters():
-    pluralize = lambda x, s, p: "{} {}".format(x, s if x == 1 else p)
-    return dict(pluralize=pluralize)
+    return {'pluralize': lambda x, s, p: "{} {}".format(x, s if x == 1 else p)}
 
 
 @app.after_request
