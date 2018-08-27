@@ -22,7 +22,7 @@ let uris = {{ uris|safe }}
   <div>
     <h1><img src="/ipwbassets/logo.png" alt="ipwb" /></h1>
     <form onsubmit="handleSubmit(); return false;" method="get" action="/memento/*/">
-      <input type="text" placeholder="http://example.com" id="url" name="url" aria-label="Enter a URI" />
+      <input type="text" placeholder="http://example.com" id="url" name="url" aria-label="Enter a URI" required />
       <input type="submit" value="Search URL in the archive"/>
     </form>
   </div>

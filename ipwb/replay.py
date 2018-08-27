@@ -153,6 +153,8 @@ def commandDaemon(cmd):
 @app.route('/memento/*/')
 def showMementosForURIRs_sansJS():
     urir = request.args.get('url')
+    if urir is None or urir.strip() == '':
+        return Response('Searching for nothing is not allowed!', status=400)
     return redirect('/memento/*/' + urir, code=301)
 
 
@@ -725,7 +727,7 @@ def generateNoMementosInterface_noDatetime(urir):
     msg += ('<form method="get" action="/memento/*/" '
             'style="margin-top: 1.0em;">'
             '<input type="text" value="{0}" id="url"'
-            'name="url" aria-label="Enter a URI" />'
+            'name="url" aria-label="Enter a URI" required />'
             '<input type="submit" value="Search URL in the archive"/>'
             '</form>').format(urir)
 
