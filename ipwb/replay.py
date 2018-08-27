@@ -68,6 +68,12 @@ app.debug = False
 IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
 
 
+@app.context_processor
+def formatters():
+    pluralize = lambda x, s, p: "{} {}".format(x, s if x == 1 else p)
+    return dict(pluralize=pluralize)
+
+
 @app.after_request
 def setServerHeader(response):
     response.headers['Server'] = 'InterPlanetary Wayback Replay/' + ipwbVersion
@@ -552,13 +558,9 @@ def showAdmin():
 def showLandingPage():
     iFile = ipwbUtils.getIPWBReplayIndexPath()
     (mCount, uniqueURIRs) = retrieveMemCount(iFile)
-    urimPlurality = 'memento' if mCount == 1 else 'mementos'
-    urirPlurality = 'resource' if uniqueURIRs == 1 else 'resources'
     summary = {'indexPath': iFile,
                'urimCount': mCount,
-               'urirCount': uniqueURIRs,
-               'urimPlurality': urimPlurality,
-               'urirPlurality': urirPlurality}
+               'urirCount': uniqueURIRs}
     uris = getURIsAndDatetimesInCDXJ(iFile)
     return render_template('index.html', summary=summary, uris=uris)
 
