@@ -56,6 +56,7 @@ from __init__ import __version__ as ipwbVersion
 from flask import flash, url_for
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
+from flask import make_response
 
 UPLOAD_FOLDER = '/tmp'
 ALLOWED_EXTENSIONS = ('.warc', '.warc.gz')
@@ -107,6 +108,14 @@ def upload_file():
         # TODO: Release semaphore lock
 
         return redirect('/')
+
+
+@app.route('/ipwbassets/<path:path>')
+def serveAssets(path):
+    resp = make_response(send_from_directory('assets', path))
+    if path == 'serviceWorker.js':
+        resp.headers['Service-Worker-Allowed'] = '/'
+    return resp
 
 
 @app.route('/webui/<path:path>')
