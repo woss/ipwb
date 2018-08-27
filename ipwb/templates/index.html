@@ -49,10 +49,8 @@ let uris = {{ uris|safe }}
   </footer>
     <div id="uris" class="hidden">
     <h3 id="urisHeader"><abbr title="Uniform Resource Identifiers">URIs</abbr> locally available</h3>
-    <h4 id="htmlCountHeader">
-        {{ summary.urimCount }} {{ correctPlural('memento', summary.urimCount) }} of
-        {{ summary.urirCount }} {{ correctPlural('resource', summary.urirCount) }} with
-        <span id="htmlPages">0</span> HTML page<span id="htmlPagesPlurality">s</span> listed
+    <h4 id="htmlCountHeader">{{ summary.urimCount }} {{ summary.urimPlurality }} of {{ summary.urirCount }} {{ summary.urirPlurality }} with <span id="htmlPages">0</span>
+        HTML page<span id="htmlPagesPlurality">s</span> listed
         <button id="showEmbeddedURI" data-defaultValue="Show All" data-activatedValue="Show Only HTML Pages">Show All</button></h4>
     <ul id="uriList"></ul>
   </div>

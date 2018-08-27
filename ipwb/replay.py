@@ -548,25 +548,17 @@ def showAdmin():
                            summary=summary)
 
 
-@app.context_processor
-def pluralityProcessor():
-    def correctPlural(word, count):
-        if count == 1:
-            return word
-        addS = word in ['memento', 'resource']
-        addEs = word in []
-        return word + 's' if addS else word + 'es'
-    return dict(correctPlural=correctPlural)
-
-
 @app.route('/', strict_slashes=False)
 def showLandingPage():
     iFile = ipwbUtils.getIPWBReplayIndexPath()
     (mCount, uniqueURIRs) = retrieveMemCount(iFile)
-
+    urimPlurality = 'memento' if mCount == 1 else 'mementos'
+    urirPlurality = 'resource' if uniqueURIRs == 1 else 'resources'
     summary = {'indexPath': iFile,
                'urimCount': mCount,
-               'urirCount': uniqueURIRs}
+               'urirCount': uniqueURIRs,
+               'urimPlurality': urimPlurality,
+               'urirPlurality': urirPlurality}
     uris = getURIsAndDatetimesInCDXJ(iFile)
     return render_template('index.html', summary=summary, uris=uris)
 
