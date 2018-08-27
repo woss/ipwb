@@ -25,7 +25,7 @@ setup(
     install_requires=[
         'pywb==0.33.2',
         'ipfsapi>=0.4.2',
-        'Flask==0.12.2',
+        'Flask==0.12.3',
         'pycryptodome>=3.4.11',
         'requests>=2.19.1',
         'beautifulsoup4>=4.6.3'
