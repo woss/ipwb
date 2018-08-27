@@ -229,7 +229,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             title = None
             try:
                 ctype = hdrs.get_header('Content-Type')
-                if (ctype and ctype.lower().startswith('text/html')):
+                if ctype and ctype.lower().startswith('text/html'):
                     title = BeautifulSoup(payload, 'html.parser').title.text
                     title = ' '.join(title.split()) or None
             except Exception as e:
