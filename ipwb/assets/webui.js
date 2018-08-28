@@ -188,7 +188,7 @@ function updateIPFSDaemonButtonUI () {
 function sendCommandToIPFSDaemon (cmd) {
   const failFunction = function () { console.log('Comm w/ ipfs daemon failed.') }
   const errFunction = function () { console.log('Error talking to ipfs daemon.') }
-  makeAnAJAXRequest('/daemon/' + cmd, updateIPFSDaemonButtonUI,
+  makeAnAJAXRequest('/ipfsdaemon/' + cmd, updateIPFSDaemonButtonUI,
     failFunction, errFunction)
 }
 

@@ -5,7 +5,7 @@ function recheckDaemonStatus () {
   remainingTries = 10
 
   if (!running) {
-    makeAnAJAXRequest('/daemon/status', checkStatus, null, errorOnStatusCheck)
+    makeAnAJAXRequest('/ipfsdaemon/status', checkStatus, null, errorOnStatusCheck)
   }
 }
 
@@ -15,7 +15,7 @@ function checkStatus (resp) {
   }
   if (resp.indexOf('Not Running') > -1) {
     window.setTimeout(function () {
-      makeAnAJAXRequest('/daemon/status', checkStatus, null, errorOnStatusCheck)
+      makeAnAJAXRequest('/ipfsdaemon/status', checkStatus, null, errorOnStatusCheck)
     }, 1000)
   } else {
     document.location.reload(true)

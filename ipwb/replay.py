@@ -127,7 +127,7 @@ class UnsupportedIPFSVersions(Exception):
     pass
 
 
-@app.route('/daemon/<cmd>')
+@app.route('/ipfsdaemon/<cmd>')
 def commandDaemon(cmd):
     global IPFS_API
     if cmd == 'status':
@@ -534,7 +534,7 @@ def getRequestedSetting(requestedSetting):
     return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/ipwbassets')
 
 
-@app.route('/admin', strict_slashes=False)
+@app.route('/ipwbadmin', strict_slashes=False)
 def showAdmin():
     ipfsEndpoint = '{0}:{1}'.format(IPFSAPI_HOST, IPFSAPI_PORT)
     status = {'ipwbVersion': ipwbVersion,
