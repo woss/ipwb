@@ -529,7 +529,7 @@ def all_exception_handler(error):
 # This route needs better restructuring but is currently only used to get the
 # webUI location for the ipwb webUI, more setting might need to be fetched in
 # the future.
-@app.route('/config/<requestedSetting>')
+@app.route('/ipwbconfig/<requestedSetting>')
 def getRequestedSetting(requestedSetting):
     return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/ipwbassets')
 

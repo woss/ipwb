@@ -176,7 +176,7 @@ function getIPFSWebUIAddress () {
   }
   const fail = function () { console.log('fail') }
   const err = function () { console.log('err') }
-  makeAnAJAXRequest('/config/openEndedPlaceHolder', setIPFSWebUILink, fail, err)
+  makeAnAJAXRequest('/ipwbconfig/openEndedPlaceHolder', setIPFSWebUILink, fail, err)
 }
 
 function updateIPFSDaemonButtonUI () {
