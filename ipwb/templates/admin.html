@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="/ipwbassets/webui.css" />
     <title>Admin | InterPlanetary Wayback (ipwb)</title>
   </head>
   <body>
@@ -18,13 +19,7 @@
         <dd>{{ status.ipfsEndpoint }} (<a href="#" rel="noreferrer">Change</a> | <a href="#" rel="noreferrer">Web UI</a>)</dd>
         <dt>IPFS Status</dt>
         <dd>
-        {% if status.ipfsAlive %}
-          <span class="running">Running</span>
-          <button type="button" name="stop">Stop</button>
-        {% else %}
-          <span class="running">Stopped</span>
-          <button type="button" name="run">Run</button>
-        {% endif %}
+            <label id="daemonStatusLabel">IPFS Daemon: </label><iframe src="ipfsdaemon/status" id="daemonStatus"></iframe>
         </dd>
       </dl>
     </section>
