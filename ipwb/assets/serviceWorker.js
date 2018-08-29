@@ -29,7 +29,7 @@ const rc = new Reconstructive({
 // <   localResource: function(FetchEvent) => boolean
 // < }
 rc.exclusions.specialEndpint = function (event, config) {
-  return ['/ipwbassets/', '/daemon/', '/config/'].some(
+  return ['/ipwbassets/', '/ipfsdaemon/', '/ipwbconfig/'].some(
     ep => event.request.url.startsWith(self.location.origin + ep))
 }
 
