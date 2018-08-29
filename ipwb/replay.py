@@ -538,8 +538,7 @@ def getRequestedSetting(requestedSetting):
 def showAdmin():
     ipfsEndpoint = '{0}:{1}'.format(IPFSAPI_HOST, IPFSAPI_PORT)
     status = {'ipwbVersion': ipwbVersion,
-              'ipfsEndpoint': ipfsEndpoint,
-              'ipfsAlive': ipwbUtils.isDaemonAlive(ipfsEndpoint)}
+              'ipfsEndpoint': ipfsEndpoint}
     # TODO: Calculate actual URI-R/M counts
     indexes = [{'path': ipwbUtils.getIPWBReplayIndexPath(),
                 'enabled': True,
