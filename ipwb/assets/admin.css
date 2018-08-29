@@ -1,0 +1,13 @@
+div#iframeWrapper {text-overflow: hidden; color: #8f1d27; height: 1.0em;}
+div#iframeWrapper p {}
+iframe#daemonStatus {border: 0; height: 50px; width: 200px; vertical-align: top;}
+
+details {font-family: Consolas, monospace; width: 100%; margin: 0 auto 0 auto; text-align: left;}
+details p {margin: 0;}
+details summary {color: #8f1d27; text-decoration: underline; font-weight: bold; text-align: center;}
+details summary:hover {cursor: pointer;}
+details label {padding: 0; color: #8f1d27; text-align: right; display: block; float: left; margin-right: 1.0em; width: 50%;}
+details label#daemonStatusLabel {height: 10px; margin-top: 0; vertical-align: top;}
+details label.twoRowLabel {height: 2.0em;}
+
+form input[type=submit] {display: block; clear: both; margin: 0.5em auto 0 auto;}
