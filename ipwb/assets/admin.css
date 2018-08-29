@@ -1,0 +1,38 @@
+#wrapper {margin: auto; text-align: center;}
+#submit, #url {font-size: 72px; font-family: Consolas, sans-serif;}
+#memCount {font-size: 30px;  font-family: Consolas, sans-serif;}
+h1 {font-size: 72px; margin-bottom: 0.5em; font-family: sans-serif;}
+h1 img {height: 2.0em;}
+abbr:hover {cursor: help;}
+.hidden {display: none;}
+#uriList {list-style-type: none; text-align: left; margin: auto;}
+a#memCountListLink {border-bottom: 1px dotted black; cursor: pointer;}
+a#memCountListLink.activated {border-bottom: 2px solid #009900;}
+p.centered {text-align: center;}
+p.topSpace {margin-top: 1.0em;}
+
+#uris {border-bottom: 3px double #ccc; border-top: 1px solid #ccc; padding-bottom: 5px; width: 100%;}
+
+div#iframeWrapper {text-overflow: hidden; color: #8f1d27; height: 1.0em;}
+div#iframeWrapper p {}
+iframe#daemonStatus {border: 0; height: 50px; width: 200px; vertical-align: top;}
+
+html.status body {margin: 0 0 0 2px; padding: 0;}
+html#statusStart {color: red;}
+html#statusStop {color: green;}
+html.status button {display: inline-block; margin-left: 5px;}
+ul#uriList li {display: none; width: 100%; margin-bottom: 0.5em;}
+ul#uriList li[data-mime="text/html"] {background-color: white; display: block;}
+ul#uriList.forceDisplay li {display: block;}
+
+h3#urisHeader {margin-bottom: 0;}
+h4#htmlCountHeader {margin-top: 0; margin-bottom: 1.0em; font-size: 0.8em; font-weight: normal;}
+details {font-family: Consolas, monospace; width: 100%; margin: 0 auto 0 auto; text-align: left;}
+details p {margin: 0;}
+details summary {color: #8f1d27; text-decoration: underline; font-weight: bold; text-align: center;}
+details summary:hover {cursor: pointer;}
+details label {padding: 0; color: #8f1d27; text-align: right; display: block; float: left; margin-right: 1.0em; width: 50%;}
+details label#daemonStatusLabel {height: 10px; margin-top: 0; vertical-align: top;}
+details label.twoRowLabel {height: 2.0em;}
+
+form input[type=submit] {display: block; clear: both; margin: 0.5em auto 0 auto;}
