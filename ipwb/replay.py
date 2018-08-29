@@ -539,14 +539,17 @@ def showAdmin():
     ipfsEndpoint = '{0}:{1}'.format(IPFSAPI_HOST, IPFSAPI_PORT)
     status = {'ipwbVersion': ipwbVersion,
               'ipfsEndpoint': ipfsEndpoint}
+    iFile = ipwbUtils.getIPWBReplayIndexPath()
+    (mCount, uniqueURIRs) = retrieveMemCount(iFile)
+
     # TODO: Calculate actual URI-R/M counts
     indexes = [{'path': ipwbUtils.getIPWBReplayIndexPath(),
                 'enabled': True,
-                'urimCount': '#URI-M',
-                'urirCount': '#URI-R'}]
+                'urimCount': mCount,
+                'urirCount': uniqueURIRs}]
     # TODO: Calculate actual values
-    summary = {'urimCount': '#URI-M',
-               'urirCount': '#URI-R',
+    summary = {'urimCount': mCount,
+               'urirCount': uniqueURIRs,
                'htmlCount': '#HTML',
                'earliest': 'Date1',
                'latest': 'Date2'}
