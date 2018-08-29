@@ -6,9 +6,7 @@ function handleSubmit () {
 }
 
 function shortestFirst (a, b) {
-  if (a.length < b.length) { return -1 }
-  if (a.length > b.length) { return 1 }
-  return 0
+  return a.length - b.length
 }
 
 function hideURIs () {
