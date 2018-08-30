@@ -541,6 +541,7 @@ def showAdmin():
               'ipfsEndpoint': ipfsEndpoint}
     iFile = ipwbUtils.getIPWBReplayIndexPath()
     (mCount, uniqueURIRs) = retrieveMemCount(iFile)
+    uris = getURIsAndDatetimesInCDXJ(iFile)
 
     # TODO: Calculate actual URI-R/M counts
     indexes = [{'path': ipwbUtils.getIPWBReplayIndexPath(),
@@ -550,6 +551,7 @@ def showAdmin():
     # TODO: Calculate actual values
     summary = {'urimCount': mCount,
                'urirCount': uniqueURIRs,
+               'uris': uris,
                'htmlCount': '#HTML',
                'earliest': 'Date1',
                'latest': 'Date2'}
