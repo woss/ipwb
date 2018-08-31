@@ -3,6 +3,9 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/ipwbassets/admin.css" />
+      <script>
+        let uris = {{ summary.uris|safe }}
+      </script>
     <title>Admin | InterPlanetary Wayback (ipwb)</title>
   </head>
   <body>
@@ -44,7 +47,13 @@
     <section>
       <h2>Collection</h2>
       <p>{{ summary.urimCount }} mementos of {{ summary.urirCount }} resources with {{ summary.htmlCount }} HTML pages between {{ summary.earliest }} and {{ summary.latest }}</p>
-      <button type="button" name="cdxj">Upload WARC File</button>
+
+        <span id="htmlPages">0</span>
+        HTML page<span id="htmlPagesPlurality">s</span> listed
+
+        <ul id="uriList"></ul>
+
+        <button type="button" name="cdxj">Upload WARC File</button>
       <p>TODO: Paginated list of mementos with option to filter and sort</p>
     </section>
   </body>
