@@ -33,7 +33,10 @@ from ipfsapi.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
-from urlparse import urlsplit, urlunsplit  # N/A in Py3!
+
+from six.moves.urllib_parse import urlsplit
+from six.moves.urllib_parse import urlunsplit
+
 
 from requests.exceptions import HTTPError
 
