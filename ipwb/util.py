@@ -23,6 +23,8 @@ import urllib2
 import json
 from __init__ import __version__ as ipwbVersion
 
+from pkg_resources import parse_version
+
 # from requests.exceptions import ConnectionError
 from ipfsapi.exceptions import ConnectionError
 
@@ -90,9 +92,7 @@ def isValidCDXJLine(cdxjLine):
 
 # Compare versions of software, <0 if a<b, 0 if ==, >1 if b>a
 def compareVersions(versionA, versionB):
-    def normalize(v):
-        return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split(".")]
-    return cmp(normalize(versionA), normalize(versionB))
+    return parse_version(versionA) < parse_version(versionB)
 
 
 def isCDXJMetadataRecord(cdxjLine):
