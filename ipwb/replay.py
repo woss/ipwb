@@ -40,11 +40,11 @@ from six.moves.urllib_parse import urlunsplit
 
 from requests.exceptions import HTTPError
 
-import util as ipwbUtils
-from util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
-from util import INDEX_FILE
+from . import util as ipwbUtils
+from .util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
+from .util import INDEX_FILE
 
-import indexer
+from . import indexer
 
 from base64 import b64decode
 from Crypto.Cipher import AES
@@ -53,7 +53,7 @@ from Crypto.Util.Padding import pad
 import base64
 
 from werkzeug.routing import BaseConverter
-from __init__ import __version__ as ipwbVersion
+from .__init__ import __version__ as ipwbVersion
 
 
 from flask import flash, url_for
@@ -610,7 +610,6 @@ def show_uri(path, datetime=None):
             searchString = surtedURI + ' ' + datetime
 
         cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
-        print('CDXJ Line: {0}'.format(cdxjLine))
 
     except Exception as e:
         print(sys.exc_info()[0])
@@ -691,7 +690,7 @@ def show_uri(path, datetime=None):
         header = cipher.decrypt(base64.b64decode(header))
         payload = cipher.decrypt(base64.b64decode(payload))
 
-    hLines = header.split('\n')
+    hLines = header.decode().split('\n')
     hLines.pop(0)
 
     status = 200
@@ -707,6 +706,8 @@ def show_uri(path, datetime=None):
             try:
                 unchunkedPayload = extractResponseFromChunkedData(payload)
             except Exception as e:
+                print('Error while dechunking')
+                print(sys.exc_info()[0])
                 continue  # Data may have no actually been chunked
             resp.set_data(unchunkedPayload)
 
@@ -717,10 +718,19 @@ def show_uri(path, datetime=None):
 
     # Add ipwb header for additional SW logic
     newPayload = resp.get_data()
-    ipwbjsinject = """<script src="/ipwbassets/webui.js"></script>
+    ct = resp.headers.get('content-type')
+
+    lineJSON = cdxjLine.split(' ', 2)[2]
+    mime = json.loads(lineJSON)['mime_type']
+
+    if 'text/html' in mime:
+        ipwbjsinject = """<script src="/ipwbassets/webui.js"></script>
                       <script>injectIPWBJS()</script>"""
-    newPayload = newPayload.replace('</html>', ipwbjsinject + '</html>')
-    resp.set_data(newPayload)
+
+        newPayload = newPayload.decode().replace(
+            '</html>', ipwbjsinject + '</html>')
+
+        resp.set_data(newPayload)
 
     resp.headers['Memento-Datetime'] = ipwbUtils.digits14ToRFC1123(datetime)
 
@@ -803,19 +813,24 @@ def extractResponseFromChunkedData(data):
     chunkDescriptor = -1
     retStr = ''
 
+    if isinstance(data, bytes):
+        data = data.decode()
     (chunkDescriptor, rest) = data.split('\n', 1)
     chunkDescriptor = chunkDescriptor.split(';')[0].strip()
 
     while chunkDescriptor != '0':
         # On fail, exception, delta in header vs. payload chunkedness
         chunkDecFromHex = int(chunkDescriptor, 16)  # Get dec for slice
+
         retStr += rest[:chunkDecFromHex]  # Add to payload
         rest = rest[chunkDecFromHex:]  # Trim from the next chunk onward
+
         (CRLF, chunkDescriptor, rest) = rest.split('\n', 2)
         chunkDescriptor = chunkDescriptor.split(';')[0].strip()
 
         if len(chunkDescriptor.strip()) == 0:
             break
+
     return retStr
 
 
