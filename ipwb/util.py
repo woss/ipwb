@@ -115,14 +115,6 @@ def setupIPWBInIPFSConfig():
         setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
 
 
-# TODO: remedy duplication of similarly named function in replay
-def retrieveMemCount():
-    with open(INDEX_FILE, 'r') as cdxjFile:
-        for i, l in enumerate(cdxjFile):
-            pass
-        return i + 1
-
-
 def setLocale():
     currentOS = platform.system()
     if currentOS == 'Darwin':
