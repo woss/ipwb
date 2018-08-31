@@ -7,7 +7,7 @@ import os
 import sys
 import requests
 import ipfsapi
-import exceptions
+# import exceptions
 import subprocess
 import re
 import site
@@ -19,7 +19,7 @@ import platform
 
 from six.moves.urllib.request import urlopen
 import json
-from __init__ import __version__ as ipwbVersion
+from .__init__ import __version__ as ipwbVersion
 
 from pkg_resources import parse_version
 
@@ -46,7 +46,7 @@ def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_HOST, IPFSAPI_PORT)):
         # ConnectionError/AttributeError if IPFS daemon not running
         client.id()
         return True
-    except (ConnectionError, exceptions.AttributeError):
+    except (ConnectionError):  # exceptions.AttributeError):
         logError("Daemon is not running at http://" + hostAndPort)
         return False
     except OSError:

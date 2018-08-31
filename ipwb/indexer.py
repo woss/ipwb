@@ -29,8 +29,10 @@ from ipfsapi.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 
 from six.moves import input
+from six import PY2
+from six import PY3
 
-from util import IPFSAPI_HOST, IPFSAPI_PORT
+from .util import IPFSAPI_HOST, IPFSAPI_PORT
 
 # from warcio.archiveiterator import ArchiveIterator
 
@@ -44,11 +46,15 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 import base64
 
-from __init__ import __version__ as ipwbVersion
+from .__init__ import __version__ as ipwbVersion
 
 DEBUG = False
 
 IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
+
+
+def s2b(s):  # Convert str to bytes, cross-py
+    return bytes(s) if PY2 else bytes(s, 'utf-8')
 
 
 # TODO: put this method definition below indexFileAt()
@@ -57,8 +63,16 @@ def pushToIPFS(hstr, payload):
     retryCount = 0
     while retryCount < ipfsRetryCount:
         try:
-            httpHeaderIPFSHash = pushBytesToIPFS(bytes(hstr))
-            payloadIPFSHash = pushBytesToIPFS(bytes(payload))
+            if isinstance(hstr, str):
+                logError('Converting header to string')
+                hstr = s2b(hstr)
+            if isinstance(payload, str):
+                logError('Converting payload to string')
+                payload = s2b(payload)
+
+            httpHeaderIPFSHash = pushBytesToIPFS(hstr)
+            payloadIPFSHash = pushBytesToIPFS(payload)
+
             if retryCount > 0:
                 m = 'Retrying succeeded after {0} attempts'.format(retryCount)
                 print(m)
@@ -72,7 +86,7 @@ def pushToIPFS(hstr, payload):
             attemptCount = '{0}/{1}'.format(retryCount + 1, ipfsRetryCount)
             logError('IPFS failed to add, ' +
                      'retrying attempt {0}'.format(attemptCount))
-            # print(sys.exc_info())
+            logError(sys.exc_info())
             retryCount += 1
 
     return None  # Process of adding to IPFS failed
@@ -368,13 +382,16 @@ def pushBytesToIPFS(bytes):
     """
     global IPFS_API
 
+    # Returns unicode in py2.7, str in py3.7
     res = IPFS_API.add_bytes(bytes)  # bytes)
     # TODO: verify that the add was successful
 
-    # Receiving weirdness where res is sometimes a dictionary and sometimes
-    #  a unicode string
     if type(res).__name__ == 'unicode':
         return res
+    elif type(res).__name__ == 'str':
+        return res
+
+    logError('NEITHER UNICODE NOR STR RETURNED.')
     return res[0]['Hash']
 
 
