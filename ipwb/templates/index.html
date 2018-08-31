@@ -48,7 +48,7 @@ let uris = {{ uris|safe }}
   </footer>
     <div id="uris" class="hidden">
     <h3 id="urisHeader"><abbr title="Uniform Resource Identifiers">URIs</abbr> locally available</h3>
-    <h4 id="htmlCountHeader">{{ pluralize(summary.urimCount, 'memento', 'mementos') }} of {{ pluralize(summary.urirCount, 'resource', 'resources') }} with <span id="htmlPages">0</span>
+    <h4 id="htmlCountHeader">{{ pluralize(summary.urimCount, 'memento', 'mementos') }} of {{ pluralize(summary.urirCount, 'resource', 'resources') }} with <span id="htmlPages">{{ summary.htmlCount }}</span>
         HTML page<span id="htmlPagesPlurality">s</span> listed
         <button id="showEmbeddedURI" data-defaultValue="Show All" data-activatedValue="Show Only HTML Pages">Show All</button></h4>
     <ul id="uriList"></ul>

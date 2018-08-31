@@ -114,7 +114,7 @@ def setupIPWBInIPFSConfig():
     if not hostPort:
         setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
 
-
+# TODO: remedy duplication of similarly named function in replay
 def retrieveMemCount():
     with open(INDEX_FILE, 'r') as cdxjFile:
         for i, l in enumerate(cdxjFile):

@@ -17,7 +17,6 @@ function hideURIs () {
 
 function addURIListToDOM () {
   let ul = document.getElementById('uriList')
-  let htmlPages = 0
   const uriKeys = Object.keys(uris).sort(shortestFirst)
   for (let uri of uriKeys) {
     for (let datetimesI = 0; datetimesI < uris[uri]['datetimes'].length; datetimesI++) {
@@ -34,9 +33,7 @@ function addURIListToDOM () {
       li.setAttribute('data-mime', uris[uri]['mime'])
       ul.appendChild(li)
     }
-    uris[uri]['mime'] === 'text/html' ? ++htmlPages : ''
   }
-  document.getElementById('htmlPages').innerHTML = htmlPages
 }
 
 

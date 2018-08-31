@@ -540,7 +540,13 @@ def showAdmin():
     status = {'ipwbVersion': ipwbVersion,
               'ipfsEndpoint': ipfsEndpoint}
     iFile = ipwbUtils.getIPWBReplayIndexPath()
-    (mCount, uniqueURIRs) = retrieveMemCount(iFile)
+
+    mementoInfo = calculateMementoInfoInIndex(iFile)
+
+    mCount = mementoInfo['mementoCount']
+    uniqueURIRs = len(mementoInfo['surtURIs'].keys())
+    htmlCount = mementoInfo['htmlCount']
+
     uris = getURIsAndDatetimesInCDXJ(iFile)
 
     # TODO: Calculate actual URI-R/M counts
@@ -552,7 +558,7 @@ def showAdmin():
     summary = {'urimCount': mCount,
                'urirCount': uniqueURIRs,
                'uris': uris,
-               'htmlCount': '#HTML',
+               'htmlCount': htmlCount,
                'earliest': 'Date1',
                'latest': 'Date2'}
     return render_template('admin.html', status=status, indexes=indexes,
@@ -562,10 +568,16 @@ def showAdmin():
 @app.route('/', strict_slashes=False)
 def showLandingPage():
     iFile = ipwbUtils.getIPWBReplayIndexPath()
-    (mCount, uniqueURIRs) = retrieveMemCount(iFile)
+    mementoInfo = calculateMementoInfoInIndex(iFile)
+
+    mCount = mementoInfo['mementoCount']
+    uniqueURIRs = len(mementoInfo['surtURIs'].keys())
+    htmlCount = mementoInfo['htmlCount']
+
     summary = {'indexPath': iFile,
                'urimCount': mCount,
-               'urirCount': uniqueURIRs}
+               'urirCount': uniqueURIRs,
+               'htmlCount': htmlCount}
     uris = getURIsAndDatetimesInCDXJ(iFile)
     return render_template('index.html', summary=summary, uris=uris)
 
@@ -916,7 +928,7 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
     return json.dumps(uris)
 
 
-def retrieveMemCount(cdxjFilePath=INDEX_FILE):
+def calculateMementoInfoInIndex(cdxjFilePath=INDEX_FILE):
     print("Retrieving URI-Ms from {0}".format(cdxjFilePath))
     indexFileContents = getIndexFileContents(cdxjFilePath)
 
@@ -928,21 +940,29 @@ def retrieveMemCount(cdxjFilePath=INDEX_FILE):
 
     if not lines:
         return errReturn
-    mementoCount = 0
 
-    bucket = {}
+    mementoInfo = {
+        'mementoCount': 0,
+        'htmlCount': 0,
+        'surtURIs': {}
+    }
+
     for i, l in enumerate(lines):
         validCDXJLine = ipwbUtils.isValidCDXJLine(l)
         metadataRecord = ipwbUtils.isCDXJMetadataRecord(l)
         if validCDXJLine and not metadataRecord:
-            mementoCount += 1
-            surtURI = l.split()[0]
-            if surtURI not in bucket:
-                bucket[surtURI] = 1
+            mementoInfo['mementoCount'] += 1
+            (surtURI, datetime, jsonInLine) = l.split(' ', 2)
+            if surtURI not in mementoInfo['surtURIs']:
+                mementoInfo['surtURIs'][surtURI] = 1
             else:  # Unnecessary to keep count now, maybe useful later
-                bucket[surtURI] += 1
+                mementoInfo['surtURIs'][surtURI] += 1
 
-    return mementoCount, len(bucket.keys())
+            j = json.loads(jsonInLine)
+            if j['mime_type'] == 'text/html':
+                mementoInfo['htmlCount'] += 1
+
+    return mementoInfo
 
 
 def objectifyCDXJData(lines, onlyURI):
