@@ -28,7 +28,8 @@ setup(
         'Flask==0.12.3',
         'pycryptodome>=3.4.11',
         'requests>=2.19.1',
-        'beautifulsoup4>=4.6.3'
+        'beautifulsoup4>=4.6.3',
+        'six==1.11.0'
     ],
     tests_require=[
         'flake8>=3.4',

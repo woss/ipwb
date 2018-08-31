@@ -4,8 +4,6 @@ from os.path import expanduser
 from os.path import basename
 
 import os
-from os import devnull
-import json
 import sys
 import requests
 import ipfsapi
@@ -19,7 +17,7 @@ import datetime
 import logging
 import platform
 
-import urllib2
+from six.moves.urllib.request import urlopen
 import json
 from __init__ import __version__ as ipwbVersion
 
@@ -45,9 +43,6 @@ def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_HOST, IPFSAPI_PORT)):
     client = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
 
     try:
-        # OSError if ipfs not installed, redundant of below
-        # subprocess.call(['ipfs', '--version'], stdout=open(devnull, 'wb'))
-
         # ConnectionError/AttributeError if IPFS daemon not running
         client.id()
         return True
@@ -248,7 +243,7 @@ def getIPWBReplayIndexPath():
 
 def compareCurrentAndLatestIPWBVersions():
     try:
-        resp = urllib2.urlopen('https://pypi.python.org/pypi/ipwb/json')
+        resp = urlopen('https://pypi.python.org/pypi/ipwb/json')
         jResp = json.loads(resp.read())
         latestVersion = jResp['info']['version']
         currentVersion = re.sub(r'\.0+', '.', ipwbVersion)
