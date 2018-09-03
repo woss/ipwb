@@ -63,11 +63,10 @@ def pushToIPFS(hstr, payload):
     retryCount = 0
     while retryCount < ipfsRetryCount:
         try:
+            # Py 2/3 str/unicode/byte resolution
             if isinstance(hstr, str):
-                logError('Converting header to string')
                 hstr = s2b(hstr)
             if isinstance(payload, str):
-                logError('Converting payload to string')
                 payload = s2b(payload)
 
             httpHeaderIPFSHash = pushBytesToIPFS(hstr)

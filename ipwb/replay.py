@@ -549,6 +549,8 @@ def showAdmin():
     mCount = mementoInfo['mementoCount']
     uniqueURIRs = len(mementoInfo['surtURIs'].keys())
     htmlCount = mementoInfo['htmlCount']
+    oldestDatetime = mementoInfo['oldestDatetime']
+    newestDatetime = mementoInfo['newestDatetime']
 
     uris = getURIsAndDatetimesInCDXJ(iFile)
 
@@ -562,8 +564,8 @@ def showAdmin():
                'urirCount': uniqueURIRs,
                'uris': uris,
                'htmlCount': htmlCount,
-               'earliest': 'Date1',
-               'latest': 'Date2'}
+               'earliest': oldestDatetime,
+               'latest': newestDatetime}
     return render_template('admin.html', status=status, indexes=indexes,
                            summary=summary)
 
@@ -962,7 +964,9 @@ def calculateMementoInfoInIndex(cdxjFilePath=INDEX_FILE):
     mementoInfo = {
         'mementoCount': 0,
         'htmlCount': 0,
-        'surtURIs': {}
+        'surtURIs': {},
+        'oldestDatetime': None,
+        'newestDatetime': None
     }
 
     for i, l in enumerate(lines):
@@ -979,6 +983,16 @@ def calculateMementoInfoInIndex(cdxjFilePath=INDEX_FILE):
             j = json.loads(jsonInLine)
             if j['mime_type'] == 'text/html':
                 mementoInfo['htmlCount'] += 1
+
+            if mementoInfo['oldestDatetime'] is None:
+                mementoInfo['oldestDatetime'] = datetime
+                mementoInfo['newestDatetime'] = datetime
+                continue
+
+            if datetime < mementoInfo['oldestDatetime']:
+                mementoInfo['oldestDatetime'] = datetime
+            if datetime > mementoInfo['newestDatetime']:
+                mementoInfo['newestDatetime'] = datetime
 
     return mementoInfo
 
