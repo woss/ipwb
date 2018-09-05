@@ -729,7 +729,7 @@ def show_uri(path, datetime=None):
         ipwbjsinject = """<script src="/ipwbassets/webui.js"></script>
                       <script>injectIPWBJS()</script>"""
 
-        newPayload = newPayload.decode().replace(
+        newPayload = newPayload.decode('utf-8').replace(
             '</html>', ipwbjsinject + '</html>')
 
         resp.set_data(newPayload)
