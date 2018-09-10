@@ -67,7 +67,7 @@ $ ipwb index (path to warc or warc.gz)
 ...for example, from the root of the ipwb repository:
 
 ```
-$ ipwb index ipwb/samples/warcs/salam-home.warc
+$ ipwb index samples/warcs/salam-home.warc
 ```
 
 The ipwb indexer partitions the WARC into WARC Records and extracts the WARC Response headers, HTTP response headers, and the HTTP response bodies (payloads). Relevant information is extracted from the WARC Response headers, temporary byte strings are created for the HTTP response headers and payload, and these two bytes strings are pushed into IPFS. The resulting CDXJ data is written to `STDOUT` by default but can be redirected to a file, e.g.,
