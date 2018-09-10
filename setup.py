@@ -45,9 +45,7 @@ setup(
         'ipwb': [
             'assets/*.*',
             'assets/favicons/*.*',
-            'templates/*.*',
-            'samples/indexes/*.*',
-            'samples/warcs/*.*'
+            'templates/*.*'
           ]
     },
     zip_safe=False,
