@@ -17,7 +17,7 @@ p = Process()
 def createUniqueWARC():
     lines = []
     warcInFilename = 'frogTest.warc'
-    warcInPath = os.path.join(os.path.dirname(__file__) + '/samples/warcs/' +
+    warcInPath = os.path.join('samples/warcs/' +
                               warcInFilename)
 
     stringToChange = 'abcdefghijklmnopqrstuvwxz'
@@ -28,8 +28,7 @@ def createUniqueWARC():
 
     warcOutFilename = warcInFilename.replace('.warc', '_' +
                                              randomString + '.warc')
-    warcOutPath = os.path.join(os.path.dirname(__file__) +
-                               '/samples/warcs/' + warcOutFilename)
+    warcOutPath = os.path.join('samples/warcs/' + warcOutFilename)
     with open(warcOutPath, 'w') as warcFile:
         warcFile.write(newContent)
 
@@ -52,8 +51,7 @@ def countCDXJEntries(cdxjData):
 
 def startReplay(warcFilename):
     global p
-    pathOfWARC = os.path.join(os.path.dirname(moduleLocation) +
-                              '/samples/warcs/' + warcFilename)
+    pathOfWARC = os.path.join('samples/warcs/' + warcFilename)
     tempFilePath = '/tmp/' + ''.join(random.sample(
         string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
 
