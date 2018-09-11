@@ -241,6 +241,21 @@ def getIPWBReplayIndexPath():
         return ''
 
 
+# From pywb 2.0.4
+def unsurt(surt):
+    try:
+        index = surt.index(')/')
+        parts = surt[0:index].split(',')
+        parts.reverse()
+        host = '.'.join(parts)
+        host += surt[index+1:]
+        return host
+
+    except ValueError:
+        # May not be a valid surt
+        return surt
+
+
 def compareCurrentAndLatestIPWBVersions():
     try:
         resp = urlopen('https://pypi.python.org/pypi/ipwb/json')
