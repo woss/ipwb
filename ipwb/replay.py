@@ -19,8 +19,7 @@ import pkg_resources
 import surt
 import re
 import signal
-
-from pywb.utils.canonicalize import unsurt
+import traceback
 
 from flask import Flask
 from flask import Response
@@ -41,6 +40,7 @@ from six.moves.urllib_parse import urlunsplit
 from requests.exceptions import HTTPError
 
 from . import util as ipwbUtils
+from .util import unsurt
 from .util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from .util import INDEX_FILE
 
@@ -525,6 +525,7 @@ def getCompleteURI(uri):
 def all_exception_handler(error):
     print(error)
     print(sys.exc_info())
+    traceback.print_tb(sys.exc_info()[-1])
 
     return 'Error', 500
 
@@ -716,7 +717,7 @@ def show_uri(path, datetime=None):
         if k.lower() not in ["content-type", "content-encoding", "location"]:
             k = "X-Archive-Orig-" + k
 
-        resp.headers[k] = v
+        resp.headers[k] = v.strip()
 
     # Add ipwb header for additional SW logic
     newPayload = resp.get_data()

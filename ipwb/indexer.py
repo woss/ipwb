@@ -19,12 +19,13 @@ import argparse
 import zlib
 import surt
 import ntpath
+import traceback
 
 from io import BytesIO
-from pywb.warc.archiveiterator import DefaultRecordParser
-# from pywb.utils.canonicalize import canonicalize as surt
+from warcio.archiveiterator import ArchiveIterator
+from warcio.recordloader import ArchiveLoadFailed
+
 from requests.packages.urllib3.exceptions import NewConnectionError
-from pywb.warc.recordloader import ArchiveLoadFailed
 from ipfsapi.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 
@@ -33,6 +34,7 @@ from six import PY2
 from six import PY3
 
 from .util import IPFSAPI_HOST, IPFSAPI_PORT
+from .util import iso8601ToDigits14
 
 # from warcio.archiveiterator import ArchiveIterator
 
@@ -86,6 +88,8 @@ def pushToIPFS(hstr, payload):
             logError('IPFS failed to add, ' +
                      'retrying attempt {0}'.format(attemptCount))
             logError(sys.exc_info())
+            traceback.print_tb(sys.exc_info()[-1])
+
             retryCount += 1
 
     return None  # Process of adding to IPFS failed
@@ -191,20 +195,13 @@ def sanitizecdxjLine(cdxjLine):
 
 
 def getCDXJLinesFromFile(warcPath, **encCompOpts):
-    textRecordParserOptions = {
-        'cdxj': True,
-        'include_all': False,
-        'surt_ordered': False}
-    iter = TextRecordParser(**textRecordParserOptions)
-
     recordCount = 0
     with open(warcPath, 'rb') as fhForCounting:
-        iterForCounting = TextRecordParser(**textRecordParserOptions)
         recordCount = 0
         try:
-            for i in iterForCounting(fhForCounting):
+            for record in ArchiveIterator(fhForCounting):
                 recordCount += 1
-                # recordCount = sum(1 for _ in iterForCounting(fhForCounting))
+
         except ArchiveLoadFailed:
             print('Encountered a bad WARC record.', file=sys.stderr)
 
@@ -212,7 +209,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
         cdxjLines = []
         recordsProcessed = 0
         # Throws pywb.warc.recordloader.ArchiveLoadFailed if not a warc
-        for entry in iter(fh):
+        for record in ArchiveIterator(fh):
             msg = 'Processing WARC records in ' + ntpath.basename(warcPath)
             showProgress(msg, recordsProcessed, recordCount)
 
@@ -220,28 +217,23 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             # Only consider WARC resps records from reqs for web resources
             ''' TODO: Change conditional to return on non-HTTP responses
                       to reduce branch depth'''
-            if entry.record.rec_type != 'response' or \
-               entry.get('mime') in ('text/dns', 'text/whois'):
+            if record.rec_type != 'response' or \
+               record.http_headers.get_header('Content-Type') in \
+                    ('text/dns', 'text/whois'):
                 continue
 
-            hdrs = entry.record.status_headers
-            hstr = hdrs.protocol + ' ' + hdrs.statusline
-            for h in hdrs.headers:
-                hstr += "\n" + ': '.join(h)
+            hstr = record.http_headers.to_str().strip()
+
             try:
-                statusCode = hdrs.statusline.split()[0]
+                statusCode = record.http_headers.statusline.split()[0]
             except Exception as e:  # TODO: Do not use bare except
                 break
 
-            if not entry.buffer:
-                return
-
-            entry.buffer.seek(0)
-            payload = entry.buffer.read()
+            payload = record.content_stream().read()
 
             title = None
             try:
-                ctype = hdrs.get_header('Content-Type')
+                ctype = record.content_type
                 if ctype and ctype.lower().startswith('text/html'):
                     title = BeautifulSoup(payload, 'html.parser').title
                     if title is not None:
@@ -277,18 +269,20 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             ipfsHashes = pushToIPFS(hstr, payload)
 
             if ipfsHashes is None:
-                logError('Skipping ' + entry.get('url'))
+                logError('Skipping ' +
+                         record.rec_headers.get_header('WARC-Target-URI'))
 
                 continue
 
             (httpHeaderIPFSHash, payloadIPFSHash) = ipfsHashes
 
-            originaluri = entry.get('url')
+            originaluri = record.rec_headers.get_header('WARC-Target-URI')
             originaluri_surted = \
                 surt.surt(originaluri,
                           path_strip_trailing_slash_unless_empty=False)
-            timestamp = entry.get('timestamp')
-            mime = entry.get('mime')
+            timestamp = iso8601ToDigits14(
+                record.rec_headers.get_header('WARC-Date'))
+            mime = record.http_headers.get_header('content-type')
             obj = {
                 'locator': 'urn:ipfs/{0}/{1}'.format(
                     httpHeaderIPFSHash, payloadIPFSHash),
@@ -383,6 +377,7 @@ def pushBytesToIPFS(bytes):
 
     # Returns unicode in py2.7, str in py3.7
     res = IPFS_API.add_bytes(bytes)  # bytes)
+
     # TODO: verify that the add was successful
 
     if type(res).__name__ == 'unicode':
@@ -397,12 +392,3 @@ def pushBytesToIPFS(bytes):
 def writeFile(filename, content):
     with open(filename, 'w') as tmpFile:
         tmpFile.write(content)
-
-
-class TextRecordParser(DefaultRecordParser):
-    def create_payload_buffer(self, entry):
-        return BytesIO()
-
-    def create_record_iter(self, raw_iter):
-        raw_iter.INC_RECORD = ''
-        return super(TextRecordParser, self).create_record_iter(raw_iter)

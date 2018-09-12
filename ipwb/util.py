@@ -138,6 +138,16 @@ def rfc1123ToDigits14(rfc1123DateString):
     return d.strftime('%Y%m%d%H%M%S')
 
 
+def iso8601ToDigits14(iso8601DateString):
+    setLocale()
+    d = datetime.datetime.strptime(iso8601DateString,
+                                   "%Y-%m-%dT%H:%M:%SZ")
+
+    # TODO: Account for conversion if TZ other than GMT not specified
+
+    return d.strftime('%Y%m%d%H%M%S')
+
+
 def getRFC1123OfNow():
     setLocale()
     d = datetime.datetime.now()
