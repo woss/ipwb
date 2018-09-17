@@ -982,7 +982,7 @@ def calculateMementoInfoInIndex(cdxjFilePath=INDEX_FILE):
                 mementoInfo['surtURIs'][surtURI] += 1
 
             j = json.loads(jsonInLine)
-            if j['mime_type'] == 'text/html':
+            if 'text/html' in j['mime_type']:
                 mementoInfo['htmlCount'] += 1
 
             if mementoInfo['oldestDatetime'] is None:

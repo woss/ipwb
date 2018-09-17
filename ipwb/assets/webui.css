@@ -22,7 +22,7 @@ html#statusStart {color: red;}
 html#statusStop {color: green;}
 html.status button {display: inline-block; margin-left: 5px;}
 ul#uriList li {display: none; width: 100%; margin-bottom: 0.5em;}
-ul#uriList li[data-mime="text/html"] {background-color: white; display: block;}
+ul#uriList li[data-mime*="text/html"] {background-color: white; display: block;}
 ul#uriList.forceDisplay li {display: block;}
 
 h3#urisHeader {margin-bottom: 0;}
