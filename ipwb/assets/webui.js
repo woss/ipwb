@@ -18,22 +18,27 @@ function hideURIs () {
 function addURIListToDOM () {
   let ul = document.getElementById('uriList')
   const uriKeys = Object.keys(uris).sort(shortestFirst)
-  for (let uri of uriKeys) {
-    for (let datetimesI = 0; datetimesI < uris[uri]['datetimes'].length; datetimesI++) {
-      let datetime = uris[uri]['datetimes'][datetimesI]
 
+
+  Object.entries(uris).forEach(([urir, mementoList]) => {
+    mementoList.forEach(function (memento) {
       let li = document.createElement('li')
       let a = document.createElement('a')
-      a.href = 'memento/' + datetime + '/' + uri
-      a.appendChild(document.createTextNode(uri))
-      dt = document.createTextNode(' (' + datetime + ')')
+      a.href = 'memento/' + memento['datetime'] + '/' + urir
+      a.appendChild(document.createTextNode(urir))
+      dt = document.createTextNode(' (' + memento['datetime'] + ')')
 
       li.appendChild(a)
       li.appendChild(dt)
-      li.setAttribute('data-mime', uris[uri]['mime'])
+
+      li.setAttribute('data-mime', memento['mime'])
+      li.setAttribute('data-status', memento['status'])
+      if (memento['mime'].startsWith('text/html') && memento['status'][0] !== '3') {
+        li.setAttribute('data-display', 'default')
+      }
       ul.appendChild(li)
-    }
-  }
+    })
+  })
 }
 
 

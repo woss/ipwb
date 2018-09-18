@@ -940,10 +940,15 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
             continue
 
         if uri not in uris:
-            uris[uri] = {}
-            uris[uri]['datetimes'] = []
-        uris[uri]['datetimes'].append(datetime)
-        uris[uri]['mime'] = jsonFields['mime_type']
+            uris[uri] = []
+
+        mementoAsJSON = {
+            'datetime': datetime,
+            'mime': jsonFields['mime_type'],
+            'status': jsonFields['status_code']
+        }
+
+        uris[uri].append(mementoAsJSON)
 
         pass
     return json.dumps(uris)
