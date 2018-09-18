@@ -950,7 +950,6 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
         uris[uri].append(mementoAsJSON)
 
-        pass
     return json.dumps(uris)
 
 
