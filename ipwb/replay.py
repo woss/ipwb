@@ -940,10 +940,15 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
             continue
 
         if uri not in uris:
-            uris[uri] = {}
-            uris[uri]['datetimes'] = []
-        uris[uri]['datetimes'].append(datetime)
-        uris[uri]['mime'] = jsonFields['mime_type']
+            uris[uri] = []
+
+        mementoAsJSON = {
+            'datetime': datetime,
+            'mime': jsonFields['mime_type'],
+            'status': jsonFields['status_code']
+        }
+
+        uris[uri].append(mementoAsJSON)
 
         pass
     return json.dumps(uris)
@@ -982,7 +987,11 @@ def calculateMementoInfoInIndex(cdxjFilePath=INDEX_FILE):
                 mementoInfo['surtURIs'][surtURI] += 1
 
             j = json.loads(jsonInLine)
-            if j['mime_type'] == 'text/html':
+
+            # Count only non-redirect HTML pages for htmlCount display
+            if j['mime_type'] and \
+                    j['mime_type'].lower().startswith('text/html') and \
+                    j['status_code'][0] != '3':
                 mementoInfo['htmlCount'] += 1
 
             if mementoInfo['oldestDatetime'] is None:
