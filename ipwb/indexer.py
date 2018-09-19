@@ -218,7 +218,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             ''' TODO: Change conditional to return on non-HTTP responses
                       to reduce branch depth'''
             if record.rec_type != 'response' or \
-               record.http_headers.get_header('Content-Type') in \
+               record.rec_headers.get_header('Content-Type') in \
                     ('text/dns', 'text/whois'):
                 continue
 
