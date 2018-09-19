@@ -19,9 +19,8 @@ function addURIListToDOM () {
   let ul = document.getElementById('uriList')
   const uriKeys = Object.keys(uris).sort(shortestFirst)
 
-
-  Object.entries(uris).forEach(([urir, mementoList]) => {
-    mementoList.forEach(function (memento) {
+  uriKeys.forEach(urir => {
+    uris[urir].forEach(function (memento) {
       let li = document.createElement('li')
       let a = document.createElement('a')
       a.href = 'memento/' + memento['datetime'] + '/' + urir
