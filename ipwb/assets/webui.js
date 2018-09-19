@@ -15,6 +15,10 @@ function hideURIs () {
   window.localStorage.setItem('showURIs', 'false')
 }
 
+function splitDatetime (datetime) {
+  return datetime.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1-$2-$3 $4:$5:$6')
+}
+
 function addURIListToDOM () {
   let ul = document.getElementById('uriList')
   const uriKeys = Object.keys(uris).sort(shortestFirst)
@@ -25,10 +29,10 @@ function addURIListToDOM () {
       let a = document.createElement('a')
       a.href = 'memento/' + memento['datetime'] + '/' + urir
       a.appendChild(document.createTextNode(urir))
-      dt = document.createTextNode(' (' + memento['datetime'] + ')')
+      dt = document.createTextNode('[' + splitDatetime(memento['datetime']) + '] ')
 
-      li.appendChild(a)
       li.appendChild(dt)
+      li.appendChild(a)
 
       li.setAttribute('data-mime', memento['mime'])
       li.setAttribute('data-status', memento['status'])
