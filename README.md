@@ -25,7 +25,7 @@ Both *Service Worker* and *Custom Element* APIs are new and only supported in mo
 
 ## Installing
 
-InterPlanetary Wayback requires Python 2.7+ though we are working on having it work on Python 3 as well (see [#51](https://github.com/oduwsdl/ipwb/issues/51)). ipwb can also be used with Docker ([see below](#user-content-using-docker)).
+InterPlanetary Wayback (ipwb) requires Python 2.7+ though we are working on having it work on Python 3 as well (see [#51](https://github.com/oduwsdl/ipwb/issues/51)). ipwb can also be used with Docker ([see below](#user-content-using-docker)).
 
 For conventional usage, the latest release of ipwb can be installed using pip:
 
