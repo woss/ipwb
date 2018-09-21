@@ -21,7 +21,7 @@ An important aspect of archival replay systems is rewriting various resource ref
 
 Another important feature of archival replays is the inclusion of an archival banner in mementos. The purpose of an archival banner is to highlight that a replayed page is a memento and not a live page, to provide metadata about the memento and the archive, and to facilitate additional interactivity. Many archival banners used in different web archival replay systems are obtrusive in nature and have issues like style leakage. To eliminate both of these issues we have implemented a [Custom HTML Element](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [<reconstructive-banner>](https://oduwsdl.github.io/Reconstructive/docs/class/Reconstructive/reconstructive-banner.js~ReconstructiveBanner.html) as part of the [Reconstructive](https://oduwsdl.github.io/Reconstructive/) library and used in the ipwb.
 
-Both *Service Worker* and *Custom Element* APIs are new and only supported in modern web browsers. So, we expect the replay to function properly in only the modern browsers.
+Both *Service Worker* and *Custom Element* APIs are new and only supported in modern web browsers (Chrome > v67, Firefox > v63).
 
 ## Installing
 
