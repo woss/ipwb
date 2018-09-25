@@ -233,7 +233,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
 
             title = None
             try:
-                ctype = record.content_type
+                ctype = record.http_headers.get_header('content-type')
                 if ctype and ctype.lower().startswith('text/html'):
                     title = BeautifulSoup(payload, 'html.parser').title
                     if title is not None:
