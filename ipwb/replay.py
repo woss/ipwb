@@ -947,6 +947,8 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
             'mime': jsonFields['mime_type'],
             'status': jsonFields['status_code']
         }
+        if 'title' in jsonFields:
+            mementoAsJSON['title'] = jsonFields['title']
 
         uris[uri].append(mementoAsJSON)
 
