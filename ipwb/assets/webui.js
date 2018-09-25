@@ -27,11 +27,11 @@ function addURIListToDOM () {
     uris[urir].forEach(function (memento) {
       let li = document.createElement('li')
       let a = document.createElement('a')
-      let span = document.createElement('span')
+      let dt = document.createElement('span')
       a.href = 'memento/' + memento['datetime'] + '/' + urir
       a.appendChild(document.createTextNode(memento['title'] || urir))
-      span.setAttribute('class', 'datetime')
-      let dt = span.appendChild(document.createTextNode(splitDatetime(memento['datetime'])))
+      dt.setAttribute('class', 'datetime')
+      dt.appendChild(document.createTextNode(splitDatetime(memento['datetime'])))
 
       li.appendChild(dt)
       li.appendChild(a)
