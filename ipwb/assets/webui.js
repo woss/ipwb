@@ -6,13 +6,17 @@ function handleSubmit () {
 }
 
 function shortestFirst (a, b) {
-  return a.length - b.length
+  return a.replace(/\/+$/, '').split('/').length - b.replace(/\/+$/, '').split('/').length
 }
 
 function hideURIs () {
   document.getElementById('uris').classList.add('hidden')
   document.getElementById('memCountListLink').classList.remove('activated')
   window.localStorage.setItem('showURIs', 'false')
+}
+
+function splitDatetime (datetime) {
+  return datetime.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1-$2-$3 $4:$5:$6')
 }
 
 function addURIListToDOM () {
@@ -23,12 +27,14 @@ function addURIListToDOM () {
     uris[urir].forEach(function (memento) {
       let li = document.createElement('li')
       let a = document.createElement('a')
+      let dt = document.createElement('span')
       a.href = 'memento/' + memento['datetime'] + '/' + urir
-      a.appendChild(document.createTextNode(urir))
-      dt = document.createTextNode(' (' + memento['datetime'] + ')')
+      a.appendChild(document.createTextNode(memento['title'] || urir))
+      dt.setAttribute('class', 'datetime')
+      dt.appendChild(document.createTextNode(splitDatetime(memento['datetime'])))
 
-      li.appendChild(a)
       li.appendChild(dt)
+      li.appendChild(a)
 
       li.setAttribute('data-mime', memento['mime'])
       li.setAttribute('data-status', memento['status'])
