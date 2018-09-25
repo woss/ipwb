@@ -287,7 +287,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 'locator': 'urn:ipfs/{0}/{1}'.format(
                     httpHeaderIPFSHash, payloadIPFSHash),
                 'status_code': statusCode,
-                'mime_type': mime,
+                'mime_type': mime or '',
                 'original_uri': originaluri
             }
             if encCompOpts.get('encryptionKey') is not None:
