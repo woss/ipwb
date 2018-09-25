@@ -6,7 +6,7 @@ function handleSubmit () {
 }
 
 function shortestFirst (a, b) {
-  return a.split('/').length - b.split('/').length
+  return a.replace(/\/$+/, '').split('/').length - b.replace(/\/+$/, '').split('/').length
 }
 
 function hideURIs () {
