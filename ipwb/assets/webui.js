@@ -32,6 +32,9 @@ function addURIListToDOM () {
 
       li.setAttribute('data-mime', memento['mime'])
       li.setAttribute('data-status', memento['status'])
+      if ('title' in memento) {
+        li.setAttribute('title', memento['title'])
+      }
 
       const isHTML = memento['mime'].toLowerCase().startsWith('text/html')
       const isARedirect = memento['status'][0] === '3'
