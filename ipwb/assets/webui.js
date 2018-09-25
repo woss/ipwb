@@ -6,7 +6,7 @@ function handleSubmit () {
 }
 
 function shortestFirst (a, b) {
-  return a.length - b.length
+  return a.split('/').length - b.split('/').length
 }
 
 function hideURIs () {
