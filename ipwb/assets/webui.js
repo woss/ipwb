@@ -39,7 +39,10 @@ function addURIListToDOM () {
       li.setAttribute('data-mime', memento['mime'])
       li.setAttribute('data-status', memento['status'])
 
-      const isHTML = memento['mime'].toLowerCase().startsWith('text/html')
+      const mementoMIME = memento['mime'].toLowerCase()
+      const isHTML = mementoMIME.startsWith('text/html') ||
+        mementoMIME.startsWith('application/xhtml+xml')
+
       const isARedirect = memento['status'][0] === '3'
       if (isHTML && !isARedirect) {
         li.setAttribute('data-display', 'default')
