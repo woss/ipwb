@@ -2,7 +2,7 @@
 
 set -e
 
-if [[ ("$1" = "ipwb") && ("$1" != "$@") && ("$@" != *" -h"*) && ("$@" != *" --help"*) ]]
+if [[ ("$@" != "ipwb") && ("$@" != *" -h"*) && ("$@" != *" --help"*) ]]
 then
     # Run the IPFS daemon in background, initialize configs if necessary
     ipfs daemon --init &
