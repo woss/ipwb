@@ -380,7 +380,7 @@ def pushBytesToIPFS(bytes):
 
     # Returns unicode in py2.7, str in py3.7
     try:
-      res = IPFS_API.add_bytes(bytes)  # bytes)
+        res = IPFS_API.add_bytes(bytes)  # bytes)
     except TypeError as err:
         logError('IPFS_API had an issue pushing the item to IPFS')
         logError(sys.exc_info())
