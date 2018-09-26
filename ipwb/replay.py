@@ -944,7 +944,7 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
         mementoAsJSON = {
             'datetime': datetime,
-            'mime': jsonFields['mime_type'],
+            'mime': jsonFields['mime_type'] or '',
             'status': jsonFields['status_code']
         }
         if 'title' in jsonFields:
