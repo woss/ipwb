@@ -53,7 +53,14 @@
 
         <ul id="uriList"></ul>
 
-        <button type="button" name="cdxj">Upload WARC File</button>
+        <form method="post" action="/upload" enctype="multipart/form-data">
+        <label class="twoRowLabel">Upload WARC</label>
+        <div>
+          <input type="file" name="file"><br />
+          <input type="submit" value="Upload" style="display: inline">
+        </div>
+        </form>
+
       <p>TODO: Paginated list of mementos with option to filter and sort</p>
     </section>
   </body>
