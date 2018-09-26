@@ -92,6 +92,7 @@ def upload_file():
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
+
     file = request.files['file']
     # if user does not select file, browser also
     # submit an empty part without filename
@@ -114,8 +115,7 @@ def upload_file():
         app.cdxjFileContents = getIndexFileContents(app.cdxjFilePath)
 
         # TODO: Release semaphore lock
-
-        return redirect('/')
+        return redirect(request.referrer)
 
 
 @app.route('/ipwbassets/<path:path>')
