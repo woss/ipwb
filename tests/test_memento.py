@@ -8,6 +8,7 @@ from time import sleep
 import os
 import subprocess
 import urllib2
+import requests
 import random
 import string
 import re
@@ -47,6 +48,28 @@ def getRelsFromURIMSinWARC(warc):
 
     ipwbTest.stopReplay()
     return relsForURIMs
+
+
+@pytest.mark.parametrize("warc,lookup,acceptdatetime,status", [
+    ('5mementos.warc', 'timegate/memento.us',
+     'Thu, 31 May 2007 20:35:00 GMT', 302),
+    ('5mementos.warc', 'timegate/memento.us',
+     'Thu, 31 May 2007 20:35:00', 400),
+    ('5mementos.warc', 'timegate/memento.us',
+     'Thu, 31 May 2007 20:35 GMT', 400),
+    ('5mementos.warc', 'timegate/memento.us',
+     '20181001123636', 400)
+])
+def test_acceptdatetime_status(warc, lookup, acceptdatetime, status):
+    ipwbTest.startReplay(warc)
+
+    headers = {'Accept-Datetime': acceptdatetime}
+
+    resp = requests.get('http://localhost:5000/{}'.format(lookup),
+                        allow_redirects=False, headers=headers)
+    assert resp.status_code == status
+
+    ipwbTest.stopReplay()
 
 
 @pytest.mark.mementoRelationOneCount

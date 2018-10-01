@@ -146,6 +146,14 @@ def iso8601ToDigits14(iso8601DateString):
     return d.strftime('%Y%m%d%H%M%S')
 
 
+def isRFC1123Compliant(dtstr):
+    try:
+        datetime.datetime.strptime(dtstr, '%a, %d %b %Y %H:%M:%S GMT')
+        return True
+    except ValueError as err:
+        return False
+
+
 def getRFC1123OfNow():
     setLocale()
     d = datetime.datetime.now()
