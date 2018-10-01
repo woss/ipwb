@@ -315,6 +315,9 @@ def queryTimeGate(urir):
     if adt is None:
         adt = ipwbUtils.getRFC1123OfNow()
 
+    if not ipwbUtils.isRFC1123Compliant(adt):
+        abort(400)
+
     datetime14 = ipwbUtils.rfc1123ToDigits14(adt)
 
     resolvedMemento = resolveMemento(urir, datetime14)
