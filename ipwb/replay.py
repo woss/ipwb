@@ -56,7 +56,7 @@ from werkzeug.routing import BaseConverter
 from .__init__ import __version__ as ipwbVersion
 
 
-from flask import flash, url_for
+from flask import flash
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
 from flask import make_response
@@ -813,7 +813,6 @@ def generateNoMementosInterface(path, datetime):
 
 
 def extractResponseFromChunkedData(data):
-    chunkDescriptor = -1
     retStr = ''
 
     if isinstance(data, bytes):
@@ -885,7 +884,6 @@ def fetchRemoteCDXJFile(path):
         return fileContents
 
     # TODO: Check if valid CDXJ here before returning
-    return fileContents
 
 
 def getIndexFileContents(cdxjFilePath=INDEX_FILE):
@@ -1035,10 +1033,7 @@ def binary_search(haystack, needle, returnIndex=False, onlyURI=False):
 
     metaLineCount = len(cdxjObj['metadata'])
 
-    if uBound is not None:
-        uBound = uBound
-    else:
-        uBound = len(surtURIsAndDatetimes)
+    uBound = len(surtURIsAndDatetimes)
 
     pos = bisect_left(surtURIsAndDatetimes, needle, lBound, uBound)
 
