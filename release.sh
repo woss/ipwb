@@ -21,5 +21,8 @@ git tag $TAG_NAME
 git push
 git push origin $TAG_NAME
 
+# Install release requirements for pypi push
+pip install twine
+
 # Push to pypi
 rm -rf dist; python setup.py sdist bdist_wheel; twine upload dist/*
