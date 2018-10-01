@@ -435,8 +435,10 @@ def getProxiedURIT(uriT):
 
 def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     tmurl = getProxiedURIT(tmself)
+
     if app.proxy is not None:
         tmself = urlunsplit(tmurl)
+        tgURI = urlunsplit(getProxiedURIT(tgURI))
 
     # Extract and trim for host:port prepending
     tmurl[2] = ''  # Clear TM path
