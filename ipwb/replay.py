@@ -480,6 +480,7 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     tmurl = getProxiedURIT(tmself)
     if app.proxy is not None:
         tmself = urlunsplit(tmurl)
+        tgURI = urlunsplit(getProxiedURIT(tgURI))
 
     # unsurted URI will never have a scheme, add one
     originalURI = 'http://{0}'.format(unsurt(original))
