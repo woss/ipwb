@@ -7,10 +7,8 @@ import os
 import sys
 import requests
 import ipfsapi
-# import exceptions
-import subprocess
+
 import re
-import site
 # Datetime conversion to rfc1123
 import locale
 import datetime
@@ -198,12 +196,6 @@ def getIPFSAPIHostAndPort(ipfsJSON=None):
         ipfsJSON['Addresses']['API'][1:].split('/')
     )
     return host + ':' + port
-
-
-def getIPFSAPIPort(ipfsJSON=None):
-    if not ipfsJSON:
-        ipfsJSON = readIPFSConfig()
-    ipfsAPIPort = basename(ipfsJSON['Addresses']['API'])
 
 
 def getIPWBReplayConfig(ipfsJSON=None):
