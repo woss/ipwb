@@ -172,7 +172,7 @@ def showMementosForURIRs(urir):
 
     if ipwbUtils.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
-    s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
@@ -727,7 +727,6 @@ def show_uri(path, datetime=None):
 
     # Add ipwb header for additional SW logic
     newPayload = resp.get_data()
-    ct = resp.headers.get('content-type')
 
     lineJSON = cdxjLine.split(' ', 2)[2]
     mime = json.loads(lineJSON)['mime_type']
@@ -1072,7 +1071,6 @@ def start(cdxjFilePath, proxy=None):
 
     if not hostPort:
         ipwbUtils.setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
-        hostPort = ipwbUtils.getIPWBReplayConfig()
 
     if ipwbUtils.isDaemonAlive():
         ipwbUtils.setIPWBReplayIndexPath(cdxjFilePath)
