@@ -89,16 +89,19 @@ def allowed_file(filename):
 @app.route('/upload', methods=['POST'])
 def upload_file():
     # check if the post request has the file part
+    resp = redirect(request.url)
+    resp.autocorrect_location_header = False
+
     if 'file' not in request.files:
         flash('No file part')
-        return redirect(request.url)
+        return resp
 
     file = request.files['file']
     # if user does not select file, browser also
     # submit an empty part without filename
     if file.filename == '':
         flash('No selected file')
-        return redirect(request.url)
+        return resp
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         warcPath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -115,7 +118,9 @@ def upload_file():
         app.cdxjFileContents = getIndexFileContents(app.cdxjFilePath)
 
         # TODO: Release semaphore lock
-        return redirect(request.referrer)
+        resp.location = request.referrer
+
+        return resp
 
 
 @app.route('/ipwbassets/<path:path>')
@@ -163,7 +168,10 @@ def showMementosForURIRs_sansJS():
     urir = request.args.get('url')
     if urir is None or urir.strip() == '':
         return Response('Searching for nothing is not allowed!', status=400)
-    return redirect('/memento/*/' + urir, code=301)
+    resp = redirect('/memento/*/' + urir, code=301)
+    resp.autocorrect_location_header = False
+
+    return resp
 
 
 @app.route('/memento/*/<path:urir>')
@@ -182,7 +190,11 @@ def showMementosForURIRs(urir):
     if len(cdxjLinesWithURIR) == 1:
         fields = cdxjLinesWithURIR[0].split(' ', 2)
         redirectURI = '/memento/{1}/{0}'.format(unsurt(fields[0]), fields[1])
-        return redirect(redirectURI, code=302)
+
+        resp = redirect(redirectURI, code=302)
+        resp.autocorrect_location_header = False
+
+        return resp
 
     msg = ''
     if cdxjLinesWithURIR:
@@ -250,6 +262,7 @@ def showMemento(urir, datetime):
 
     if newDatetime != datetime:
         resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
+        resp.autocorrect_location_header = False
     else:
         resp = show_uri(uri, newDatetime)
 
@@ -327,6 +340,7 @@ def queryTimeGate(urir):
     (newDatetime, linkHeader, uri) = resolvedMemento
 
     resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
+    resp.autocorrect_location_header = False
 
     resp.headers['Link'] = linkHeader
     resp.headers['Vary'] = 'Accept-Datetime'
@@ -790,7 +804,11 @@ def generateNoMementosInterface(path, datetime):
     if len(linesWithSameURIR) == 1:
         fields = linesWithSameURIR[0].split(' ', 2)
         redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
-        return redirect(redirectURI, code=302)
+
+        resp = redirect(redirectURI, code=302)
+        resp.autocorrect_location_header = False
+
+        return resp
 
     urir = ''
     if linesWithSameURIR:
