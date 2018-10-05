@@ -79,6 +79,7 @@ def formatters():
 @app.after_request
 def setServerHeader(response):
     response.headers['Server'] = 'InterPlanetary Wayback Replay/' + ipwbVersion
+    response.autocorrect_location_header = False
     return response
 
 
@@ -90,7 +91,6 @@ def allowed_file(filename):
 def upload_file():
     # check if the post request has the file part
     resp = redirect(request.url)
-    resp.autocorrect_location_header = False
 
     if 'file' not in request.files:
         flash('No file part')
@@ -168,10 +168,8 @@ def showMementosForURIRs_sansJS():
     urir = request.args.get('url')
     if urir is None or urir.strip() == '':
         return Response('Searching for nothing is not allowed!', status=400)
-    resp = redirect('/memento/*/' + urir, code=301)
-    resp.autocorrect_location_header = False
 
-    return resp
+    return redirect('/memento/*/' + urir, code=301)
 
 
 @app.route('/memento/*/<path:urir>')
@@ -191,10 +189,7 @@ def showMementosForURIRs(urir):
         fields = cdxjLinesWithURIR[0].split(' ', 2)
         redirectURI = '/memento/{1}/{0}'.format(unsurt(fields[0]), fields[1])
 
-        resp = redirect(redirectURI, code=302)
-        resp.autocorrect_location_header = False
-
-        return resp
+        return redirect(redirectURI, code=302)
 
     msg = ''
     if cdxjLinesWithURIR:
@@ -262,7 +257,6 @@ def showMemento(urir, datetime):
 
     if newDatetime != datetime:
         resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
-        resp.autocorrect_location_header = False
     else:
         resp = show_uri(uri, newDatetime)
 
@@ -340,7 +334,6 @@ def queryTimeGate(urir):
     (newDatetime, linkHeader, uri) = resolvedMemento
 
     resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
-    resp.autocorrect_location_header = False
 
     resp.headers['Link'] = linkHeader
     resp.headers['Vary'] = 'Accept-Datetime'
@@ -804,10 +797,7 @@ def generateNoMementosInterface(path, datetime):
         fields = linesWithSameURIR[0].split(' ', 2)
         redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
 
-        resp = redirect(redirectURI, code=302)
-        resp.autocorrect_location_header = False
-
-        return resp
+        return redirect(redirectURI, code=302)
 
     urir = ''
     if linesWithSameURIR:
