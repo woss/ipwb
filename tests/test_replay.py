@@ -15,16 +15,16 @@ import urllib2
 
 @pytest.mark.parametrize("warc,lookup,status,location", [
     ('salam-home.warc', 'memento/*/cs.odu.edu/~salam/', 302,
-     'http://localhost:5000/memento/20160305192247/cs.odu.edu/~salam/'),
+     '/memento/20160305192247/cs.odu.edu/~salam/'),
     ('1memento.warc', 'memento/*/memento.us', 302,
-     'http://localhost:5000/memento/20130202100000/memento.us/'),
+     '/memento/20130202100000/memento.us/'),
     ('2mementos.warc', 'memento/*/memento.us', 200, None),
     ('salam-home.warc', 'memento/*/?url=cs.odu.edu/~salam/', 301,
-     'http://localhost:5000/memento/*/cs.odu.edu/~salam/'),
+     '/memento/*/cs.odu.edu/~salam/'),
     ('1memento.warc', 'memento/*/?url=memento.us', 301,
-     'http://localhost:5000/memento/*/memento.us'),
+     '/memento/*/memento.us'),
     ('2mementos.warc', 'memento/*/?url=memento.us', 301,
-     'http://localhost:5000/memento/*/memento.us'),
+     '/memento/*/memento.us'),
 
 ])
 def test_replay_search(warc, lookup, status, location):
