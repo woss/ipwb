@@ -36,6 +36,9 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 
+dtPattern = re.compile("^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
+
+
 def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_HOST, IPFSAPI_PORT)):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
     client = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
@@ -158,6 +161,22 @@ def getRFC1123OfNow():
     setLocale()
     d = datetime.datetime.now()
     return d.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+
+def padDigits14(dtstr, validate=False):
+    '''Pad datetime to make a 14-digit string and optionally validate it'''
+    match = dtPattern.match(dtstr)
+    if match:
+        Y = match.group(1)
+        m = match.group(2) or '01'
+        d = match.group(3) or '01'
+        H = match.group(4) or '00'
+        M = match.group(5) or '00'
+        S = match.group(6) or '00'
+        dtstr = '{}{}{}{}{}{}'.format(Y, m, d, H, M, S)
+    if validate:
+        datetime.datetime.strptime(dtstr, '%Y%m%d%H%M%S')
+    return dtstr
 
 
 def fetchRemoteFile(path):
