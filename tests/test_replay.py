@@ -40,21 +40,34 @@ def test_replay_search(warc, lookup, status, location):
 def test_replay_dated_memento():
     ipwbTest.startReplay('salam-home.warc')
 
+    url = 'http://localhost:5000/memento/{}/cs.odu.edu/~salam/'
+    dest = '/memento/20160305192247/cs.odu.edu/~salam/'
+
     invalidDts = [
         '18',
         '20181',
         '201800',
         '20180132',
         '2018010226',
+        '20181301000000',
+        '20180932000000',
+        '20180230000000',
         '20180102263127',
         '20181126134257.123',
     ]
     for dt in invalidDts:
-        url = 'http://localhost:5000/memento/{}/cs.odu.edu/~salam/'.format(dt)
-        resp = requests.get(url, allow_redirects=False)
+        resp = requests.get(url.format(dt), allow_redirects=False)
         assert resp.status_code == 400
 
-    dest = '/memento/20160305192247/cs.odu.edu/~salam/'
+    typoDts = [
+        'foo',
+        '201l',
+        '2018010100000O',
+    ]
+    for dt in typoDts:
+        resp = requests.get(url.format(dt), allow_redirects=False)
+        assert resp.status_code == 404
+
     validDts = [
         '2018',
         '201811',
@@ -64,8 +77,7 @@ def test_replay_dated_memento():
         '20181126134257',
     ]
     for dt in validDts:
-        url = 'http://localhost:5000/memento/{}/cs.odu.edu/~salam/'.format(dt)
-        resp = requests.get(url, allow_redirects=False)
+        resp = requests.get(url.format(dt), allow_redirects=False)
         assert resp.status_code == 302
         assert resp.headers.get('location') == dest
 
