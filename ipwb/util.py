@@ -167,12 +167,12 @@ def padDigits14(dtstr, validate=False):
     '''Pad datetime to make a 14-digit string and optionally validate it'''
     match = dtPattern.match(dtstr)
     if match:
-        Y = match[1]
-        m = match[2] or '01'
-        d = match[3] or '01'
-        H = match[4] or '00'
-        M = match[5] or '00'
-        S = match[6] or '00'
+        Y = match.group(1)
+        m = match.group(2) or '01'
+        d = match.group(3) or '01'
+        H = match.group(4) or '00'
+        M = match.group(5) or '00'
+        S = match.group(6) or '00'
         dtstr = '{}{}{}{}{}{}'.format(Y, m, d, H, M, S)
     if validate:
         datetime.datetime.strptime(dtstr, '%Y%m%d%H%M%S')
