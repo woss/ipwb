@@ -248,6 +248,11 @@ def resolveMemento(urir, datetime):
 
 @app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
 def showMemento(urir, datetime):
+    try:
+        datetime = ipwbUtils.padDigits14(datetime, validate=True)
+    except ValueError as e:
+        msg = 'Expected a 4-14 digits valid datetime: {}'.format(datetime)
+        return Response(msg, status=400)
     resolvedMemento = resolveMemento(urir, datetime)
 
     # resolved to a 404, flask Response object returned instead of tuple
