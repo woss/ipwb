@@ -41,7 +41,6 @@ def test_replay_dated_memento():
     ipwbTest.startReplay('salam-home.warc')
 
     invalidDts = [
-        'foo',
         '18',
         '20181',
         '201800',
