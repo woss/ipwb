@@ -81,6 +81,9 @@ def test_replay_dated_memento():
         assert resp.status_code == 302
         assert resp.headers.get('location') == dest
 
+    resp = requests.get(url.format('20160305192247'), allow_redirects=False)
+    assert resp.status_code == 200
+
     ipwbTest.stopReplay()
 
 
