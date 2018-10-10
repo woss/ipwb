@@ -53,7 +53,6 @@ def test_replay_dated_memento():
         '20180932000000',
         '20180230000000',
         '20180102263127',
-        '20181126134257.123',
     ]
     for dt in invalidDts:
         resp = requests.get(url.format(dt), allow_redirects=False)
@@ -63,6 +62,7 @@ def test_replay_dated_memento():
         'foo',
         '201l',
         '2018010100000O',
+        '20181126134257.123',
     ]
     for dt in typoDts:
         resp = requests.get(url.format(dt), allow_redirects=False)
