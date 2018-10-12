@@ -52,7 +52,7 @@ setup(
     zip_safe=False,
     keywords='http web archives ipfs distributed odu wayback memento',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         'Environment :: Web Environment',
 
