@@ -42,6 +42,15 @@ COPY       requirements.txt ./
 RUN        pip install -r requirements.txt
 
 
+# Standard JS lint
+FROM       node
+WORKDIR    /ipwb
+COPY       . ./
+ARG        SKIPTEST=false
+RUN        $SKIPTEST || npm install -g standard
+RUN        $SKIPTEST || standard
+
+
 # Testing stage
 FROM base AS test
 
