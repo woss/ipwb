@@ -1,4 +1,5 @@
 /* eslint-env serviceworker */
+/* global Reconstructive */
 
 // This makes a class module available named "Reconstructive"
 importScripts('/ipwbassets/reconstructive.js')
