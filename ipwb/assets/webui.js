@@ -1,4 +1,6 @@
-function handleSubmit () {
+/* global uris */
+
+function handleSubmit () { // eslint-disable-line no-unused-vars
   let val = document.getElementById('url').value
   if (val) {
     document.location += 'memento/*/' + val
@@ -52,7 +54,6 @@ function addURIListToDOM () {
   })
 }
 
-
 function showURIs () {
   if (document.getElementById('uriList').childNodes.length === 0) {
     addURIListToDOM() // Prevent multiple adds of the URI list to the DOM
@@ -74,7 +75,7 @@ function setUIExpandedState (urisObj) {
 }
 
 function calculateURIsHash (urisObj) {
-  return JSON.stringify(urisObj).hashCode()
+  return getStringHashCode(JSON.stringify(urisObj))
 }
 
 function getURIsHash () {
@@ -85,7 +86,7 @@ function setURIsHash (hashIn) {
   return window.localStorage.setItem('urisHash', hashIn)
 }
 
-String.prototype.hashCode = function () {
+function getStringHashCode (str) {
   let hash = 0
   let i
   let chr
@@ -108,7 +109,7 @@ function toggleURIDisplay () {
   }
 }
 
-function addEventListeners () {
+function addEventListeners () { // eslint-disable-line no-unused-vars
   let target = document.getElementById('memCountListLink')
   target.addEventListener('click', toggleURIDisplay, false)
 
@@ -160,7 +161,7 @@ function setShowAllButtonStatus () {
   }
 }
 
-function assignStatusButtonHandlers () {
+function assignStatusButtonHandlers () { // eslint-disable-line no-unused-vars
   let button = document.getElementsByTagName('button')[0]
   if (button.innerHTML === 'Start') {
     button.addEventListener('click', startIPFSDaemon)
@@ -204,10 +205,10 @@ function sendCommandToIPFSDaemon (cmd) {
 }
 
 function makeAnAJAXRequest (address, successFunction, failFunction, errorFunction) {
-  let xmlhttp = new XMLHttpRequest()
+  let xmlhttp = new window.XMLHttpRequest()
 
   xmlhttp.onreadystatechange = function () {
-    if (xmlhttp.readyState === XMLHttpRequest.DONE) {
+    if (xmlhttp.readyState === window.XMLHttpRequest.DONE) {
       if (xmlhttp.status === 200) {
         successFunction(xmlhttp.responseText)
       } else if (xmlhttp.status === 400) {
@@ -222,12 +223,12 @@ function makeAnAJAXRequest (address, successFunction, failFunction, errorFunctio
   xmlhttp.send()
 }
 
-function injectIPWBJS () {
+function injectIPWBJS () { // eslint-disable-line no-unused-vars
   registerServiceWorker()
 }
 
 function getServiceWorkerVersion () {
-  return fetch(self.location.href)
+  return window.fetch(document.location.href)
     .then(function (resp) {
       return Promise.resolve(resp.headers.get('Server').split('/')[1])
     })
@@ -263,7 +264,7 @@ function installServiceWorker () {
     newInstallation = true
   }
 
-  navigator.serviceWorker.register('/ipwbassets/serviceWorker.js', {scope: '/'}).then(
+  navigator.serviceWorker.register('/ipwbassets/serviceWorker.js', { scope: '/' }).then(
     function (registration) {
       console.log('ServiceWorker registration successful with scope: ', registration.scope)
     }).catch(function (err) {
@@ -285,16 +286,4 @@ function registerServiceWorker () {
   } else {
     console.log('Browser does not support Service Worker.')
   }
-}
-
-function serviceWorkerUpToDate () {
-
-}
-
-function updateServiceWorker () {
-
-}
-
-function reloadPageFromServiceWorker () {
-  console.log('reloading page from serviceWorker!')
 }
