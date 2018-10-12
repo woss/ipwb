@@ -1,10 +1,9 @@
 let remainingTries = 0
 
 function recheckDaemonStatus () {
-  const running = document.getElementById('status').innerHTML === 'Running'
   remainingTries = 10
 
-  if (!running) {
+  if (document.getElementById('status').innerHTML !== 'Running') {
     checkDaemonStatus()
   }
 }
