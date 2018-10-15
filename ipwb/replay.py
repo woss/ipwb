@@ -553,7 +553,7 @@ def all_exception_handler(error):
 # the future.
 @app.route('/ipwbconfig/<requestedSetting>')
 def getRequestedSetting(requestedSetting):
-    return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/ipwbassets')
+    return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/webui')
 
 
 @app.route('/ipwbadmin', strict_slashes=False)
