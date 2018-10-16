@@ -157,7 +157,7 @@ def commandDaemon(cmd):
                 subprocess.call(['taskkill', '/im', 'ipfs.exe', '/F'])
 
         return Response('IPFS daemon stopping...')
-    elif cmd == 'getwebuilink':
+    elif cmd == 'webuilink':
         return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/webui')
     else:
         print('ERROR, bad command sent to daemon API!')
