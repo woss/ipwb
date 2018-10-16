@@ -157,6 +157,8 @@ def commandDaemon(cmd):
                 subprocess.call(['taskkill', '/im', 'ipfs.exe', '/F'])
 
         return Response('IPFS daemon stopping...')
+    elif cmd == 'webuilink':
+        return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/webui')
     else:
         print('ERROR, bad command sent to daemon API!')
         print(cmd)
@@ -546,14 +548,6 @@ def all_exception_handler(error):
     traceback.print_tb(sys.exc_info()[-1])
 
     return 'Error', 500
-
-
-# This route needs better restructuring but is currently only used to get the
-# webUI location for the ipwb webUI, more setting might need to be fetched in
-# the future.
-@app.route('/ipwbconfig/<requestedSetting>')
-def getRequestedSetting(requestedSetting):
-    return Response(ipwbUtils.getIPFSAPIHostAndPort() + '/ipwbassets')
 
 
 @app.route('/ipwbadmin', strict_slashes=False)
