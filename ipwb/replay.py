@@ -705,7 +705,11 @@ def show_uri(path, datetime=None):
         header = cipher.decrypt(base64.b64decode(header))
         payload = cipher.decrypt(base64.b64decode(payload))
 
-    hLines = header.decode().split('\n')
+    hLines = header.decode() \
+                   .replace('\r', '') \
+                   .replace('\n\t', '\t') \
+                   .replace('\n ', ' ') \
+                   .split('\n')
     hLines.pop(0)
 
     status = 200
