@@ -715,7 +715,7 @@ def show_uri(path, datetime=None):
     resp = Response(payload, status=status)
 
     for idx, hLine in enumerate(hLines):
-        k, v = hLine.split(': ', 1)
+        k, v = hLine.split(':', 1)
 
         if k.lower() == 'transfer-encoding' and 'chunked' in v.lower():
             try:
