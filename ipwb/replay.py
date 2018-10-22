@@ -705,7 +705,11 @@ def show_uri(path, datetime=None):
         header = cipher.decrypt(base64.b64decode(header))
         payload = cipher.decrypt(base64.b64decode(payload))
 
-    hLines = header.decode().split('\n')
+    hLines = header.decode() \
+                   .replace('\r', '') \
+                   .replace('\n\t', '\t') \
+                   .replace('\n ', ' ') \
+                   .split('\n')
     hLines.pop(0)
 
     status = 200
@@ -715,9 +719,10 @@ def show_uri(path, datetime=None):
     resp = Response(payload, status=status)
 
     for idx, hLine in enumerate(hLines):
-        k, v = hLine.split(': ', 1)
+        k, v = hLine.split(':', 1)
 
-        if k.lower() == 'transfer-encoding' and v.lower() == 'chunked':
+        if k.lower() == 'transfer-encoding' and \
+           re.search(r'\bchunked\b', v, re.I):
             try:
                 unchunkedPayload = extractResponseFromChunkedData(payload)
             except Exception as e:
