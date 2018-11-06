@@ -536,7 +536,7 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
 # Fixes Flask issue of clipping queryString
 def getCompleteURI(uri):
     qs = request.query_string.decode('utf-8')
-    if qs != '':
+    if qs != '' and '?' not in uri:
         uri += '?' + qs
     return uri
 
