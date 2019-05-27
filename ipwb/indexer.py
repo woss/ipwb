@@ -14,7 +14,7 @@ from __future__ import print_function
 import sys
 import os
 import json
-import ipfsapi
+import ipfshttpclient as ipfsapi
 import argparse
 import zlib
 import surt
@@ -26,7 +26,7 @@ from warcio.archiveiterator import ArchiveIterator
 from warcio.recordloader import ArchiveLoadFailed
 
 from requests.packages.urllib3.exceptions import NewConnectionError
-from ipfsapi.exceptions import ConnectionError
+from ipfshttpclient.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 
 from six.moves import input
@@ -52,7 +52,7 @@ from .__init__ import __version__ as ipwbVersion
 
 DEBUG = False
 
-IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
+IPFS_API = ipfsapi.Client(f"/dns/{IPFSAPI_HOST}/tcp/{IPFSAPI_PORT}/http")
 
 
 def s2b(s):  # Convert str to bytes, cross-py

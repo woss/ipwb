@@ -6,7 +6,7 @@ from os.path import basename
 import os
 import sys
 import requests
-import ipfsapi
+import ipfshttpclient as ipfsapi
 
 import re
 # Datetime conversion to rfc1123
@@ -22,7 +22,7 @@ from .__init__ import __version__ as ipwbVersion
 from pkg_resources import parse_version
 
 # from requests.exceptions import ConnectionError
-from ipfsapi.exceptions import ConnectionError
+from ipfshttpclient.exceptions import ConnectionError
 
 
 IPFSAPI_HOST = 'localhost'
@@ -41,7 +41,7 @@ dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_HOST, IPFSAPI_PORT)):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    client = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
+    client = ipfsapi.Client(f"/dns/{IPFSAPI_HOST}/tcp/{IPFSAPI_PORT}/http")
 
     try:
         # ConnectionError/AttributeError if IPFS daemon not running

@@ -12,7 +12,7 @@ navigating their captures.
 from __future__ import print_function
 import sys
 import os
-import ipfsapi
+import ipfshttpclient as ipfsapi
 import json
 import subprocess
 import pkg_resources
@@ -28,7 +28,7 @@ from flask import redirect
 from flask import abort
 from flask import render_template
 
-from ipfsapi.exceptions import StatusError as hashNotInIPFS
+from ipfshttpclient.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
@@ -68,7 +68,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
 
-IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
+IPFS_API = ipfsapi.Client(f"/dns/{IPFSAPI_HOST}/tcp/{IPFSAPI_PORT}/http")
 
 
 @app.context_processor
