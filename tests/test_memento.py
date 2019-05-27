@@ -7,7 +7,7 @@ from ipwb import __file__ as moduleLocation
 from time import sleep
 import os
 import subprocess
-import urllib2
+from urllib.request import urlopen
 import requests
 import random
 import string
@@ -19,7 +19,7 @@ def getURIMsFromTimeMapInWARC(warcFilename):
     ipwbTest.startReplay(warcFilename)
 
     tmURI = 'http://localhost:5000/timemap/link/memento.us/'
-    tm = urllib2.urlopen(tmURI).read()
+    tm = urlopen(tmURI).read()
 
     urims = []
     for line in tm.split('\n'):
@@ -38,7 +38,7 @@ def getRelsFromURIMSinWARC(warc):
     # Get Link header values for each memento
     linkHeaders = []
     for urim in urims:
-        linkHeaders.append(urllib2.urlopen(urim).info().getheader('Link'))
+        linkHeaders.append(urlopen(urim).info().getheader('Link'))
     ipwbTest.stopReplay()
 
     relsForURIMs = []
