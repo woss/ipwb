@@ -19,7 +19,7 @@ def getURIMsFromTimeMapInWARC(warcFilename):
     ipwbTest.startReplay(warcFilename)
 
     tmURI = 'http://localhost:5000/timemap/link/memento.us/'
-    tm = urlopen(tmURI).read()
+    tm = urlopen(tmURI).read().decode('utf-8')
 
     urims = []
     for line in tm.split('\n'):
@@ -38,7 +38,7 @@ def getRelsFromURIMSinWARC(warc):
     # Get Link header values for each memento
     linkHeaders = []
     for urim in urims:
-        linkHeaders.append(urlopen(urim).info().getheader('Link'))
+        linkHeaders.append(urlopen(urim).info().get('Link'))
     ipwbTest.stopReplay()
 
     relsForURIMs = []

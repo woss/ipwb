@@ -24,7 +24,7 @@ def createUniqueWARC():
     randomString = getRandomString(len(stringToChange))
 
     with open(warcInPath, 'r') as warcFile:
-        newContent = warcFile.read().replace(stringToChange, randomString)
+        newContent = warcFile.read().decode('utf-8').replace(stringToChange, randomString)
 
     warcOutFilename = warcInFilename.replace('.warc', '_' +
                                              randomString + '.warc')
