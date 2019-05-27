@@ -1,6 +1,6 @@
 import pytest
 
-import testUtil as ipwbTest
+from . import testUtil as ipwbTest
 from ipwb import replay
 from ipwb import indexer
 from ipwb import __file__ as moduleLocation

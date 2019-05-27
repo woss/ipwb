@@ -1,6 +1,6 @@
 import pytest
 
-import testUtil as ipwbTest
+from . import testUtil as ipwbTest
 from ipwb import replay
 from time import sleep
 
