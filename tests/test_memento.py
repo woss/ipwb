@@ -76,7 +76,7 @@ def test_acceptdatetime_status(warc, lookup, acceptdatetime, status):
 def test_mementoRelations_one():
     relsForURIMs = getRelsFromURIMSinWARC('1memento.warc')
 
-    relsForURIMs = filter(lambda k: 'memento' in k, relsForURIMs[0])
+    relsForURIMs = list(filter(lambda k: 'memento' in k, relsForURIMs[0]))
     m1_m1 = relsForURIMs[0].split(' ')
 
     onlyOneMemento = len(relsForURIMs) == 1
@@ -98,8 +98,8 @@ def test_mementoRelations_two():
     cond_firstPrevMemento = False
     cond_lastMemento = False
 
-    relsForURIMs1of2 = filter(lambda k: 'memento' in k, relsForURIMs[0])
-    relsForURIMs2of2 = filter(lambda k: 'memento' in k, relsForURIMs[1])
+    relsForURIMs1of2 = list(filter(lambda k: 'memento' in k, relsForURIMs[0]))
+    relsForURIMs2of2 = list(filter(lambda k: 'memento' in k, relsForURIMs[1]))
 
     # mX_mY = URI-M requested, Y-th URIM-M in header
     m1_m1 = relsForURIMs1of2[0].split(' ')
@@ -132,9 +132,9 @@ def test_mementoRelations_three():
     cond_m3m2_prevMemento = False
     cond_m3m3_lastMemento = False
 
-    relsForURIMs1of3 = filter(lambda k: 'memento' in k, relsForURIMs[0])
-    relsForURIMs2of3 = filter(lambda k: 'memento' in k, relsForURIMs[1])
-    relsForURIMs3of3 = filter(lambda k: 'memento' in k, relsForURIMs[2])
+    relsForURIMs1of3 = list(filter(lambda k: 'memento' in k, relsForURIMs[0]))
+    relsForURIMs2of3 = list(filter(lambda k: 'memento' in k, relsForURIMs[1]))
+    relsForURIMs3of3 = list(filter(lambda k: 'memento' in k, relsForURIMs[2]))
 
     # mX_mY = URI-M requested, Y-th URIM-M in header
     m1_m1 = relsForURIMs1of3[0].split(' ')
@@ -189,10 +189,10 @@ def test_mementoRelations_four():
     cond_m4m3_prevMemento = False
     cond_m4m4_lastMemento = False
 
-    relsForURIMs1of4 = filter(lambda k: 'memento' in k, relsForURIMs[0])
-    relsForURIMs2of4 = filter(lambda k: 'memento' in k, relsForURIMs[1])
-    relsForURIMs3of4 = filter(lambda k: 'memento' in k, relsForURIMs[2])
-    relsForURIMs4of4 = filter(lambda k: 'memento' in k, relsForURIMs[3])
+    relsForURIMs1of4 = list(filter(lambda k: 'memento' in k, relsForURIMs[0]))
+    relsForURIMs2of4 = list(filter(lambda k: 'memento' in k, relsForURIMs[1]))
+    relsForURIMs3of4 = list(filter(lambda k: 'memento' in k, relsForURIMs[2]))
+    relsForURIMs4of4 = list(filter(lambda k: 'memento' in k, relsForURIMs[3]))
 
     # mX_mY = URI-M requested, Y-th URIM-M in header
     m1_m1 = relsForURIMs1of4[0].split(' ')
@@ -277,11 +277,11 @@ def test_mementoRelations_five():
     cond_m5m4_prevMemento = False
     cond_m5m5_lastMemento = False
 
-    relsForURIMs1of5 = filter(lambda k: 'memento' in k, relsForURIMs[0])
-    relsForURIMs2of5 = filter(lambda k: 'memento' in k, relsForURIMs[1])
-    relsForURIMs3of5 = filter(lambda k: 'memento' in k, relsForURIMs[2])
-    relsForURIMs4of5 = filter(lambda k: 'memento' in k, relsForURIMs[3])
-    relsForURIMs5of5 = filter(lambda k: 'memento' in k, relsForURIMs[4])
+    relsForURIMs1of5 = list(filter(lambda k: 'memento' in k, relsForURIMs[0]))
+    relsForURIMs2of5 = list(filter(lambda k: 'memento' in k, relsForURIMs[1]))
+    relsForURIMs3of5 = list(filter(lambda k: 'memento' in k, relsForURIMs[2]))
+    relsForURIMs4of5 = list(filter(lambda k: 'memento' in k, relsForURIMs[3]))
+    relsForURIMs5of5 = list(filter(lambda k: 'memento' in k, relsForURIMs[4]))
 
     # mX_mY = URI-M requested, Y-th URIM-M in header
     m1_m1 = relsForURIMs1of5[0].split(' ')
