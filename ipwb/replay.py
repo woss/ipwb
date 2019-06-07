@@ -722,13 +722,11 @@ def show_uri(path, datetime=None):
         k, v = hLine.split(':', 1)
 
         if k.lower() == 'transfer-encoding' and \
-           re.search(r'\bchunked\b', v, re.I):
+            re.search(r'\bchunked\b', v, re.I):
             try:
                 unchunkedPayload = extractResponseFromChunkedData(payload)
             except Exception as e:
-                print('Error while dechunking')
-                print(sys.exc_info()[0])
-                continue  # Data may have no actually been chunked
+                continue  # Data not chunked
             resp.set_data(unchunkedPayload)
 
         if k.lower() not in ["content-type", "content-encoding", "location"]:
@@ -909,7 +907,7 @@ def getIndexFileContents(cdxjFilePath=INDEX_FILE):
                                                                  cdxjFilePath))
         return fetchRemoteCDXJFile(cdxjFilePath) or ''
 
-    indexFilePath = '/{0}'.format(cdxjFilePath).replace('ipwb.replay', 'ipwb')
+    indexFilePath = cdxjFilePath.replace('ipwb.replay', 'ipwb')
     print('getting index file at {0}'.format(indexFilePath))
 
     indexFileContent = ''
