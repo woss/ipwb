@@ -722,7 +722,7 @@ def show_uri(path, datetime=None):
         k, v = hLine.split(':', 1)
 
         if k.lower() == 'transfer-encoding' and \
-            re.search(r'\bchunked\b', v, re.I):
+                re.search(r'\bchunked\b', v, re.I):
             try:
                 unchunkedPayload = extractResponseFromChunkedData(payload)
             except Exception as e:
