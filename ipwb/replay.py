@@ -12,7 +12,7 @@ navigating their captures.
 from __future__ import print_function
 import sys
 import os
-import ipfsapi
+import ipfshttpclient as ipfsapi
 import json
 import subprocess
 import pkg_resources
@@ -28,7 +28,7 @@ from flask import redirect
 from flask import abort
 from flask import render_template
 
-from ipfsapi.exceptions import StatusError as hashNotInIPFS
+from ipfshttpclient.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
@@ -68,7 +68,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
 
-IPFS_API = ipfsapi.Client(IPFSAPI_HOST, IPFSAPI_PORT)
+IPFS_API = ipfsapi.Client(f"/dns/{IPFSAPI_HOST}/tcp/{IPFSAPI_PORT}/http")
 
 
 @app.context_processor
@@ -722,13 +722,11 @@ def show_uri(path, datetime=None):
         k, v = hLine.split(':', 1)
 
         if k.lower() == 'transfer-encoding' and \
-           re.search(r'\bchunked\b', v, re.I):
+                re.search(r'\bchunked\b', v, re.I):
             try:
                 unchunkedPayload = extractResponseFromChunkedData(payload)
             except Exception as e:
-                print('Error while dechunking')
-                print(sys.exc_info()[0])
-                continue  # Data may have no actually been chunked
+                continue  # Data not chunked
             resp.set_data(unchunkedPayload)
 
         if k.lower() not in ["content-type", "content-encoding", "location"]:
@@ -909,7 +907,7 @@ def getIndexFileContents(cdxjFilePath=INDEX_FILE):
                                                                  cdxjFilePath))
         return fetchRemoteCDXJFile(cdxjFilePath) or ''
 
-    indexFilePath = '/{0}'.format(cdxjFilePath).replace('ipwb.replay', 'ipwb')
+    indexFilePath = cdxjFilePath.replace('ipwb.replay', 'ipwb')
     print('getting index file at {0}'.format(indexFilePath))
 
     indexFileContent = ''

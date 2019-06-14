@@ -20,17 +20,19 @@ def createUniqueWARC():
     warcInPath = os.path.join(os.path.dirname(__file__) +
                               '/../samples/warcs/' + warcInFilename)
 
-    stringToChange = 'abcdefghijklmnopqrstuvwxz'
+    stringToChange = b'abcdefghijklmnopqrstuvwxz'
     randomString = getRandomString(len(stringToChange))
+    randomBytes = str.encode(randomString)
 
-    with open(warcInPath, 'r') as warcFile:
-        newContent = warcFile.read().replace(stringToChange, randomString)
+    with open(warcInPath, 'rb') as warcFile:
+        newContent = warcFile.read().replace(stringToChange, randomBytes)
 
     warcOutFilename = warcInFilename.replace('.warc', '_' +
                                              randomString + '.warc')
     warcOutPath = os.path.join(os.path.dirname(__file__) +
                                '/../samples/warcs/' + warcOutFilename)
-    with open(warcOutPath, 'w') as warcFile:
+    print(warcOutPath)
+    with open(warcOutPath, 'wb') as warcFile:
         warcFile.write(newContent)
 
     return warcOutPath

@@ -1,12 +1,12 @@
 import pytest
 
-import testUtil as ipwbTest
+from . import testUtil as ipwbTest
 from ipwb import replay
 from time import sleep
 
 import requests
 
-import urllib2
+import urllib
 
 # Successful retrieval
 # Accurate retrieval
@@ -162,8 +162,8 @@ def test_unit_commandDaemon():
     replay.commandDaemon('start')
     sleep(10)
     try:
-        urllib2.urlopen('http://localhost:5001')
-    except urllib2.HTTPError as e:
+        urllib.request.urlopen('http://localhost:5001')
+    except urllib.error.HTTPError as e:
         assert e.code == 404
     except Exception as e:
         assert False
