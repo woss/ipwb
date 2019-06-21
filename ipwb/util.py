@@ -6,6 +6,7 @@ from os.path import basename
 import os
 import sys
 import requests
+import socket
 import ipfshttpclient as ipfsapi
 
 import re
@@ -25,10 +26,12 @@ from pkg_resources import parse_version
 from ipfshttpclient.exceptions import ConnectionError
 
 
-IPFSAPI_HOST = 'localhost'
-IPFSAPI_PORT = 5001
-IPWBREPLAY_HOST = 'localhost'
-IPWBREPLAY_PORT = 5000
+# host/ip:port, e.g., localhost:5001 or 123.4.5.678:9999
+IPFSAPI_ADDRESS = 'localhost:5001'
+IPWBREPLAY_ADDRESS = 'localhost:5000'
+
+(IPWBREPLAY_HOST, IPWBREPLAY_PORT) = IPWBREPLAY_ADDRESS.split(':')
+IPWBREPLAY_PORT = int(IPWBREPLAY_PORT)
 
 INDEX_FILE = 'samples/indexes/salam-home.cdxj'
 
@@ -39,9 +42,26 @@ log.setLevel(logging.ERROR)
 dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 
-def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_HOST, IPFSAPI_PORT)):
+def getMultiAddress(hostAndPort=IPFSAPI_ADDRESS):
+    try:
+        (host, port) = hostAndPort.split(':')
+    except ValueError as err:
+        # Naive check to determine if multiaddr passed in
+        if hostAndPort[0] == '/' and hostAndPort.count('/'):
+            return hostAndPort
+        else:
+            print('Error reading IPFSAPI address')
+            sys.exit()
+    try:
+        socket.inet_aton(host)
+        return f"/ip4/{host}/tcp/{port}/http"
+    except socket.error:
+        return f"/dns/{host}/tcp/{port}/http"
+
+
+def isDaemonAlive(hostAndPort=IPFSAPI_ADDRESS):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    client = ipfsapi.Client(f"/dns/{IPFSAPI_HOST}/tcp/{IPFSAPI_PORT}/http")
+    client = ipfsapi.Client(getMultiAddress(hostAndPort))
 
     try:
         # ConnectionError/AttributeError if IPFS daemon not running

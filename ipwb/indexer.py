@@ -33,8 +33,8 @@ from six.moves import input
 from six import PY2
 from six import PY3
 
-from .util import IPFSAPI_HOST, IPFSAPI_PORT
 from .util import iso8601ToDigits14
+from . import util as ipwbUtils
 
 # from warcio.archiveiterator import ArchiveIterator
 
@@ -52,7 +52,7 @@ from .__init__ import __version__ as ipwbVersion
 
 DEBUG = False
 
-IPFS_API = ipfsapi.Client(f"/dns/{IPFSAPI_HOST}/tcp/{IPFSAPI_PORT}/http")
+IPFS_API = ipfsapi.Client(ipwbUtils.getMultiAddress())
 
 
 def s2b(s):  # Convert str to bytes, cross-py

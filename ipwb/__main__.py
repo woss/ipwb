@@ -10,7 +10,7 @@ from . import replay
 from . import indexer
 from . import util
 
-from .util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
+from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 
 
 def main():
@@ -138,7 +138,7 @@ def checkArgs(argsIn):
     parser.add_argument(
         '-d', '--daemon',
         help='Location of ipfs daemon (default 127.0.0.1:5001)',
-        default='{0}:{1}'.format(IPFSAPI_HOST, IPFSAPI_PORT),
+        default=util.IPFSAPI_ADDRESS,
         dest='daemon_address')
     parser.add_argument(
         '-v', '--version', help='Report the version of ipwb', action='version',
