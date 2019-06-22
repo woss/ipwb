@@ -6,7 +6,6 @@ from os.path import basename
 import os
 import sys
 import requests
-import socket
 import ipfshttpclient as ipfsapi
 
 import re
