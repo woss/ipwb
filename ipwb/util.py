@@ -43,9 +43,9 @@ log.setLevel(logging.ERROR)
 dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 
-def createIPFSClient():
+def createIPFSClient(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     try:
-        return ipfsapi.Client(IPFSAPI_MUTLIADDRESS)
+        return ipfsapi.Client(daemonMultiaddr)
     except ipfsapi.exceptions.AddressError:
         return None  # Malformed multiaddress for the daemon
 
