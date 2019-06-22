@@ -52,10 +52,9 @@ from .__init__ import __version__ as ipwbVersion
 
 DEBUG = False
 
-try:
-    IPFS_API = ipfsapi.Client(ipwbUtils.IPFSAPI_MUTLIADDRESS)
-except ipfsapi.exceptions.AddressError:
-    print('Malformed multiaddress for the daemon')
+IPFS_API = ipwbUtils.createIPFSClient()
+if IPFS_API is None:
+    print("Error initializing IPFS API client")
     sys.exit()
 
 

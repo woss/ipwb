@@ -19,6 +19,7 @@ import platform
 from six.moves.urllib.request import urlopen
 import json
 from .__init__ import __version__ as ipwbVersion
+from . import util as ipwbUtils
 
 from pkg_resources import parse_version
 
@@ -44,12 +45,18 @@ log.setLevel(logging.ERROR)
 dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 
+def createIPFSClient():
+    try:
+        return ipfsapi.Client(IPFSAPI_MUTLIADDRESS)
+    except ipfsapi.exceptions.AddressError:
+        return None  # Malformed multiaddress for the daemon
+
+
 def isDaemonAlive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    try:
-        client = ipfsapi.Client(daemonMultiaddr)
-    except ipfsapi.exceptions.AddressError:
-        print('Malformed multiaddress for the daemon')
+    client = ipwbUtils.createIPFSClient()
+    if client is None:
+        print("Error initializing IPFS API client")
         return False
 
     try:

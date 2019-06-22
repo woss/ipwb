@@ -68,10 +68,10 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
 
-try:
-    IPFS_API = ipfsapi.Client(ipwbUtils.IPFSAPI_MUTLIADDRESS)
-except ipfsapi.exceptions.AddressError:
-    print('Malformed multiaddress for the daemon')
+
+IPFS_API = ipwbUtils.createIPFSClient()
+if IPFS_API is None:
+    print("Error initializing IPFS API client")
     sys.exit()
 
 
