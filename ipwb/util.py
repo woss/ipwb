@@ -23,6 +23,8 @@ from pkg_resources import parse_version
 
 # from requests.exceptions import ConnectionError
 from ipfshttpclient.exceptions import ConnectionError
+from ipfshttpclient.exceptions import AddressError
+from multiaddr.exceptions import StringParseError
 
 IPFSAPI_MUTLIADDRESS = '/dns/localhost/tcp/5001/http'
 # or '/dns/{host}/tcp/{port}/http'
@@ -46,7 +48,7 @@ dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 def createIPFSClient(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     try:
         return ipfsapi.Client(daemonMultiaddr)
-    except ipfsapi.exceptions.AddressError:
+    except (StringParseError, AddressError):
         return None  # Malformed multiaddress for the daemon
 
 
