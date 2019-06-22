@@ -19,7 +19,6 @@ import platform
 from six.moves.urllib.request import urlopen
 import json
 from .__init__ import __version__ as ipwbVersion
-from . import util as ipwbUtils
 
 from pkg_resources import parse_version
 
@@ -54,7 +53,7 @@ def createIPFSClient():
 
 def isDaemonAlive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    client = ipwbUtils.createIPFSClient()
+    client = createIPFSClient()
     if client is None:
         print("Error initializing IPFS API client")
         return False
