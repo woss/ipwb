@@ -68,7 +68,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
 
-IPFS_API = ipfsapi.Client(ipwbUtils.getMultiAddress())
+IPFS_API = ipfsapi.Client(ipwbUtils.IPFSAPI_MUTLIADDRESS)
 
 
 @app.context_processor
@@ -553,7 +553,7 @@ def all_exception_handler(error):
 @app.route('/ipwbadmin', strict_slashes=False)
 def showAdmin():
     status = {'ipwbVersion': ipwbVersion,
-              'ipfsEndpoint': ipwbUtils.getMultiAddress()}
+              'ipfsEndpoint': ipwbUtils.IPFSAPI_MUTLIADDRESS}
     iFile = ipwbUtils.getIPWBReplayIndexPath()
 
     mementoInfo = calculateMementoInfoInIndex(iFile)
@@ -604,7 +604,7 @@ def showLandingPage():
 def show_uri(path, datetime=None):
     global IPFS_API
 
-    if not ipwbUtils.isDaemonAlive(ipwbUtils.getMultiAddress()):
+    if not ipwbUtils.isDaemonAlive(ipwbUtils.IPFSAPI_MUTLIADDRESS):
         errStr = ('IPFS daemon not running. '
                   'Start it using $ ipfs daemon on the command-line '
                   ' or from the <a href="/">'

@@ -52,7 +52,7 @@ from .__init__ import __version__ as ipwbVersion
 
 DEBUG = False
 
-IPFS_API = ipfsapi.Client(ipwbUtils.getMultiAddress())
+IPFS_API = ipfsapi.Client(ipwbUtils.IPFSAPI_MUTLIADDRESS)
 
 
 def s2b(s):  # Convert str to bytes, cross-py

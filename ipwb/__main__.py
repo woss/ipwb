@@ -138,7 +138,7 @@ def checkArgs(argsIn):
     parser.add_argument(
         '-d', '--daemon',
         help='Location of ipfs daemon (default 127.0.0.1:5001)',
-        default=ipwbUtil.IPFSAPI_ADDRESS,
+        default=ipwbUtil.IPFSAPI_MUTLIADDRESS,
         dest='daemon_address')
     parser.add_argument(
         '-v', '--version', help='Report the version of ipwb', action='version',
