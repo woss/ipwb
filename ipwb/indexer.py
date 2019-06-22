@@ -52,7 +52,11 @@ from .__init__ import __version__ as ipwbVersion
 
 DEBUG = False
 
-IPFS_API = ipfsapi.Client(ipwbUtils.IPFSAPI_MUTLIADDRESS)
+try:
+    IPFS_API = ipfsapi.Client(ipwbUtils.IPFSAPI_MUTLIADDRESS)
+except ipfsapi.exceptions.AddressError:
+    print('Malformed multiaddress for the daemon')
+    sys.exit()
 
 
 def s2b(s):  # Convert str to bytes, cross-py

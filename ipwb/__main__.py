@@ -137,7 +137,7 @@ def checkArgs(argsIn):
 
     parser.add_argument(
         '-d', '--daemon',
-        help='Location of ipfs daemon (default 127.0.0.1:5001)',
+        help='Multi-address of IPFS daemon (default /dns/localhost/tcp/5001/http)',
         default=ipwbUtil.IPFSAPI_MUTLIADDRESS,
         dest='daemon_address')
     parser.add_argument(

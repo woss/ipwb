@@ -68,7 +68,11 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
 
-IPFS_API = ipfsapi.Client(ipwbUtils.IPFSAPI_MUTLIADDRESS)
+try:
+    IPFS_API = ipfsapi.Client(ipwbUtils.IPFSAPI_MUTLIADDRESS)
+except ipfsapi.exceptions.AddressError:
+    print('Malformed multiaddress for the daemon')
+    sys.exit()
 
 
 @app.context_processor

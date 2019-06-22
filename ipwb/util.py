@@ -46,7 +46,11 @@ dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 def isDaemonAlive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    client = ipfsapi.Client(daemonMultiaddr)
+    try:
+        client = ipfsapi.Client(daemonMultiaddr)
+    except ipfsapi.exceptions.AddressError:
+        print('Malformed multiaddress for the daemon')
+        return False
 
     try:
         # ConnectionError/AttributeError if IPFS daemon not running
