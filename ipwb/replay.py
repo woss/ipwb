@@ -41,7 +41,7 @@ from requests.exceptions import HTTPError
 
 from . import util as ipwbUtils
 from .util import unsurt
-from .util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
+from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from .util import INDEX_FILE
 
 from . import indexer
@@ -68,7 +68,11 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
 
-IPFS_API = ipfsapi.Client(f"/dns/{IPFSAPI_HOST}/tcp/{IPFSAPI_PORT}/http")
+
+IPFS_API = ipwbUtils.createIPFSClient()
+if IPFS_API is None:
+    print("Error initializing IPFS API client")
+    sys.exit()
 
 
 @app.context_processor
@@ -552,9 +556,8 @@ def all_exception_handler(error):
 
 @app.route('/ipwbadmin', strict_slashes=False)
 def showAdmin():
-    ipfsEndpoint = '{0}:{1}'.format(IPFSAPI_HOST, IPFSAPI_PORT)
     status = {'ipwbVersion': ipwbVersion,
-              'ipfsEndpoint': ipfsEndpoint}
+              'ipfsEndpoint': ipwbUtils.IPFSAPI_MUTLIADDRESS}
     iFile = ipwbUtils.getIPWBReplayIndexPath()
 
     mementoInfo = calculateMementoInfoInIndex(iFile)
@@ -605,8 +608,7 @@ def showLandingPage():
 def show_uri(path, datetime=None):
     global IPFS_API
 
-    daemonAddress = '{0}:{1}'.format(IPFSAPI_HOST, IPFSAPI_PORT)
-    if not ipwbUtils.isDaemonAlive(daemonAddress):
+    if not ipwbUtils.isDaemonAlive(ipwbUtils.IPFSAPI_MUTLIADDRESS):
         errStr = ('IPFS daemon not running. '
                   'Start it using $ ipfs daemon on the command-line '
                   ' or from the <a href="/">'

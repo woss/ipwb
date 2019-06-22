@@ -8,18 +8,18 @@ from .__init__ import __version__ as ipwbVersion
 # ipwb modules
 from . import replay
 from . import indexer
-from . import util
+from . import util as ipwbUtil
 
-from .util import IPFSAPI_HOST, IPFSAPI_PORT, IPWBREPLAY_HOST, IPWBREPLAY_PORT
+from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 
 
 def main():
-    util.checkForUpdate()
+    ipwbUtil.checkForUpdate()
     args = checkArgs(sys.argv)
 
 
 def checkArgs_index(args):
-    if not util.isDaemonAlive():
+    if not ipwbUtil.isDaemonAlive():
         sys.exit()
     encKey = None
     compressionLevel = None
@@ -137,8 +137,9 @@ def checkArgs(argsIn):
 
     parser.add_argument(
         '-d', '--daemon',
-        help='Location of ipfs daemon (default 127.0.0.1:5001)',
-        default='{0}:{1}'.format(IPFSAPI_HOST, IPFSAPI_PORT),
+        help=("Multi-address of IPFS daemon "
+              "(default /dns/localhost/tcp/5001/http)"),
+        default=ipwbUtil.IPFSAPI_MUTLIADDRESS,
         dest='daemon_address')
     parser.add_argument(
         '-v', '--version', help='Report the version of ipwb', action='version',

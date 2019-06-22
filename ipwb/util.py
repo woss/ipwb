@@ -23,12 +23,18 @@ from pkg_resources import parse_version
 
 # from requests.exceptions import ConnectionError
 from ipfshttpclient.exceptions import ConnectionError
+from ipfshttpclient.exceptions import AddressError
+from multiaddr.exceptions import StringParseError
 
+IPFSAPI_MUTLIADDRESS = '/dns/localhost/tcp/5001/http'
+# or '/dns/{host}/tcp/{port}/http'
+# or '/ip4/{ipaddress}/tcp/{port}/http'
+# or '/ip6/{ipaddress}/tcp/{port}/http
 
-IPFSAPI_HOST = 'localhost'
-IPFSAPI_PORT = 5001
-IPWBREPLAY_HOST = 'localhost'
-IPWBREPLAY_PORT = 5000
+IPWBREPLAY_ADDRESS = 'localhost:5000'
+
+(IPWBREPLAY_HOST, IPWBREPLAY_PORT) = IPWBREPLAY_ADDRESS.split(':')
+IPWBREPLAY_PORT = int(IPWBREPLAY_PORT)
 
 INDEX_FILE = 'samples/indexes/salam-home.cdxj'
 
@@ -39,16 +45,26 @@ log.setLevel(logging.ERROR)
 dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 
-def isDaemonAlive(hostAndPort="{0}:{1}".format(IPFSAPI_HOST, IPFSAPI_PORT)):
+def createIPFSClient(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+    try:
+        return ipfsapi.Client(daemonMultiaddr)
+    except (StringParseError, AddressError):
+        return None  # Malformed multiaddress for the daemon
+
+
+def isDaemonAlive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    client = ipfsapi.Client(f"/dns/{IPFSAPI_HOST}/tcp/{IPFSAPI_PORT}/http")
+    client = createIPFSClient()
+    if client is None:
+        print("Error initializing IPFS API client")
+        return False
 
     try:
         # ConnectionError/AttributeError if IPFS daemon not running
         client.id()
         return True
     except (ConnectionError):  # exceptions.AttributeError):
-        logError("Daemon is not running at http://" + hostAndPort)
+        logError("Daemon is not running at " + daemonMultiaddr)
         return False
     except OSError:
         logError("IPFS is likely not installed. "
