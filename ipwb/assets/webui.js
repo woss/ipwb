@@ -1,7 +1,7 @@
 /* global uris */
 
 function handleSubmit () { // eslint-disable-line no-unused-vars
-  let val = document.getElementById('url').value
+  const val = document.getElementById('url').value
   if (val) {
     document.location += 'memento/*/' + val
   }
@@ -22,14 +22,14 @@ function splitDatetime (datetime) {
 }
 
 function addURIListToDOM () {
-  let ul = document.getElementById('uriList')
+  const ul = document.getElementById('uriList')
   const uriKeys = Object.keys(uris).sort(shortestFirst)
 
   uriKeys.forEach(urir => {
     uris[urir].forEach(function (memento) {
-      let li = document.createElement('li')
-      let a = document.createElement('a')
-      let dt = document.createElement('span')
+      const li = document.createElement('li')
+      const a = document.createElement('a')
+      const dt = document.createElement('span')
       const title = memento['title'] || urir
 
       a.href = 'memento/' + memento['datetime'] + '/' + urir
@@ -114,10 +114,10 @@ function toggleURIDisplay () {
 }
 
 function addEventListeners () { // eslint-disable-line no-unused-vars
-  let target = document.getElementById('memCountListLink')
+  const target = document.getElementById('memCountListLink')
   target.addEventListener('click', toggleURIDisplay, false)
 
-  let showAllInListingButton = document.getElementById('showEmbeddedURI')
+  const showAllInListingButton = document.getElementById('showEmbeddedURI')
   showAllInListingButton.onclick = function showAllURIs () {
     const uriList = document.getElementById('uriList')
     if (this.innerHTML === this.dataset.defaultvalue) {
@@ -132,7 +132,7 @@ function addEventListeners () { // eslint-disable-line no-unused-vars
   getIPFSWebUIAddress()
   updateServiceWorkerVersionUI()
 
-  let reinstallServiceWorkerButton = document.getElementById('reinstallServiceWorker')
+  const reinstallServiceWorkerButton = document.getElementById('reinstallServiceWorker')
   reinstallServiceWorkerButton.onclick = reinstallServiceWorker
 
   setShowURIsVisibility()
@@ -166,7 +166,7 @@ function setShowAllButtonStatus () {
 }
 
 function assignStatusButtonHandlers () { // eslint-disable-line no-unused-vars
-  let button = document.getElementsByTagName('button')[0]
+  const button = document.getElementsByTagName('button')[0]
   if (button.innerHTML === 'Start') {
     button.addEventListener('click', startIPFSDaemon)
   } else {
@@ -209,7 +209,7 @@ function sendCommandToIPFSDaemon (cmd) {
 }
 
 function makeAnAJAXRequest (address, successFunction, failFunction, errorFunction) {
-  let xmlhttp = new window.XMLHttpRequest()
+  const xmlhttp = new window.XMLHttpRequest()
 
   xmlhttp.onreadystatechange = function () {
     if (xmlhttp.readyState === window.XMLHttpRequest.DONE) {
@@ -248,7 +248,7 @@ function reinstallServiceWorker () {
 
 function deleteServiceWorker () {
   navigator.serviceWorker.getRegistrations().then(function (registrations) {
-    for (let registration of registrations) {
+    for (const registration of registrations) {
       registration.unregister()
     }
   })
