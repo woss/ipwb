@@ -271,8 +271,7 @@ def showMemento(urir, datetime):
     else:
         resp = show_uri(uri, newDatetime)
 
-    resp.headers.add('Link', linkHeader)
-    # resp.headers['Link'] = linkHeader
+    resp.headers['Link'] = linkHeader
 
     return resp
 
