@@ -61,7 +61,7 @@ RUN        pip install -r test-requirements.txt
 COPY       . ./
 ARG        SKIPTEST=false
 RUN        $SKIPTEST || pycodestyle
-RUN        $SKIPTEST || (ipfs daemon & while ! curl -s localhost:5001 > /dev/null; do sleep 1; done && py.test --cov=./)
+RUN        $SKIPTEST || (ipfs daemon & while ! curl -s localhost:5001 > /dev/null; do sleep 1; done && py.test -s --cov=./)
 
 
 # Final production image

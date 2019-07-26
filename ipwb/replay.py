@@ -334,7 +334,7 @@ def queryTimeGate(urir):
         adt = ipwbUtils.getRFC1123OfNow()
 
     if not ipwbUtils.isRFC1123Compliant(adt):
-        abort(400)
+        return "Bad Request", 400
 
     datetime14 = ipwbUtils.rfc1123ToDigits14(adt)
 
@@ -652,15 +652,15 @@ def show_uri(path, datetime=None):
         def handler(signum, frame):
             raise HashNotFoundError()
 
-        if os.name != 'nt':  # Bug #310
-            signal.signal(signal.SIGALRM, handler)
-            signal.alarm(10)
+        # if os.name != 'nt':  # Bug #310
+        #    signal.signal(signal.SIGALRM, handler)
+        #    signal.alarm(10)
 
         payload = IPFS_API.cat(digests[-1])
         header = IPFS_API.cat(digests[-2])
 
-        if os.name != 'nt':  # Bug #310
-            signal.alarm(0)
+        # if os.name != 'nt':  # Bug #310
+        #    signal.alarm(0)
 
     except ipfsapi.exceptions.TimeoutError:
         print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
@@ -671,23 +671,23 @@ def show_uri(path, datetime=None):
     except TypeError as e:
         print('A type error occurred')
         print(e)
-        abort(500)
+        return "A Type Error Occurred", 500
     except HTTPError as e:
         print("Fetching from the IPFS failed")
         print(e)
-        abort(503)
+        return "Fetching from IPFS failed", 503
     except HashNotFoundError:
         if payload is None:
             print("Hashes not found:\n\t{0}\n\t{1}".format(
                 digests[-1], digests[-2]))
-            abort(404)
+            return "Hashed not found", 404
         else:  # payload found but not header, fabricate header
             print("HTTP header not found, fabricating for resp replay")
             header = ''
     except Exception as e:
         print('Unknown exception occurred while fetching from ipfs.')
         print(e)
-        abort(500)
+        return "An unknown exception occurred", 500
 
     if 'encryption_method' in jObj:
         keyString = None
