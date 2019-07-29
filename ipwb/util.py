@@ -129,6 +129,7 @@ def setupIPWBInIPFSConfig():
 
 def setLocale():
     currentOS = platform.system()
+
     if currentOS == 'Darwin':
         newLocale = 'en_US'
     elif currentOS == 'Windows':
@@ -136,7 +137,10 @@ def setLocale():
     else:  # Assume Linux
         newLocale = 'en_US.utf8'
 
-    locale.setlocale(locale.LC_TIME, newLocale)
+    try:
+        locale.setlocale(locale.LC_TIME, newLocale)
+    except locale.Error:
+        locale.setlocale(locale.LC_TIME, '')
 
 
 def digits14ToRFC1123(digits14):
