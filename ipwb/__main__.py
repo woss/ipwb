@@ -1,6 +1,7 @@
 import sys
 import os
 import argparse
+import tempfile
 import string  # For generating a temp file for stdin
 import random  # For generating a temp file for stdin
 from .__init__ import __version__ as ipwbVersion
@@ -46,7 +47,7 @@ def checkArgs_replay(args):
 
         random.seed()
         # Write data to temp file (sub-optimal)
-        tempFilePath = '/tmp/' + ''.join(random.sample(
+        tempFilePath = tempfile.gettempdir() + '/' + ''.join(random.sample(
               string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
         with open(tempFilePath, 'w') as f:
             f.write(cdxjIn)

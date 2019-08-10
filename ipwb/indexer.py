@@ -20,6 +20,7 @@ import zlib
 import surt
 import ntpath
 import traceback
+import tempfile
 
 from io import BytesIO
 from warcio.archiveiterator import ArchiveIterator
@@ -115,7 +116,7 @@ def encrypt(hstr, payload, encryptionKey):
 
 
 def createIPFSTempPath():
-    ipfsTempPath = '/tmp/ipfs/'
+    ipfsTempPath = tempfile.gettempdir() + '/ipfs/'
 
     # Create temp path for ipwb temp files if it does not already exist
     if not os.path.exists(ipfsTempPath):
