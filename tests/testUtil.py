@@ -2,6 +2,7 @@ import os
 import random
 import string
 import re
+import tempfile
 
 from time import sleep
 
@@ -56,7 +57,7 @@ def startReplay(warcFilename):
     global p
     pathOfWARC = os.path.join(os.path.dirname(__file__) +
                               '/../samples/warcs/' + warcFilename)
-    tempFilePath = '/tmp/' + ''.join(random.sample(
+    tempFilePath = tempfile.gettempdir() + '/' + ''.join(random.sample(
         string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
 
     open(tempFilePath, 'a').close()  # Create placeholder file for replay

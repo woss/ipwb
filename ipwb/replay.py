@@ -20,6 +20,7 @@ import surt
 import re
 import signal
 import traceback
+import tempfile
 
 from flask import Flask
 from flask import Response
@@ -61,7 +62,7 @@ from werkzeug.utils import secure_filename
 from flask import send_from_directory
 from flask import make_response
 
-UPLOAD_FOLDER = '/tmp'
+UPLOAD_FOLDER = tempfile.gettempdir()
 ALLOWED_EXTENSIONS = ('.warc', '.warc.gz')
 
 app = Flask(__name__)
