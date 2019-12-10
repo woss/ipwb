@@ -30,26 +30,26 @@ function addURIListToDOM () {
       const li = document.createElement('li')
       const a = document.createElement('a')
       const dt = document.createElement('span')
-      const title = memento['title'] || urir
+      const title = memento.title || urir
 
-      a.href = 'memento/' + memento['datetime'] + '/' + urir
+      a.href = 'memento/' + memento.datetime + '/' + urir
       a.appendChild(document.createTextNode(title))
       a.title = title
 
       dt.setAttribute('class', 'datetime')
-      dt.appendChild(document.createTextNode(splitDatetime(memento['datetime'])))
+      dt.appendChild(document.createTextNode(splitDatetime(memento.datetime)))
 
       li.appendChild(dt)
       li.appendChild(a)
 
-      li.setAttribute('data-mime', memento['mime'])
-      li.setAttribute('data-status', memento['status'])
+      li.setAttribute('data-mime', memento.mime)
+      li.setAttribute('data-status', memento.status)
 
       const htmlMIMEs = ['text/html', 'application/xhtml+xml']
-      const mementoMIME = memento['mime'].split(/\s*;/)[0].toLowerCase()
+      const mementoMIME = memento.mime.split(/\s*;/)[0].toLowerCase()
       const isHTML = htmlMIMEs.includes(mementoMIME)
 
-      const isARedirect = memento['status'][0] === '3'
+      const isARedirect = memento.status[0] === '3'
       if (isHTML && !isARedirect) {
         li.setAttribute('data-display', 'default')
       }
