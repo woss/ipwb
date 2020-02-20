@@ -210,6 +210,7 @@ def bin_search(iter, key):
         iter.readline()  # Q: Why are there two readlines?
         line = iter.readline()
         surtk, rest = line.split(maxsplit=1)
+        # print('{}  {}'.format(key, surtk))
 
         if key == surtk[0:-1]:
             return line
@@ -242,9 +243,10 @@ def lookup(iter, surt):
 def getCDXJLinesWithURIR_new(indexPath, urir):
     # Convert URI-R to surt
     surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+    surtedURIR = surtedURIR[0:-2]
 
     res = run_batchlookup(indexPath, surtedURIR)
-    return res
+    return [res]
 
 
 @app.route('/memento/*/<path:urir>')
@@ -369,13 +371,15 @@ def getCDXJLinesWithURIR(urir, indexPath):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     cdxjLinesWithURIR = []
 
-    cdxjLineIndex = getCDXJLine_binarySearch(s, indexPath, True, True)  # get i
+    #cdxjLineIndex = getCDXJLine_binarySearch(s, indexPath, True, True)  # get i
 
-    if cdxjLineIndex is None:
-        return []
+    #if cdxjLineIndex is None:
+    #    return []
 
-    cdxjLines = []
-    with open(indexPath, 'r') as f:
+    #cdxjLines = []
+    return getCDXJLine_binarySearch(indexPath, s)
+
+    '''with open(indexPath, 'r') as f:
         cdxjLines = f.read().split('\n')
         baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
 
@@ -393,6 +397,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
         if cdxjLines[sI].split(' ')[0] == s:
             cdxjLinesWithURIR.append(cdxjLines[sI])
         sI += 1
+    '''
     return cdxjLinesWithURIR
 
 
@@ -427,7 +432,9 @@ def showTimeMap(urir, format):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
+    # cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
+    cdxjLinesWithURIR = getCDXJLinesWithURIR_new(indexPath, urir)
+
     tmContentType = ''
 
     hostAndPort = ipwbUtils.getIPWBReplayConfig()
@@ -545,7 +552,7 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     tmData += '<{0}>; rel="timegate"'.format(tgURI)
 
     for i, line in enumerate(cdxjLines):
-        (surtURI, datetime, json) = line.split(' ', 2)
+        (surtURI, datetime, json) = line.decode().split(' ', 2)
         dtRFC1123 = ipwbUtils.digits14ToRFC1123(datetime)
         firstLastStr = ''
 
@@ -695,7 +702,8 @@ def show_uri(path, datetime=None):
         if datetime is not None:
             searchString = surtedURI + ' ' + datetime
 
-        cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
+        # cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
+        cdxjLine = getCDXJLinesWithURIR_new(indexPath, searchString)
 
     except Exception as e:
         print(sys.exc_info()[0])
