@@ -179,6 +179,74 @@ def showMementosForURIRs_sansJS():
     return redirect('/memento/*/' + urir, code=301)
 
 
+def lookup_keys(surt):
+    keyre = re.compile(r"(.+)([,/]).+")
+    key = surt.split("?")[0].strip("/")
+    keys = [key, f"{key}/*"]
+    while "," in key:
+        try:
+            m = keyre.match(key)
+            keys.append(f"{m[1]}{m[2]}*")
+            key = m[1]
+        except Exception as e:
+            key = key.strip("/,")
+    return keys
+
+
+def bin_search(iter, key):
+    # Read line encompassing current position
+    surtk, rest = iter.readline().split(maxsplit=1)
+    if key == surtk:
+        return [surtk, freq]
+
+    # If further searching required...
+    left = 0
+    # Go to end of seek stream
+    iter.seek(0, 2)
+    right = iter.tell()  # Current position
+    while (right - left > 1):
+        mid = (right + left) // 2
+        iter.seek(mid)
+        iter.readline()  # Q: Why are there two readlines?
+        line = iter.readline()
+        surtk, rest = line.split(maxsplit=1)
+
+        if key == surtk[0:-1]:
+            return line
+        elif key > surtk:
+            left = mid
+        else:
+            right = mid
+
+
+def run_batchlookup(filename, surt):
+    mobj = open(filename, "rb")
+    iter = mobj
+
+    fobj = open(filename, "rb")
+    for line in fobj:
+        res = lookup(iter, surt)
+        if res:
+            return res
+    fobj.close()
+    mobj.close()
+
+
+def lookup(iter, surt):
+    for idx, key in enumerate(lookup_keys(surt)):
+        res = bin_search(iter, key.encode())
+        if res:
+            return res
+
+
+def getCDXJLinesWithURIR_new(indexPath, urir):
+    # Convert URI-R to surt
+    surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+
+    res = run_batchlookup(indexPath, surtedURIR)
+    return res
+
+
 @app.route('/memento/*/<path:urir>')
 def showMementosForURIRs(urir):
     urir = getCompleteURI(urir)
@@ -190,7 +258,7 @@ def showMementosForURIRs(urir):
 
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
-    cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
+    cdxjLinesWithURIR = getCDXJLinesWithURIR_new(urir, indexPath)
 
     if len(cdxjLinesWithURIR) == 1:
         fields = cdxjLinesWithURIR[0].split(' ', 2)
