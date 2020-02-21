@@ -243,6 +243,8 @@ def lookup(iter, surt):
 def getCDXJLinesWithURIR_new(indexPath, urir):
     # Convert URI-R to surt
     surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+
+    # Remove trailing chars from surting with above params, TOREVISE
     surtedURIR = surtedURIR[0:-2]
 
     res = run_batchlookup(indexPath, surtedURIR)
