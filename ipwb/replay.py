@@ -573,7 +573,7 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     hostAndPort = tmself[0:tmself.index('timemap/')]
 
     for i, line in enumerate(cdxjLines):
-        (surtURI, datetime, json) = line.split(' ', 2)
+        (surtURI, datetime, json) = line.decode().split(' ', 2)
         dtRFC1123 = ipwbUtils.digits14ToRFC1123(datetime)
         firstLastStr = ''
 
