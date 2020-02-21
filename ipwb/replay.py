@@ -248,7 +248,9 @@ def getCDXJLinesWithURIR_new(indexPath, urir):
     surtedURIR = surtedURIR[0:-2]
 
     res = run_batchlookup(indexPath, surtedURIR)
-    return [res]
+    if res is not None:
+        return [res]
+    return []
 
 
 @app.route('/memento/*/<path:urir>')
