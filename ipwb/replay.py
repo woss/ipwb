@@ -371,36 +371,8 @@ def getCDXJLinesWithURIR(urir, indexPath):
 
     print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
-    cdxjLinesWithURIR = []
 
-    #cdxjLineIndex = getCDXJLine_binarySearch(s, indexPath, True, True)  # get i
-
-    #if cdxjLineIndex is None:
-    #    return []
-
-    #cdxjLines = []
     return getCDXJLine_binarySearch(indexPath, s)
-
-    '''with open(indexPath, 'r') as f:
-        cdxjLines = f.read().split('\n')
-        baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
-
-        cdxjLinesWithURIR.append(baseCDXJLine)
-
-    # Get lines before pivot that match surt
-    sI = cdxjLineIndex - 1
-    while sI >= 0:
-        if cdxjLines[sI].split(' ')[0] == s:
-            cdxjLinesWithURIR.append(cdxjLines[sI])
-        sI -= 1
-    # Get lines after pivot that match surt
-    sI = cdxjLineIndex + 1
-    while sI < len(cdxjLines):
-        if cdxjLines[sI].split(' ')[0] == s:
-            cdxjLinesWithURIR.append(cdxjLines[sI])
-        sI += 1
-    '''
-    return cdxjLinesWithURIR
 
 
 @app.route('/timegate/<path:urir>')
