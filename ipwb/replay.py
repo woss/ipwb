@@ -318,6 +318,8 @@ def resolveMemento(urir, datetime):
         msg += 'No capture found for {0} at {1}.'.format(urir, datetime)
 
         return Response(msg, status=404)
+    else:  # If there is a byte string, conv to reg string for splitting
+        closestLine = closestLine.decode()
 
     uri = unsurt(closestLine.split(' ')[0])
     newDatetime = closestLine.split(' ')[1]
@@ -357,7 +359,7 @@ def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
     bestLine = None
     datetimeTarget = int(datetimeTarget)
     for cdxjLine in cdxjLines:
-        dt = int(cdxjLine.split(' ')[1])
+        dt = int(cdxjLine.decode().split(' ')[1])
         diff = abs(dt - datetimeTarget)
         if diff < smallestDiff:
             smallestDiff = diff
@@ -374,7 +376,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
     print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
 
-    return getCDXJLine_binarySearch(indexPath, s)
+    return getCDXJLinesWithURIR_new(indexPath, s)
 
 
 @app.route('/timegate/<path:urir>')
