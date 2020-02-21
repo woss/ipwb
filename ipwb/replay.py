@@ -207,17 +207,20 @@ def bin_search(iter, key):
     while (right - left > 1):
         mid = (right + left) // 2
         iter.seek(mid)
-        iter.readline()  # Q: Why are there two readlines?
-        line = iter.readline()
-        surtk, rest = line.split(maxsplit=1)
-        # print('{}  {}'.format(key, surtk))
+        iter.readline()  # Purge rest of current line
+        line = iter.readline() # Read the next full line
 
-        if key == surtk[0:-1]:
+        surtk, rest = line.split(maxsplit=1)
+
+        # TODO: find a more elegant way for comparison than manually
+        # trimming the last two chars off of the surtk
+        if key == surtk[0:-2]:
             return line
-        elif key > surtk:
+        elif key > surtk[0:-2]:
             left = mid
         else:
             right = mid
+    return ""
 
 
 def run_batchlookup(filename, surt):
