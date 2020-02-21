@@ -208,7 +208,7 @@ def bin_search(iter, key):
         mid = (right + left) // 2
         iter.seek(mid)
         iter.readline()  # Purge rest of current line
-        line = iter.readline() # Read the next full line
+        line = iter.readline()  # Read the next full line
 
         surtk, rest = line.split(maxsplit=1)
 
