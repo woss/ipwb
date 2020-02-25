@@ -202,7 +202,7 @@ def bin_search(iter, key):
 
     surtk, rest = ln.split(maxsplit=1)
     if key == surtk:
-        return [surtk, freq]
+        return [surtk, rest]
 
     # If further searching required...
     left = 0
@@ -220,7 +220,15 @@ def bin_search(iter, key):
         # TODO: find a more elegant way for comparison than manually
         # trimming the last two chars off of the surtk
         if key == surtk[0:-2]:
-            return line
+            lines = [line]
+            # Iterate further to get lines after selection point
+            # TODO: get lines before selection point
+            while nextLine := iter.readline():
+                surtk, rest = nextLine.split(maxsplit=1)
+                if key == surtk[0:-2]:
+                    lines.append(nextLine)
+
+            return lines
         elif key > surtk[0:-2]:
             left = mid
         else:
@@ -257,7 +265,7 @@ def getCDXJLinesWithURIR_new(indexPath, urir):
 
     res = run_batchlookup(indexPath, surtedURIR)
     if res is not None:
-        return [res]
+        return res
     return []
 
 
@@ -270,7 +278,7 @@ def showMementosForURIRs(urir):
 
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    print('Getting CDXJ Lines with the URI-R {0} from {1}'
+    print('showMementos: Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
     cdxjLinesWithURIR = getCDXJLinesWithURIR_new(indexPath, urir)
 
@@ -315,7 +323,7 @@ def resolveMemento(urir, datetime):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    print('Getting CDXJ Lines with the URI-R {0} from {1}'
+    print('resolveMemento: Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
@@ -381,8 +389,9 @@ def getCDXJLinesWithURIR(urir, indexPath):
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
     indexPath = getIndexFileFullPath(indexPath)
 
-    print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
+    print('getCDXJLines: Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+    print(s)
 
     return getCDXJLinesWithURIR_new(indexPath, s)
 
@@ -577,7 +586,11 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
                '}}}}\n').format(linkTMURI, tmself)
     hostAndPort = tmself[0:tmself.index('timemap/')]
 
+    print('cdxj lines are')
+    print(cdxjLines)
     for i, line in enumerate(cdxjLines):
+        print('the line is')
+        print(line)
         (surtURI, datetime, json) = line.decode().split(' ', 2)
         dtRFC1123 = ipwbUtils.digits14ToRFC1123(datetime)
         firstLastStr = ''
