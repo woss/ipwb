@@ -267,7 +267,7 @@ def showMementosForURIRs(urir):
 
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
-    cdxjLinesWithURIR = getCDXJLinesWithURIR_new(urir, indexPath)
+    cdxjLinesWithURIR = getCDXJLinesWithURIR_new(indexPath, urir)
 
     if len(cdxjLinesWithURIR) == 1:
         fields = cdxjLinesWithURIR[0].split(' ', 2)
