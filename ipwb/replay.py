@@ -209,6 +209,8 @@ def bin_search(iter, key):
     # Go to end of seek stream
     iter.seek(0, 2)
     right = iter.tell()  # Current position
+
+    lines = set()  # Prevents dupes
     while (right - left > 1):
         mid = (right + left) // 2
         iter.seek(mid)
@@ -220,20 +222,22 @@ def bin_search(iter, key):
         # TODO: find a more elegant way for comparison than manually
         # trimming the last two chars off of the surtk
         if key == surtk[0:-2]:
-            lines = [line]
+            lines.add(line)
             # Iterate further to get lines after selection point
-            # TODO: get lines before selection point
             while nextLine := iter.readline():
                 surtk, rest = nextLine.split(maxsplit=1)
                 if key == surtk[0:-2]:
-                    lines.append(nextLine)
+                    lines.add(nextLine)
 
-            return lines
+            # Continue searching until find first instance
+            right = mid
         elif key > surtk[0:-2]:
             left = mid
         else:
             right = mid
-    return ""
+
+    # Convert uniq set to list then sort and return
+    return sorted(list(lines))
 
 
 def run_batchlookup(filename, surt):
