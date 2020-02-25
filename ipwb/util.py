@@ -108,7 +108,7 @@ def compareVersions(versionA, versionB):
 
 
 def isCDXJMetadataRecord(cdxjLine):
-    return cdxjLine.strip()[:1] == '!'
+    return cdxjLine.strip()[:1] == b'!'
 
 
 def isLocalHosty(uri):
