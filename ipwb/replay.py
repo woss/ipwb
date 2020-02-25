@@ -195,7 +195,12 @@ def lookup_keys(surt):
 
 def bin_search(iter, key):
     # Read line encompassing current position
-    surtk, rest = iter.readline().split(maxsplit=1)
+    ln = iter.readline()
+
+    while ipwbUtils.isCDXJMetadataRecord(ln):
+        ln = iter.readline()
+
+    surtk, rest = ln.split(maxsplit=1)
     if key == surtk:
         return [surtk, freq]
 
@@ -270,7 +275,7 @@ def showMementosForURIRs(urir):
     cdxjLinesWithURIR = getCDXJLinesWithURIR_new(indexPath, urir)
 
     if len(cdxjLinesWithURIR) == 1:
-        fields = cdxjLinesWithURIR[0].split(' ', 2)
+        fields = cdxjLinesWithURIR[0].decode().split(' ', 2)
         redirectURI = '/memento/{1}/{0}'.format(unsurt(fields[0]), fields[1])
 
         return redirect(redirectURI, code=302)
