@@ -224,7 +224,7 @@ def bin_search(iter, key):
         if key == surtk[0:-2]:
             lines.add(line)
             # Iterate further to get lines after selection point
-            nextLine: = iter.readline()
+            nextLine = iter.readline()
             while nextLine:
                 surtk, rest = nextLine.split(maxsplit=1)
                 if key == surtk[0:-2]:
