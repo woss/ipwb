@@ -282,7 +282,7 @@ def showMementosForURIRs(urir):
 
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    print('showMementos: Getting CDXJ Lines with the URI-R {0} from {1}'
+    print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
     cdxjLinesWithURIR = getCDXJLinesWithURIR_new(indexPath, urir)
 
@@ -327,7 +327,7 @@ def resolveMemento(urir, datetime):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    print('resolveMemento: Getting CDXJ Lines with the URI-R {0} from {1}'
+    print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
@@ -393,7 +393,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
     indexPath = getIndexFileFullPath(indexPath)
 
-    print('getCDXJLines: Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
+    print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     print(s)
 
