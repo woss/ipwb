@@ -229,7 +229,7 @@ def bin_search(iter, key):
                 surtk, rest = nextLine.split(maxsplit=1)
                 if key == surtk[0:-2]:
                     lines.add(nextLine)
-                nextLine: = iter.readline()
+                nextLine = iter.readline()
 
             # Continue searching until find first instance
             right = mid
