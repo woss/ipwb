@@ -242,10 +242,8 @@ def bin_search(iter, key, datetime=None):
             # Continue searching until find first instance
             right = mid
         elif key > surtk:
-            print('did not find, going left {} {}'.format(key, surtk))
             left = mid
         else:
-            print('did not find, going right {} {}'.format(key, surtk))
             right = mid
 
     # Convert uniq set to list then sort and return
@@ -275,13 +273,8 @@ def lookup(iter, surt, datetime=None):
 
 def getCDXJLinesWithURIR_new(urir, indexPath, datetime=None):
     # Convert URI-R to surt
-    print('pre-surted urir {}'.format(urir))
     surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=True)
-    print('post: {}'.format(surtedURIR))
 
-    # Remove trailing chars from surting with above params, TOREVISE
-    # surtedURIR = surtedURIR[0:-2]
-    print("GOING TO LOOK FOR DATETIME {}".format(datetime))
     res = run_batchlookup(surtedURIR, indexPath, datetime)
     if res is not None:
         return res
@@ -377,16 +370,11 @@ def showMemento(urir, datetime):
     if isinstance(resolvedMemento, Response):
         return resolvedMemento
     (newDatetime, linkHeader, uri) = resolvedMemento
-    print("THREE PARAMS")
-    print(newDatetime)
-    print(linkHeader)
-    print(uri)
 
     if newDatetime != datetime:
-        print("REDIRECTING")
+        # REDIRECTING
         resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
     else:
-        print('CALLING SHOW_URI with {} {}'.format(uri, newDatetime))
         resp = show_uri(uri, newDatetime)
 
     resp.headers['Link'] = linkHeader
@@ -711,12 +699,7 @@ def show_uri(path, datetime=None):
     cdxjLine = ''
     try:
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
-        print('datetime')
-        print(datetime)
-
         cdxjLine = getCDXJLinesWithURIR(uri, indexPath, datetime)
-        print("HERE")
-        print(cdxjLine)
 
     except Exception as e:
         print(sys.exc_info()[0])
@@ -725,8 +708,11 @@ def show_uri(path, datetime=None):
             path, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
         return Response(respString)
     if cdxjLine is None:  # Resource not found in archives
-        print("NONEX")
         return generateNoMementosInterface(path, datetime)
+
+    if len(cdxjLine) == 1:
+        cdxjLine = cdxjLine[0].decode()
+
 
     cdxjParts = cdxjLine.split(" ", 2)
     jObj = json.loads(cdxjParts[2])
@@ -884,8 +870,6 @@ def generateNoMementosInterface(path, datetime):
     msg += 'No capture found for {0} at {1}.'.format(path, datetime)
 
     linesWithSameURIR = getCDXJLinesWithURIR(path, None)
-    print('CDXJ lines with URI-R at {0}'.format(path))
-    print(linesWithSameURIR)
 
     # TODO: Use closest instead of conditioning on single entry
     #  temporary fix for core functionality in #225
