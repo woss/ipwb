@@ -180,6 +180,7 @@ def showMementosForURIRs_sansJS():
 
 
 def lookup_keys(surt):
+    print('surt in: {}'.format(surt))
     keyre = re.compile(r"(.+)([,/]).+")
     key = surt.split("?")[0].strip("/")
     keys = [key, f"{key}/*"]
@@ -191,6 +192,8 @@ def lookup_keys(surt):
         except Exception as e:
             key = key.strip("/,")
 
+    print('keys!')
+    print(keys)
     return keys
 
 
@@ -226,6 +229,7 @@ def bin_search(iter, key):
         # trimming the last two chars off of the surtk
 
         if key == surtk:
+            print("FOUND")
             lines.add(line)
             # Iterate further to get lines after selection point
             nextLine = iter.readline()
@@ -237,9 +241,11 @@ def bin_search(iter, key):
 
             # Continue searching until find first instance
             right = mid
-        elif key > surtk[0:-2]:
+        elif key > surtk:
+            print('did not find, going left {} {}'.format(key, surtk))
             left = mid
         else:
+            print('did not find, going right {} {}'.format(key, surtk))
             right = mid
 
     # Convert uniq set to list then sort and return
@@ -253,6 +259,8 @@ def run_batchlookup(surt, filename):
 
     fobj = open(filename, "rb")
     for line in fobj:
+        print('line!')
+        print(surt)
         res = lookup(iter, surt)
         if res:
             return res
@@ -269,10 +277,12 @@ def lookup(iter, surt):
 
 def getCDXJLinesWithURIR_new(urir, indexPath):
     # Convert URI-R to surt
-    surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
+    print('pre-curted urir {}'.format(urir))
+    surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=True)
+    print('post: {}'.format(surtedURIR))
 
     # Remove trailing chars from surting with above params, TOREVISE
-    surtedURIR = surtedURIR[0:-2]
+    # surtedURIR = surtedURIR[0:-2]
 
     res = run_batchlookup(surtedURIR, indexPath)
     if res is not None:
@@ -399,11 +409,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
     indexPath = getIndexFileFullPath(indexPath)
 
-    print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
-    s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
-    print(s)
-
-    return getCDXJLinesWithURIR_new(s, indexPath)
+    return getCDXJLinesWithURIR_new(urir, indexPath)
 
 
 @app.route('/timegate/<path:urir>')
@@ -702,6 +708,8 @@ def show_uri(path, datetime=None):
         surtedURI = surt.surt(
                      path, path_strip_trailing_slash_unless_empty=False)
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
+        print("surtedURI:")
+        print(surtedURI)
 
         searchString = surtedURI
         if datetime is not None:
@@ -709,6 +717,8 @@ def show_uri(path, datetime=None):
 
         # cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
         cdxjLine = getCDXJLinesWithURIR(searchString, indexPath)
+        print("HERE")
+        print(cdxjLine)
 
     except Exception as e:
         print(sys.exc_info()[0])
@@ -719,6 +729,8 @@ def show_uri(path, datetime=None):
     if cdxjLine is None:  # Resource not found in archives
         return generateNoMementosInterface(path, datetime)
 
+    print('the cdxj line: ')
+    print(cdxjLine)
     cdxjParts = cdxjLine.split(" ", 2)
     jObj = json.loads(cdxjParts[2])
     datetime = cdxjParts[1]
