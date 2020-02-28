@@ -180,7 +180,6 @@ def showMementosForURIRs_sansJS():
 
 
 def lookup_keys(surt):
-    print('surt in: {}'.format(surt))
     keyre = re.compile(r"(.+)([,/]).+")
     key = surt.split("?")[0].strip("/")
     keys = [key, f"{key}/*"]
@@ -192,12 +191,10 @@ def lookup_keys(surt):
         except Exception as e:
             key = key.strip("/,")
 
-    print('keys!')
-    print(keys)
     return keys
 
 
-def bin_search(iter, key):
+def bin_search(iter, key, datetime=None):
     # Read line encompassing current position
     ln = iter.readline()
 
@@ -222,6 +219,7 @@ def bin_search(iter, key):
         line = iter.readline()  # Read the next full line
 
         surtk, rest = line.split(maxsplit=1)
+        datetimeK = rest.split()[0].decode()
         if surtk[-1:] == b'/':
             surtk = surtk[0:-1]
 
@@ -229,7 +227,9 @@ def bin_search(iter, key):
         # trimming the last two chars off of the surtk
 
         if key == surtk:
-            print("FOUND")
+            if datetime and datetime != datetimeK:
+                lines.add(line)
+                break
             lines.add(line)
             # Iterate further to get lines after selection point
             nextLine = iter.readline()
@@ -253,38 +253,36 @@ def bin_search(iter, key):
     return ret
 
 
-def run_batchlookup(surt, filename):
+def run_batchlookup(surt, filename, datetime=None):
     mobj = open(filename, "rb")
     iter = mobj
 
     fobj = open(filename, "rb")
     for line in fobj:
-        print('line!')
-        print(surt)
-        res = lookup(iter, surt)
+        res = lookup(iter, surt, datetime)
         if res:
             return res
     fobj.close()
     mobj.close()
 
 
-def lookup(iter, surt):
+def lookup(iter, surt, datetime=None):
     for idx, key in enumerate(lookup_keys(surt)):
-        res = bin_search(iter, key.encode())
+        res = bin_search(iter, key.encode(), datetime)
         if res:
             return res
 
 
-def getCDXJLinesWithURIR_new(urir, indexPath):
+def getCDXJLinesWithURIR_new(urir, indexPath, datetime=None):
     # Convert URI-R to surt
-    print('pre-curted urir {}'.format(urir))
+    print('pre-surted urir {}'.format(urir))
     surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=True)
     print('post: {}'.format(surtedURIR))
 
     # Remove trailing chars from surting with above params, TOREVISE
     # surtedURIR = surtedURIR[0:-2]
-
-    res = run_batchlookup(surtedURIR, indexPath)
+    print("GOING TO LOOK FOR DATETIME {}".format(datetime))
+    res = run_batchlookup(surtedURIR, indexPath, datetime)
     if res is not None:
         return res
     return []
@@ -347,6 +345,7 @@ def resolveMemento(urir, datetime):
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
+
     closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
 
     if closestLine is None or len(closestLine) == 0:
@@ -378,10 +377,16 @@ def showMemento(urir, datetime):
     if isinstance(resolvedMemento, Response):
         return resolvedMemento
     (newDatetime, linkHeader, uri) = resolvedMemento
+    print("THREE PARAMS")
+    print(newDatetime)
+    print(linkHeader)
+    print(uri)
 
     if newDatetime != datetime:
+        print("REDIRECTING")
         resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
     else:
+        print('CALLING SHOW_URI with {} {}'.format(uri, newDatetime))
         resp = show_uri(uri, newDatetime)
 
     resp.headers['Link'] = linkHeader
@@ -403,13 +408,13 @@ def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
     return bestLine
 
 
-def getCDXJLinesWithURIR(urir, indexPath):
+def getCDXJLinesWithURIR(urir, indexPath, datetime=None):
     """ Get all CDXJ records corresponding to a URI-R """
     if not indexPath:
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
     indexPath = getIndexFileFullPath(indexPath)
 
-    return getCDXJLinesWithURIR_new(urir, indexPath)
+    return getCDXJLinesWithURIR_new(urir, indexPath, datetime)
 
 
 @app.route('/timegate/<path:urir>')
@@ -702,21 +707,14 @@ def show_uri(path, datetime=None):
                   'IPWB replay homepage</a>.')
         return Response(errStr, status=503)
 
-    path = getCompleteURI(path)
+    uri = getCompleteURI(path)
     cdxjLine = ''
     try:
-        surtedURI = surt.surt(
-                     path, path_strip_trailing_slash_unless_empty=False)
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
-        print("surtedURI:")
-        print(surtedURI)
+        print('datetime')
+        print(datetime)
 
-        searchString = surtedURI
-        if datetime is not None:
-            searchString = surtedURI + ' ' + datetime
-
-        # cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
-        cdxjLine = getCDXJLinesWithURIR(searchString, indexPath)
+        cdxjLine = getCDXJLinesWithURIR(uri, indexPath, datetime)
         print("HERE")
         print(cdxjLine)
 
@@ -727,15 +725,15 @@ def show_uri(path, datetime=None):
             path, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
         return Response(respString)
     if cdxjLine is None:  # Resource not found in archives
+        print("NONEX")
         return generateNoMementosInterface(path, datetime)
 
-    print('the cdxj line: ')
-    print(cdxjLine)
     cdxjParts = cdxjLine.split(" ", 2)
     jObj = json.loads(cdxjParts[2])
     datetime = cdxjParts[1]
 
     digests = jObj['locator'].split('/')
+
 
     class HashNotFoundError(Exception):
         pass
@@ -1131,44 +1129,6 @@ def objectifyCDXJData(lines, onlyURI):
         else:
             cdxjData['metadata'].append(line)
     return cdxjData
-
-
-def binary_search(haystack, needle, returnIndex=False, onlyURI=False):
-    lBound = 0
-    uBound = None
-
-    surtURIsAndDatetimes = []
-
-    cdxjObj = objectifyCDXJData(haystack, onlyURI)
-    surtURIsAndDatetimes = cdxjObj['data']
-
-    metaLineCount = len(cdxjObj['metadata'])
-
-    uBound = len(surtURIsAndDatetimes)
-
-    pos = bisect_left(surtURIsAndDatetimes, needle, lBound, uBound)
-
-    if pos != uBound and surtURIsAndDatetimes[pos] == needle:
-        if returnIndex:  # Index useful for adjacent line searching
-            return pos + metaLineCount
-        return haystack[pos + metaLineCount]
-    else:
-        return None
-
-
-def getCDXJLine_binarySearch(
-         surtURI, cdxjFilePath=INDEX_FILE, retIndex=False, onlyURI=False):
-    fullFilePath = getIndexFileFullPath(cdxjFilePath)
-
-    with open(fullFilePath, 'r') as cdxjFile:
-        lines = cdxjFile.read().split('\n')
-
-        lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
-        if lineFound is None:
-            print("Could not find {0} in CDXJ at {1}".format(
-                surtURI, fullFilePath))
-
-        return lineFound
 
 
 def start(cdxjFilePath, proxy=None):
