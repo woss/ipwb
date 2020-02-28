@@ -190,6 +190,7 @@ def lookup_keys(surt):
             key = m[1]
         except Exception as e:
             key = key.strip("/,")
+
     return keys
 
 
@@ -218,11 +219,13 @@ def bin_search(iter, key):
         line = iter.readline()  # Read the next full line
 
         surtk, rest = line.split(maxsplit=1)
+        if surtk[-1:] == b'/':
+            surtk = surtk[0:-1]
 
         # TODO: find a more elegant way for comparison than manually
         # trimming the last two chars off of the surtk
 
-        if key == surtk[0:-2]:
+        if key == surtk:
             lines.add(line)
             # Iterate further to get lines after selection point
             nextLine = iter.readline()
@@ -244,7 +247,7 @@ def bin_search(iter, key):
     return ret
 
 
-def run_batchlookup(filename, surt):
+def run_batchlookup(surt, filename):
     mobj = open(filename, "rb")
     iter = mobj
 
@@ -264,14 +267,14 @@ def lookup(iter, surt):
             return res
 
 
-def getCDXJLinesWithURIR_new(indexPath, urir):
+def getCDXJLinesWithURIR_new(urir, indexPath):
     # Convert URI-R to surt
     surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
 
     # Remove trailing chars from surting with above params, TOREVISE
     surtedURIR = surtedURIR[0:-2]
 
-    res = run_batchlookup(indexPath, surtedURIR)
+    res = run_batchlookup(surtedURIR, indexPath)
     if res is not None:
         return res
     return []
@@ -288,7 +291,7 @@ def showMementosForURIRs(urir):
 
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
-    cdxjLinesWithURIR = getCDXJLinesWithURIR_new(indexPath, urir)
+    cdxjLinesWithURIR = getCDXJLinesWithURIR(indexPath, urir)
 
     if len(cdxjLinesWithURIR) == 1:
         fields = cdxjLinesWithURIR[0].decode().split(' ', 2)
@@ -334,10 +337,9 @@ def resolveMemento(urir, datetime):
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
-
     closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
 
-    if closestLine is None:
+    if closestLine is None or len(closestLine) == 0:
         msg = '<h1>ERROR 404</h1>'
         msg += 'No capture found for {0} at {1}.'.format(urir, datetime)
 
@@ -401,7 +403,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     print(s)
 
-    return getCDXJLinesWithURIR_new(indexPath, s)
+    return getCDXJLinesWithURIR_new(s, indexPath)
 
 
 @app.route('/timegate/<path:urir>')
@@ -436,7 +438,7 @@ def showTimeMap(urir, format):
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
     # cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
-    cdxjLinesWithURIR = getCDXJLinesWithURIR_new(indexPath, urir)
+    cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     tmContentType = ''
 
@@ -706,7 +708,7 @@ def show_uri(path, datetime=None):
             searchString = surtedURI + ' ' + datetime
 
         # cdxjLine = getCDXJLine_binarySearch(searchString, indexPath)
-        cdxjLine = getCDXJLinesWithURIR_new(indexPath, searchString)
+        cdxjLine = getCDXJLinesWithURIR(searchString, indexPath)
 
     except Exception as e:
         print(sys.exc_info()[0])
