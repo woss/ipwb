@@ -713,13 +713,11 @@ def show_uri(path, datetime=None):
     if len(cdxjLine) == 1:
         cdxjLine = cdxjLine[0].decode()
 
-
     cdxjParts = cdxjLine.split(" ", 2)
     jObj = json.loads(cdxjParts[2])
     datetime = cdxjParts[1]
 
     digests = jObj['locator'].split('/')
-
 
     class HashNotFoundError(Exception):
         pass
