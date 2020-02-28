@@ -228,7 +228,10 @@ def bin_search(iter, key, datetime=None):
 
         if key == surtk:
             if datetime and datetime != datetimeK:
+                # Rm other close matches, exact found
+                lines.clear()
                 lines.add(line)
+
                 break
             lines.add(line)
             # Iterate further to get lines after selection point
