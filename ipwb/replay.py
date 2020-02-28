@@ -221,6 +221,7 @@ def bin_search(iter, key):
 
         # TODO: find a more elegant way for comparison than manually
         # trimming the last two chars off of the surtk
+
         if key == surtk[0:-2]:
             lines.add(line)
             # Iterate further to get lines after selection point
@@ -239,7 +240,8 @@ def bin_search(iter, key):
             right = mid
 
     # Convert uniq set to list then sort and return
-    return sorted(list(lines))
+    ret = sorted(list(lines))
+    return ret
 
 
 def run_batchlookup(filename, surt):
@@ -592,11 +594,7 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
                '}}}}\n').format(linkTMURI, tmself)
     hostAndPort = tmself[0:tmself.index('timemap/')]
 
-    print('cdxj lines are')
-    print(cdxjLines)
     for i, line in enumerate(cdxjLines):
-        print('the line is')
-        print(line)
         (surtURI, datetime, json) = line.decode().split(' ', 2)
         dtRFC1123 = ipwbUtils.digits14ToRFC1123(datetime)
         firstLastStr = ''
