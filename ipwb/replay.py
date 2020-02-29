@@ -238,8 +238,13 @@ def bin_search(iter, key, datetime=None):
             nextLine = iter.readline()
             while nextLine:
                 surtk, rest = nextLine.split(maxsplit=1)
-                if key == surtk[0:-2]:
+                datetimeK = rest.split()[0].decode()
+                if surtk[-1:] == b'/':
+                    surtk = surtk[0:-1]
+
+                if key == surtk:
                     lines.add(nextLine)
+
                 nextLine = iter.readline()
 
             # Continue searching until find first instance
@@ -251,6 +256,7 @@ def bin_search(iter, key, datetime=None):
 
     # Convert uniq set to list then sort and return
     ret = sorted(list(lines))
+
     return ret
 
 
