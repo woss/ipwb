@@ -718,7 +718,7 @@ def show_uri(path, datetime=None):
         respString = ('{0} not found :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
-        return Response(respString)
+        return Response(respString, status=404)
     if cdxjLine is None:  # Resource not found in archives
         return generateNoMementosInterface(path, datetime)
 
