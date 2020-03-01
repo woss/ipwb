@@ -284,7 +284,12 @@ def lookup(iter, surt, datetime=None):
             return res
 
 
-def getCDXJLinesWithURIR_new(urir, indexPath, datetime=None):
+def getCDXJLinesWithURIR(urir, indexPath, datetime=None):
+    """ Get all CDXJ records corresponding to a URI-R """
+    if not indexPath:
+        indexPath = ipwbUtils.getIPWBReplayIndexPath()
+    indexPath = getIndexFileFullPath(indexPath)
+
     # Convert URI-R to surt
     surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=True)
 
@@ -407,15 +412,6 @@ def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
             smallestDiff = diff
             bestLine = cdxjLine
     return bestLine
-
-
-def getCDXJLinesWithURIR(urir, indexPath, datetime=None):
-    """ Get all CDXJ records corresponding to a URI-R """
-    if not indexPath:
-        indexPath = ipwbUtils.getIPWBReplayIndexPath()
-    indexPath = getIndexFileFullPath(indexPath)
-
-    return getCDXJLinesWithURIR_new(urir, indexPath, datetime)
 
 
 @app.route('/timegate/<path:urir>')
