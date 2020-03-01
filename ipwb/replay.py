@@ -305,7 +305,7 @@ def showMementosForURIRs(urir):
 
     print('Getting CDXJ Lines with the URI-R {0} from {1}'
           .format(urir, indexPath))
-    cdxjLinesWithURIR = getCDXJLinesWithURIR(indexPath, urir)
+    cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     if len(cdxjLinesWithURIR) == 1:
         fields = cdxjLinesWithURIR[0].decode().split(' ', 2)
@@ -449,7 +449,6 @@ def showTimeMap(urir, format):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    # cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     tmContentType = ''
