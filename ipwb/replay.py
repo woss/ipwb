@@ -318,7 +318,7 @@ def showMementosForURIRs(urir):
         msg += '<p>{0} capture(s) available:</p><ul>'.format(
             len(cdxjLinesWithURIR))
         for line in cdxjLinesWithURIR:
-            fields = line.split(' ', 2)
+            fields = line.decode().split(' ', 2)
             dt14 = fields[1]
             dtrfc1123 = ipwbUtils.digits14ToRFC1123(fields[1])
             msg += ('<li><a href="/memento/{1}/{0}">{0} at {2}</a></li>'
