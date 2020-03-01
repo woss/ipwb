@@ -203,7 +203,7 @@ def bin_search(iter, key, datetime=None):
 
     surtk, rest = ln.split(maxsplit=1)
     if key == surtk:
-        return [surtk, rest]
+        return [ln]
 
     # If further searching required...
     left = 0
