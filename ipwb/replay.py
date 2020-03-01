@@ -218,6 +218,10 @@ def bin_search(iter, key, datetime=None):
         iter.readline()  # Purge rest of current line
         line = iter.readline()  # Read the next full line
 
+        if len(line) == 0:
+            right = mid
+            continue
+
         surtk, rest = line.split(maxsplit=1)
         datetimeK = rest.split()[0].decode()
         if surtk[-1:] == b'/':
