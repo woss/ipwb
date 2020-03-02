@@ -237,10 +237,7 @@ def bin_search(iter, key, datetime=None):
             # Continue searching until find first instance
             right = mid
         elif matchDegree == MementoMatch.EXACTMATCH:
-            lines.clear()
-            lines.add(line)
-
-            break
+            return [line]
         elif key > surtk:
             left = mid
         else:
