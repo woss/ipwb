@@ -15,6 +15,8 @@ import datetime
 import logging
 import platform
 
+from enum import Enum, auto
+
 from six.moves.urllib.request import urlopen
 import json
 from .__init__ import __version__ as ipwbVersion
@@ -37,6 +39,13 @@ IPWBREPLAY_ADDRESS = 'localhost:5000'
 IPWBREPLAY_PORT = int(IPWBREPLAY_PORT)
 
 INDEX_FILE = 'samples/indexes/salam-home.cdxj'
+
+
+class MementoMatch(Enum):
+    WRONGKEY = auto()
+    RIGHTKEYWRONGDATE = auto()
+    EXACTMATCH = auto()
+
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)

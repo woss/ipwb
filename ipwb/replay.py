@@ -44,6 +44,7 @@ from . import util as ipwbUtils
 from .util import unsurt
 from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from .util import INDEX_FILE
+from .util import MementoMatch
 
 from . import indexer
 
@@ -187,7 +188,10 @@ def bin_search(iter, key, datetime=None):
         ln = iter.readline()
 
     surtk, datetimeK, rest = ln.split(maxsplit=2)
-    if key == surtk and datetime is None and datetimeK == datetime:
+    datetimeK = datetimeK.decode()
+
+    matchDegree = getMatchDegree(surt, datetime, surtk, datetimeK)
+    if matchDegree == MementoMatch.EXACTMATCH:
         return [ln]
 
     # If further searching required...
@@ -213,27 +217,35 @@ def bin_search(iter, key, datetime=None):
         surtk = surtk.rstrip(b"/")
         key = key.rstrip(b"/")
 
-        if key == surtk:
-            if datetime and datetime == datetimeK:
-                # Rm other close matches, exact found
-                lines.clear()
-                lines.add(line)
+        matchDegree = getMatchDegree(key, datetime, surtk, datetimeK)
 
-                break
+        if matchDegree == MementoMatch.RIGHTKEYWRONGDATE:
             lines.add(line)
             # Iterate further to get lines after selection point
             nextLine = iter.readline()
             while nextLine:
-                surtk, rest = nextLine.split(maxsplit=1)
+                surtk, datetimeK, rest = nextLine.split(maxsplit=2)
                 surtk = surtk.rstrip(b"/")
+                datetimeK = datetimeK.decode()
 
-                if key == surtk:
+                matchDegree = getMatchDegree(key, datetime, surtk, datetimeK)
+                if matchDegree == MementoMatch.RIGHTKEYWRONGDATE:
                     lines.add(nextLine)
+                elif matchDegree == MementoMatch.EXACTMATCH:
+                    # Exact match found while iterating
+                    lines.clear()
+                    lines.add(nextLine)
+                    break
 
                 nextLine = iter.readline()
 
             # Continue searching until find first instance
             right = mid
+        elif matchDegree == MementoMatch.EXACTMATCH:
+            lines.clear()
+            lines.add(line)
+
+            break
         elif key > surtk:
             left = mid
         else:
@@ -243,6 +255,16 @@ def bin_search(iter, key, datetime=None):
     ret = sorted(list(lines))
 
     return ret
+
+
+def getMatchDegree(surt, datetime, surtK, datetimeK):
+    if surt == surtK:
+        if datetime is None or datetime is not None and datetime != datetimeK:
+            return MementoMatch.RIGHTKEYWRONGDATE
+        if datetime == datetimeK:
+            return MementoMatch.EXACTMATCH
+    else:
+        return MementoMatch.WRONGKEY
 
 
 def getCDXJLinesWithURIR(urir, indexPath, datetime=None):
