@@ -186,8 +186,8 @@ def bin_search(iter, key, datetime=None):
     while ipwbUtils.isCDXJMetadataRecord(ln):
         ln = iter.readline()
 
-    surtk, rest = ln.split(maxsplit=1)
-    if key == surtk:
+    surtk, datetimeK, rest = ln.split(maxsplit=2)
+    if key == surtk and datetime is None and datetimeK == datetime:
         return [ln]
 
     # If further searching required...
@@ -214,7 +214,7 @@ def bin_search(iter, key, datetime=None):
         key = key.rstrip(b"/")
 
         if key == surtk:
-            if datetime and datetime != datetimeK:
+            if datetime and datetime == datetimeK:
                 # Rm other close matches, exact found
                 lines.clear()
                 lines.add(line)
