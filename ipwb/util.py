@@ -146,7 +146,6 @@ def setLocale():
 def digits14ToRFC1123(digits14):
     setLocale()
     # Trim to 14-digits max for testing
-    print(digits14)
     if len(digits14) > 14:
         digits14 = digits14[0:14]
     d = datetime.datetime.strptime(digits14, '%Y%m%d%H%M%S')

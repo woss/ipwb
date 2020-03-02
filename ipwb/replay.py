@@ -179,21 +179,6 @@ def showMementosForURIRs_sansJS():
     return redirect('/memento/*/' + urir, code=301)
 
 
-def lookup_keys(surt):
-    keyre = re.compile(r"(.+)([,/]).+")
-    key = surt.split("?")[0].strip("/")
-    keys = [key, f"{key}/*"]
-    while "," in key:
-        try:
-            m = keyre.match(key)
-            keys.append(f"{m[1]}{m[2]}*")
-            key = m[1]
-        except Exception as e:
-            key = key.strip("/,")
-
-    return keys
-
-
 def bin_search(iter, key, datetime=None):
     # Read line encompassing current position
     ln = iter.readline()
@@ -222,13 +207,11 @@ def bin_search(iter, key, datetime=None):
             right = mid
             continue
 
-        surtk, rest = line.split(maxsplit=1)
-        datetimeK = rest.split()[0].decode()
-        if surtk[-1:] == b'/':
-            surtk = surtk[0:-1]
+        surtk, datetimeK, rest = line.split(maxsplit=2)
+        datetimeK = datetimeK.decode()
 
-        # TODO: find a more elegant way for comparison than manually
-        # trimming the last two chars off of the surtk
+        surtk = surtk.rstrip(b"/")
+        key = key.rstrip(b"/")
 
         if key == surtk:
             if datetime and datetime != datetimeK:
@@ -242,9 +225,7 @@ def bin_search(iter, key, datetime=None):
             nextLine = iter.readline()
             while nextLine:
                 surtk, rest = nextLine.split(maxsplit=1)
-                datetimeK = rest.split()[0].decode()
-                if surtk[-1:] == b'/':
-                    surtk = surtk[0:-1]
+                surtk = surtk.rstrip(b"/")
 
                 if key == surtk:
                     lines.add(nextLine)
@@ -264,26 +245,6 @@ def bin_search(iter, key, datetime=None):
     return ret
 
 
-def run_batchlookup(surt, filename, datetime=None):
-    mobj = open(filename, "rb")
-    iter = mobj
-
-    fobj = open(filename, "rb")
-    for line in fobj:
-        res = lookup(iter, surt, datetime)
-        if res:
-            return res
-    fobj.close()
-    mobj.close()
-
-
-def lookup(iter, surt, datetime=None):
-    for idx, key in enumerate(lookup_keys(surt)):
-        res = bin_search(iter, key.encode(), datetime)
-        if res:
-            return res
-
-
 def getCDXJLinesWithURIR(urir, indexPath, datetime=None):
     """ Get all CDXJ records corresponding to a URI-R """
     if not indexPath:
@@ -293,7 +254,10 @@ def getCDXJLinesWithURIR(urir, indexPath, datetime=None):
     # Convert URI-R to surt
     surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=True)
 
-    res = run_batchlookup(surtedURIR, indexPath, datetime)
+    fobj = open(indexPath, "rb")
+    res = bin_search(fobj, surtedURIR.encode(), datetime)
+    fobj.close()
+
     if res is not None:
         return res
     return []
