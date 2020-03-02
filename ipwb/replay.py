@@ -230,9 +230,7 @@ def bin_search(iter, key, datetime=None):
                     lines.add(nextLine)
                 elif matchDegree == MementoMatch.EXACTMATCH:
                     # Exact match found while iterating
-                    lines.clear()
-                    lines.add(nextLine)
-                    break
+                    return [nextLine]
 
                 nextLine = iter.readline()
 
