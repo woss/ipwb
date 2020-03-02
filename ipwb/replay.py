@@ -188,7 +188,6 @@ def bin_search(iter, key, datetime=None):
         ln = iter.readline()
 
     surtk, datetimeK, rest = ln.split(maxsplit=2)
-    datetimeK = datetimeK.decode()
 
     matchDegree = getMatchDegree(surt, datetime, surtk, datetimeK)
     if matchDegree == MementoMatch.EXACTMATCH:
@@ -212,7 +211,6 @@ def bin_search(iter, key, datetime=None):
             continue
 
         surtk, datetimeK, rest = line.split(maxsplit=2)
-        datetimeK = datetimeK.decode()
 
         surtk = surtk.rstrip(b"/")
         key = key.rstrip(b"/")
@@ -226,7 +224,6 @@ def bin_search(iter, key, datetime=None):
             while nextLine:
                 surtk, datetimeK, rest = nextLine.split(maxsplit=2)
                 surtk = surtk.rstrip(b"/")
-                datetimeK = datetimeK.decode()
 
                 matchDegree = getMatchDegree(key, datetime, surtk, datetimeK)
                 if matchDegree == MementoMatch.RIGHTKEYWRONGDATE:
@@ -259,6 +256,7 @@ def bin_search(iter, key, datetime=None):
 
 def getMatchDegree(surt, datetime, surtK, datetimeK):
     if surt == surtK:
+        datetimeK = datetimeK.decode()
         if datetime is None or datetime is not None and datetime != datetimeK:
             return MementoMatch.RIGHTKEYWRONGDATE
         if datetime == datetimeK:
