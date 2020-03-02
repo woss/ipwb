@@ -584,8 +584,8 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
                    '"uri": "{0}memento/{1}/{2}", '
                    '"rel": "{3}memento", '
                    '"datetime"="{4}"}}\n').format(
-                hostAndPort, datetime, unsurt(surtURI),
-                firstLastStr, dtRFC1123)
+            hostAndPort, datetime, unsurt(surtURI),
+            firstLastStr, dtRFC1123)
     return tmData
 
 
@@ -679,7 +679,10 @@ def show_uri(path, datetime=None):
                       ' <a href="http://{1}:{2}">Go home</a>').format(
             path, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
         return Response(respString, status=404)
-    if cdxjLine is None:  # Resource not found in archives
+
+    noMementosBool = cdxjLine is None or \
+        isinstance(cdxjLine, list) and len(cdxjLine) == 0
+    if noMementosBool:  # Resource not found in archives
         return generateNoMementosInterface(path, datetime)
 
     if len(cdxjLine) == 1:
@@ -952,7 +955,7 @@ def fetchRemoteCDXJFile(path):
 def getIndexFileContents(cdxjFilePath=INDEX_FILE):
     if not os.path.exists(cdxjFilePath):
         print('File {0} does not exist locally, fetching remote'.format(
-                                                                 cdxjFilePath))
+            cdxjFilePath))
         return fetchRemoteCDXJFile(cdxjFilePath) or ''
 
     indexFilePath = cdxjFilePath.replace('ipwb.replay', 'ipwb')
