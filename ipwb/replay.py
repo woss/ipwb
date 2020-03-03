@@ -181,20 +181,12 @@ def showMementosForURIRs_sansJS():
 
 
 def bin_search(iter, key, datetime=None):
-    # Read line encompassing current position
-    ln = iter.readline()
+    # Skip metadata lines
+    while iter.peek(1)[:1] == b'!':
+        iter.readline()
+    # Set the beginning position to the start of the first data line
+    left = iter.tell()
 
-    while ipwbUtils.isCDXJMetadataRecord(ln):
-        ln = iter.readline()
-
-    surtk, datetimeK, rest = ln.split(maxsplit=2)
-
-    matchDegree = getMatchDegree(surt, datetime, surtk, datetimeK)
-    if matchDegree == MementoMatch.EXACTMATCH:
-        return [ln]
-
-    # If further searching required...
-    left = 0
     # Go to end of seek stream
     iter.seek(0, 2)
     right = iter.tell()  # Current position
