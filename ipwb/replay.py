@@ -200,6 +200,8 @@ def bin_search(iter, key, datetime=None):
     right = iter.tell()  # Current position
 
     lines = set()  # Prevents dupes
+    key = key.rstrip(b"/")
+
     while (right - left > 1):
         mid = (right + left) // 2
         iter.seek(mid)
@@ -216,7 +218,6 @@ def bin_search(iter, key, datetime=None):
             continue
 
         surtk = surtk.rstrip(b"/")
-        key = key.rstrip(b"/")
 
         matchDegree = getMatchDegree(key, datetime, surtk, datetimeK)
 
