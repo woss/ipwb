@@ -231,6 +231,9 @@ def bin_search(iter, key, datetime=None):
                 elif matchDegree == MementoMatch.EXACTMATCH:
                     # Exact match found while iterating
                     return [nextLine]
+                elif matchDegree == MementoMatch.WRONGKEY:
+                    # Matched keys exhausted
+                    break
 
                 nextLine = iter.readline()
 
