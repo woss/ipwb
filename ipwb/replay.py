@@ -210,7 +210,10 @@ def bin_search(iter, key, datetime=None):
             right = mid
             continue
 
-        surtk, datetimeK, rest = line.split(maxsplit=2)
+        try:
+            surtk, datetimeK, rest = line.split(maxsplit=2)
+        except ValueError as e:
+            continue
 
         surtk = surtk.rstrip(b"/")
         key = key.rstrip(b"/")
