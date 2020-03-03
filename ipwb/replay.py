@@ -364,6 +364,12 @@ def showMemento(urir, datetime):
     except ValueError as e:
         msg = 'Expected a 4-14 digits valid datetime: {}'.format(datetime)
         return Response(msg, status=400)
+    except ipfsapi.exceptions.ErrorResponse:
+        respString = ('{0} not found :(' +
+                      ' <a href="http://{1}:{2}">Go home</a>').format(
+            urir, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
+        return Response(respString, status=404)
+
     resolvedMemento = resolveMemento(urir, datetime)
 
     # resolved to a 404, flask Response object returned instead of tuple
@@ -724,7 +730,6 @@ def show_uri(path, datetime=None):
         # if os.name != 'nt':  # Bug #310
         #    signal.signal(signal.SIGALRM, handler)
         #    signal.alarm(10)
-
         payload = IPFS_API.cat(digests[-1])
         header = IPFS_API.cat(digests[-2])
 
@@ -753,9 +758,16 @@ def show_uri(path, datetime=None):
         else:  # payload found but not header, fabricate header
             print("HTTP header not found, fabricating for resp replay")
             header = ''
+    except ipfsapi.exceptions.ErrorResponse:
+        print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
+        respString = ('{0} not found at {1} :(' +
+                      ' <a href="http://{2}:{3}">Go home</a>').format(
+            path, datetime, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
+        return Response(respString, 404)
     except Exception as e:
         print('Unknown exception occurred while fetching from ipfs.')
         print(e)
+        print(sys.exc_info()[0])
         return "An unknown exception occurred", 500
 
     if 'encryption_method' in jObj:
