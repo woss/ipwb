@@ -1,4 +1,5 @@
 import pytest
+import os
 
 from . import testUtil as ipwbTest
 from ipwb import replay
@@ -39,18 +40,10 @@ def test_replay_search(warc, lookup, status, location):
 
 @pytest.mark.unit_bin_search
 def test_bin_search():
-    data = '''!md
-    b,a)/ 20161231110000 {}
-    d,c)/ 20161231110000 {}
-    d,c)/ 20161231110001 {}
-    e,c)/ 20161231110000 {} 
-    e,c)/ 20161231110001 {}  
-    e,c)/ 20161231110002 {}
-    e,a)/ 20161231110000 {}'''
-
-    iterX = iter(data.split('\n'))
-    # res = bin_search(fobj, surtedURIR.encode(), datetime)
-    res = replay.bin_search(iterX, 'd,c', '20161231110001')
+    sampleIndex = os.path.join(os.path.dirname(__file__) +
+                               '/../samples/indexes/')
+    fh = open('{}unitTest_bin_search.cdxj'.format(sampleIndex), 'rb')
+    res = replay.bin_search(fh, b"d,c", '20161231110001')
     print(res)
 
 
