@@ -37,14 +37,46 @@ def test_replay_search(warc, lookup, status, location):
 
     ipwbTest.stopReplay()
 
-
+@pytest.mark.parametrize("surt,datetime,expectedCount,expectedDatetime", [
+    (b"e,c)",None,3,None),
+    (b"d,c)",None,2,None),
+    (b"e,a)",None,1,None),
+    (b"x,a)",None,0,None),
+    (b"b,a)",b"20161231110000",1,b"20161231110000"), # Exact matches
+    (b"b,a)",b"20161231110000",1,b"20161231110000"),
+    (b"d,c)",b"20161231110000",1,b"20161231110000"),
+    (b"d,c)",b"20161231110001",1,b"20161231110001"),
+    (b"e,c)",b"20161231110000",1,b"20161231110000"),
+    (b"e,c)",b"20161231110001",1,b"20161231110001"),
+    (b"e,c)",b"20161231110002",1,b"20161231110002"),
+    (b"e,a)",b"20161231110000",1,b"20161231110000")
+])
 @pytest.mark.unit_bin_search
-def test_bin_search():
+def test_bin_search(surt, datetime, expectedCount, expectedDatetime):
     sampleIndex = os.path.join(os.path.dirname(__file__) +
                                '/../samples/indexes/')
     fh = open('{}unitTest_bin_search.cdxj'.format(sampleIndex), 'rb')
-    res = replay.bin_search(fh, b"d,c", '20161231110001')
-    print(res)
+    #res = replay.bin_search(fh, b"e,c)", '20161231110000')
+
+    res = replay.bin_search(fh, surt, datetime)
+
+    # Return entries without specifying datetime
+    if expectedDatetime is None:
+        assert len(res) == expectedCount
+    else:  # Check memento datetime correctness when specifying datetime
+        assert len(res) == expectedCount
+        dt = res[0].split()[1]
+        assert dt == expectedDatetime
+
+'''
+b,a)/ 20161231110000 {}
+d,c)/ 20161231110000 {}
+d,c)/ 20161231110001 {}
+e,c)/ 20161231110000 {}
+e,c)/ 20161231110001 {}
+e,c)/ 20161231110002 {}
+e,a)/ 20161231110000 {}
+'''
 
 
 @pytest.mark.testReplayDatedMemento
