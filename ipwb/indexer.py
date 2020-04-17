@@ -103,11 +103,11 @@ def pushToIPFS(hstr, payload):
 
 
 def encrypt(hstr, payload, encryptionKey):
-    paddedEncryptionKey = pad(encryptionKey, AES.block_size)
+    paddedEncryptionKey = pad(encryptionKey.encode(), AES.block_size)
     key = base64.b64encode(paddedEncryptionKey)
     cipher = AES.new(key, AES.MODE_CTR)
 
-    hstrBytes = base64.b64encode(cipher.encrypt(hstr)).decode('utf-8')
+    hstrBytes = base64.b64encode(cipher.encrypt(hstr.encode())).decode('utf-8')
 
     payloadBytes = base64.b64encode(cipher.encrypt(payload)).decode('utf-8')
     nonce = base64.b64encode(cipher.nonce).decode('utf-8')
@@ -298,9 +298,11 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 'original_uri': originaluri
             }
             if encCompOpts.get('encryptionKey') is not None:
-                obj['encryption_key'] = encCompOpts.get('encryptionKey')
-                obj['encryption_method'] = 'aes'
-                obj['encryption_nonce'] = nonce
+                obj['encryption'] = {
+                    'key': encCompOpts.get('encryptionKey'),
+                    'method': 'aes',
+                    'nonce': nonce
+                }
             if title is not None:
                 obj['title'] = title
 

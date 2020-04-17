@@ -690,20 +690,15 @@ def show_uri(path, datetime=None):
         print(e)
         return "An unknown exception occurred", 500
 
-    if 'encryption_method' in jObj:
+    if 'encryption' in jObj:
         keyString = None
-        while keyString is None:
-            if 'encryption_key' in jObj:
-                keyString = jObj['encryption_key']
-            else:
-                askForKey = ('Enter a path for file',
-                             ' containing decryption key: \n> ')
-                keyString = raw_input(askForKey)
+        eAttrs = jObj['encryption']
+        eKey = eAttrs['key'] or None
+        eNonce = eAttrs['nonce'] or None
 
-        paddedEncryptionKey = pad(keyString, AES.block_size)
+        paddedEncryptionKey = pad(eKey.encode(), AES.block_size)
         key = base64.b64encode(paddedEncryptionKey)
-
-        nonce = b64decode(jObj['encryption_nonce'])
+        nonce = b64decode(eNonce)
         cipher = AES.new(key, AES.MODE_CTR, nonce=nonce)
         header = cipher.decrypt(base64.b64decode(header))
         payload = cipher.decrypt(base64.b64decode(payload))
