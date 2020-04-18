@@ -118,8 +118,6 @@ def upload_file():
         indexer.indexFileAt(warcPath, outfile=app.cdxjFilePath)
         print('Index updated at {0}'.format(app.cdxjFilePath))
 
-        app.cdxjFileContents = get_web_archive_index(app.cdxjFilePath)
-
         # TODO: Release semaphore lock
         resp.location = request.referrer
 
@@ -1053,9 +1051,6 @@ def start(cdxjFilePath, proxy=None):
     else:
         print('Sample data not pulled from IPFS.')
         print('Check that the IPFS daemon is running.')
-
-    # Perform checks for CDXJ file existence, TODO: reuse cached contents
-    app.cdxjFileContents = get_web_archive_index(cdxjFilePath)
 
     try:
         print('IPWB replay started on http://{0}:{1}'.format(
