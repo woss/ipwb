@@ -875,7 +875,7 @@ def generateDaemonStatusButton():
     return Response('{0}{1}{2}'.format(statusPageHTML, buttonHTML, footer))
 
 
-def fetchRemoteCDXJFile(path):
+def fetchRemoteCDXJFile(path) -> str:
     fileContents = ''
     path = path.replace('ipfs://', '')
     # TODO: Take into account /ipfs/(hash), first check if this is correct fmt
@@ -895,7 +895,7 @@ def fetchRemoteCDXJFile(path):
             print(sys.exc_info()[0])
             sys.exit()
         print('Data successfully obtained from IPFS')
-        return dataFromIPFS
+        return dataFromIPFS.decode('utf-8')
     else:  # http://, ftp://, smb://, file://
         print('Path contains a scheme, fetching remote file...')
         fileContents = ipwbUtils.fetchRemoteFile(path)
@@ -904,7 +904,7 @@ def fetchRemoteCDXJFile(path):
     # TODO: Check if valid CDXJ here before returning
 
 
-def getIndexFileContents(cdxjFilePath=INDEX_FILE):
+def getIndexFileContents(cdxjFilePath=INDEX_FILE) -> str:
     if not os.path.exists(cdxjFilePath):
         print('File {0} does not exist locally, fetching remote'.format(
                                                                  cdxjFilePath))
@@ -979,6 +979,7 @@ def calculateMementoInfoInIndex(cdxjFilePath=INDEX_FILE):
 
     if not indexFileContents:
         return errReturn
+
     lines = indexFileContents.strip().split('\n')
 
     if not lines:
