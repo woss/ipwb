@@ -38,7 +38,7 @@ from six.moves.urllib_parse import urlunsplit
 from requests.exceptions import HTTPError
 
 from . import util as ipwbUtils
-from .index import get_index_file_contents
+from .index import get_web_archive_index
 from .util import unsurt
 from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from .util import INDEX_FILE
@@ -118,7 +118,7 @@ def upload_file():
         indexer.indexFileAt(warcPath, outfile=app.cdxjFilePath)
         print('Index updated at {0}'.format(app.cdxjFilePath))
 
-        app.cdxjFileContents = get_index_file_contents(app.cdxjFilePath)
+        app.cdxjFileContents = get_web_archive_index(app.cdxjFilePath)
 
         # TODO: Release semaphore lock
         resp.location = request.referrer
@@ -307,7 +307,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
 
     cdxjLines = []
 
-    content = get_index_file_contents(indexPath)
+    content = get_web_archive_index(indexPath)
 
     cdxjLines = content.split('\n')
     baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
@@ -891,7 +891,7 @@ def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
 
 
 def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
-    indexFileContents = get_index_file_contents(cdxjFilePath)
+    indexFileContents = get_web_archive_index(cdxjFilePath)
 
     if not indexFileContents:
         return 0
@@ -933,7 +933,7 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
 def calculateMementoInfoInIndex(cdxjFilePath=INDEX_FILE):
     print("Retrieving URI-Ms from {0}".format(cdxjFilePath))
-    indexFileContents = get_index_file_contents(cdxjFilePath)
+    indexFileContents = get_web_archive_index(cdxjFilePath)
 
     errReturn = (0, 0)
 
@@ -1028,7 +1028,7 @@ def getCDXJLine_binarySearch(
          surtURI, cdxjFilePath=INDEX_FILE, retIndex=False, onlyURI=False):
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
 
-    content = get_index_file_contents(fullFilePath)
+    content = get_web_archive_index(fullFilePath)
 
     lines = content.split('\n')
 
@@ -1055,7 +1055,7 @@ def start(cdxjFilePath, proxy=None):
         print('Check that the IPFS daemon is running.')
 
     # Perform checks for CDXJ file existence, TODO: reuse cached contents
-    app.cdxjFileContents = get_index_file_contents(cdxjFilePath)
+    app.cdxjFileContents = get_web_archive_index(cdxjFilePath)
 
     try:
         print('IPWB replay started on http://{0}:{1}'.format(

@@ -9,7 +9,7 @@ from ipwb import util
 IPFS_API = util.createIPFSClient()
 
 
-def fetch_remote_index_file_contents(path) -> str:
+def _fetch_index_file_from_ipfs(path) -> str:
     """Fetch CDXJ file from IPFS."""
     path = path.replace('ipfs://', '')
     # TODO: Take into account /ipfs/(hash), first check if this is correct fmt
@@ -28,6 +28,8 @@ def fetch_remote_index_file_contents(path) -> str:
 
         print('Data successfully obtained from IPFS')
         return data_from_ipfs.decode('utf-8')
+
+    # TODO should be refactored into another function
     else:  # http://, ftp://, smb://, file://
         print('Path contains a scheme, fetching remote file...')
         file_contents = util.fetch_remote_file(path)
@@ -36,11 +38,11 @@ def fetch_remote_index_file_contents(path) -> str:
     # TODO: Check if valid CDXJ here before returning
 
 
-def get_index_file_contents(path=util.INDEX_FILE) -> str:
+def _fetch_index_file(path=util.INDEX_FILE) -> str:
     """Fetch CDXJ file from local disk or IPFS, depending on the path."""
     if not os.path.exists(path):
         print('File {0} does not exist locally, fetching remote'.format(path))
-        return fetch_remote_index_file_contents(path) or ''
+        return _fetch_index_file_from_ipfs(path) or ''
 
     index_file_path = path.replace('ipwb.replay', 'ipwb')
     print('getting index file at {0}'.format(index_file_path))
@@ -52,6 +54,9 @@ def get_index_file_contents(path=util.INDEX_FILE) -> str:
 
 
 @lru_cache()
-def get_cached_index_file_contents(path: str) -> str:
-    """Store index file content in memory after first fetch."""
-    return get_index_file_contents(path)
+def get_web_archive_index(path: str) -> str:
+    """
+    Store index file content in memory after first fetch.
+    Helps avoid redundant network calls.
+    """
+    return _fetch_index_file(path)
