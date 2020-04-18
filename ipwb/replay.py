@@ -181,8 +181,6 @@ def showMementosForURIRs_sansJS():
 
 @app.route('/memento/*/<path:urir>')
 def showMementosForURIRs(urir):
-    urir = getCompleteURI(urir)
-
     if ipwbUtils.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
 
@@ -226,8 +224,6 @@ app.url_map.converters['regex'] = RegexConverter
 
 def resolveMemento(urir, datetime):
     """ Request a URI-R at a supplied datetime from the CDXJ """
-    urir = getCompleteURI(urir)
-
     if ipwbUtils.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
@@ -371,7 +367,6 @@ def queryTimeGate(urir):
 
 @app.route('/timemap/<regex("link|cdxj"):format>/<path:urir>')
 def showTimeMap(urir, format):
-    urir = getCompleteURI(urir)
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
@@ -629,7 +624,6 @@ def show_uri(path, datetime=None):
                   'IPWB replay homepage</a>.')
         return Response(errStr, status=503)
 
-    path = getCompleteURI(path)
     cdxjLine = ''
     try:
         surtedURI = surt.surt(
