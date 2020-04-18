@@ -295,6 +295,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
     """ Get all CDXJ records corresponding to a URI-R """
     if not indexPath:
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
+
     indexPath = getIndexFileFullPath(indexPath)
 
     print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
@@ -307,11 +308,13 @@ def getCDXJLinesWithURIR(urir, indexPath):
         return []
 
     cdxjLines = []
-    with open(indexPath, 'r') as f:
-        cdxjLines = f.read().split('\n')
-        baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
 
-        cdxjLinesWithURIR.append(baseCDXJLine)
+    content = getIndexFileContents(indexPath)
+
+    cdxjLines = content.split('\n')
+    baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
+
+    cdxjLinesWithURIR.append(baseCDXJLine)
 
     # Get lines before pivot that match surt
     sI = cdxjLineIndex - 1
@@ -921,6 +924,10 @@ def getIndexFileContents(cdxjFilePath=INDEX_FILE) -> str:
 
 
 def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
+    # Avoid prepending current directory path to an IPFS hash.
+    if cdxjFilePath.startswith('Qm'):
+        return cdxjFilePath
+
     indexFilePath = '/{0}'.format(cdxjFilePath).replace('ipwb.replay', 'ipwb')
 
     if os.path.isfile(cdxjFilePath):
@@ -1068,15 +1075,16 @@ def getCDXJLine_binarySearch(
          surtURI, cdxjFilePath=INDEX_FILE, retIndex=False, onlyURI=False):
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
 
-    with open(fullFilePath, 'r') as cdxjFile:
-        lines = cdxjFile.read().split('\n')
+    content = getIndexFileContents(fullFilePath)
 
-        lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
-        if lineFound is None:
-            print("Could not find {0} in CDXJ at {1}".format(
-                surtURI, fullFilePath))
+    lines = content.split('\n')
 
-        return lineFound
+    lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
+    if lineFound is None:
+        print("Could not find {0} in CDXJ at {1}".format(
+            surtURI, fullFilePath))
+
+    return lineFound
 
 
 def start(cdxjFilePath, proxy=None):
