@@ -1,14 +1,10 @@
+import functools
 import os
-import sys
-from functools import lru_cache
 
 import ipfshttpclient
-from ipfshttpclient.exceptions import StatusError as hashNotInIPFS
-
+from ipfshttpclient.exceptions import StatusError
 
 from ipwb import util
-
-IPFS_API = util.createIPFSClient()
 
 
 def _fetch_index_file_from_ipfs(path: str) -> str:
@@ -24,10 +20,12 @@ def _fetch_index_file_from_ipfs(path: str) -> str:
             with ipfshttpclient.connect(util.IPFSAPI_MUTLIADDRESS) as client:
                 return client.cat(path).decode('utf-8')
 
-        except hashNotInIPFS:
-            print(("The CDXJ at hash {0} could"
-                   " not be found in IPFS").format(path))
-            sys.exit()
+        except StatusError as err:
+            raise Exception((
+                'Cannot find CDXJ index file by hash {hash} in IPFS.'
+            ).format(
+                hash=path,
+            )) from err
 
     # TODO should be refactored into another function
     else:  # http://, ftp://, smb://, file://
@@ -50,7 +48,7 @@ def fetch_web_archive_index(path: str = util.INDEX_FILE) -> str:
         return f.read()
 
 
-@lru_cache()
+@functools.lru_cache()
 def get_web_archive_index(path: str) -> str:
     """
     Store index file content in memory after first fetch.

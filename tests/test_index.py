@@ -1,10 +1,15 @@
 from unittest import mock
 
+import pytest
+from ipfshttpclient.exceptions import StatusError
+
 from ipwb.index import fetch_web_archive_index
 from pathlib import Path
 
 
-SAMPLE_INDEX = str(Path(__file__).parent.parent / 'samples/indexes/salam-home.cdxj')
+SAMPLE_INDEX = str(
+    Path(__file__).parent.parent / 'samples/indexes/salam-home.cdxj'
+)
 
 
 def test_local():
@@ -20,7 +25,7 @@ def test_https():
     ).startswith('!context ["http://tools.ietf.org/html/rfc7089"]')
 
 
-def test_ipfs():
+def test_ipfs_success():
     with open(SAMPLE_INDEX, 'r') as f:
         expected_content = f.read()
 
@@ -31,3 +36,14 @@ def test_ipfs():
         assert fetch_web_archive_index(
             'QmReQCtRpmEhdWZVLhoE3e8bqreD8G3avGpVfcLD7r4K6W'
         ).startswith('!context ["http://tools.ietf.org/html/rfc7089"]')
+
+
+def test_ipfs_failure():
+    with pytest.raises(Exception):
+        with mock.patch(
+            'ipfshttpclient.client.Client.cat',
+            side_effect=StatusError(original='')
+        ):
+            fetch_web_archive_index(
+                'QmReQCtRpmEhdWZVLhoE3e8bqreD8G3avGpVfcLD7r4K6W',
+            )

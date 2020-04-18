@@ -21,18 +21,15 @@ import re
 import traceback
 import tempfile
 
-from flask import Flask
-from flask import Response
-from flask import request
-from flask import redirect
-from flask import render_template
+from flask import (
+    Flask, Response, request, redirect, render_template,
+)
 
 from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
 
-from six.moves.urllib_parse import urlsplit
-from six.moves.urllib_parse import urlunsplit
+from six.moves.urllib_parse import urlsplit, urlunsplit
 
 
 from requests.exceptions import HTTPError
