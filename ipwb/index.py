@@ -2,14 +2,16 @@ import os
 import sys
 from functools import lru_cache
 
+import ipfshttpclient
 from ipfshttpclient.exceptions import StatusError as hashNotInIPFS
+
 
 from ipwb import util
 
 IPFS_API = util.createIPFSClient()
 
 
-def _fetch_index_file_from_ipfs(path) -> str:
+def _fetch_index_file_from_ipfs(path: str) -> str:
     """Fetch CDXJ file from IPFS."""
     path = path.replace('ipfs://', '')
     # TODO: Take into account /ipfs/(hash), first check if this is correct fmt
@@ -19,26 +21,23 @@ def _fetch_index_file_from_ipfs(path) -> str:
         print('No scheme in path, assuming IPFS hash and fetching...')
         try:
             print("Trying to ipfs.cat('{0}')".format(path))
-            data_from_ipfs = IPFS_API.cat(path)
+            with ipfshttpclient.connect(util.IPFSAPI_MUTLIADDRESS) as client:
+                return client.cat(path).decode('utf-8')
 
         except hashNotInIPFS:
             print(("The CDXJ at hash {0} could"
                    " not be found in IPFS").format(path))
             sys.exit()
 
-        print('Data successfully obtained from IPFS')
-        return data_from_ipfs.decode('utf-8')
-
     # TODO should be refactored into another function
     else:  # http://, ftp://, smb://, file://
         print('Path contains a scheme, fetching remote file...')
-        file_contents = util.fetch_remote_file(path)
-        return file_contents
+        return util.fetch_remote_file(path)
 
     # TODO: Check if valid CDXJ here before returning
 
 
-def _fetch_index_file(path=util.INDEX_FILE) -> str:
+def fetch_web_archive_index(path: str = util.INDEX_FILE) -> str:
     """Fetch CDXJ file from local disk or IPFS, depending on the path."""
     if not os.path.exists(path):
         print('File {0} does not exist locally, fetching remote'.format(path))
@@ -48,9 +47,7 @@ def _fetch_index_file(path=util.INDEX_FILE) -> str:
     print('getting index file at {0}'.format(index_file_path))
 
     with open(path, 'r') as f:
-        index_file_content = f.read()
-
-    return index_file_content
+        return f.read()
 
 
 @lru_cache()
@@ -59,4 +56,4 @@ def get_web_archive_index(path: str) -> str:
     Store index file content in memory after first fetch.
     Helps avoid redundant network calls.
     """
-    return _fetch_index_file(path)
+    return fetch_web_archive_index(path)
