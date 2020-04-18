@@ -367,6 +367,8 @@ def queryTimeGate(urir):
 
 @app.route('/timemap/<regex("link|cdxj"):format>/<path:urir>')
 def showTimeMap(urir, format):
+    urir = compile_target_uri(urir, request.query_string)
+
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
