@@ -253,8 +253,22 @@ def resolveMemento(urir, datetime):
     return (newDatetime, linkHeader, uri)
 
 
+def compile_target_uri(url: str, query_string: bytes) -> str:
+    """Append GET query string to the page path, to get full URI."""
+    if query_string:
+        return '{path}?{query_string}'.format(
+            path=url,
+            query_string=query_string.decode('utf-8'),
+        )
+
+    else:
+        return url
+
+
 @app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
 def showMemento(urir, datetime):
+    urir = compile_target_uri(urir, request.query_string)
+
     try:
         datetime = ipwbUtils.padDigits14(datetime, validate=True)
     except ValueError as e:
@@ -330,6 +344,8 @@ def getCDXJLinesWithURIR(urir, indexPath):
 
 @app.route('/timegate/<path:urir>')
 def queryTimeGate(urir):
+    urir = compile_target_uri(urir, request.query_string)
+
     adt = request.headers.get("Accept-Datetime")
     if adt is None:
         adt = ipwbUtils.getRFC1123OfNow()
@@ -540,9 +556,6 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
 
 # Fixes Flask issue of clipping queryString
 def getCompleteURI(uri):
-    qs = request.query_string.decode('utf-8')
-    if qs != '':
-        uri += '?' + qs
     return uri
 
 

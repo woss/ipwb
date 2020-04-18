@@ -47,6 +47,7 @@ coverage.xml
 *,cover
 .hypothesis/
 tests/samples/warcs/frogTest_*
+samples/warcs/frogTest_*
 
 # Translations
 *.mo
