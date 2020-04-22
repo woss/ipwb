@@ -1,4 +1,5 @@
-import os
+import dataclasses
+from typing import Optional
 from urllib.parse import urlparse
 
 import ipfshttpclient
@@ -7,30 +8,55 @@ import requests
 from ipwb import util
 
 
-def fetch_ipfs_index(path: str) -> str:
-    """Fetch CDXJ file content from IPFS by hash."""
-    with ipfshttpclient.connect(util.IPFSAPI_MUTLIADDRESS) as client:
-        return client.cat(path).decode('utf-8')
+@dataclasses.dataclass(frozen=True)
+class BackendError(Exception):
+    backend_name: str
+
+    def __str__(self):
+        return 'Cannot load index file from {self.backend_name}.'.format(
+            self=self,
+        )
 
 
-def fetch_web_index(path: str) -> str:
-    """Fetch CDXJ file content from a URL."""
-    return requests.get(path).text
-
-
-def fetch_remote_index(path: str) -> str:
-    """Fetch CDXJ file content from a remote location."""
-
+def format_ipfs_cid(path: str) -> Optional[str]:
+    """Format IPFS CID properly."""
     if path.startswith('Qm'):
-        return fetch_ipfs_index(path)
+        return path
 
+    elif path.startswith('ipfs://'):
+        return path.replace('ipfs://', '')
+
+
+def fetch_ipfs_index(path: str) -> Optional[str]:
+    """Fetch CDXJ file content from IPFS by hash."""
+    ipfs_hash = format_ipfs_cid(path)
+
+    if ipfs_hash is None:
+        return None
+
+    try:
+        with ipfshttpclient.connect(util.IPFSAPI_MUTLIADDRESS) as client:
+            return client.cat(path).decode('utf-8')
+
+    except ipfshttpclient.exceptions.StatusError as err:
+        raise BackendError(backend_name='ipfs') from err
+
+
+def fetch_web_index(path: str) -> Optional[str]:
+    """Fetch CDXJ file content from a URL."""
     scheme = urlparse(path).scheme
 
-    if scheme == 'ipfs':
-        return fetch_ipfs_index(path.replace('ipfs://', ''))
+    if not scheme:
+        return None
 
-    elif scheme:
-        return fetch_web_index(path)
+    try:
+        return requests.get(path).text
+
+    except (
+        requests.ConnectionError,
+        requests.HTTPError,
+    ) as err:
+        raise BackendError(backend_name='web') from err
 
 
 def fetch_local_index(path: str) -> str:
@@ -52,8 +78,22 @@ def get_web_archive_index(path: str) -> str:
     #   whereas right now we choose a backend automatically based on the given
     #   path itself.
 
-    if os.path.exists(path):
-        return fetch_local_index(path)
+    # Maybe it is an IPFS address?
+    response = fetch_ipfs_index(path)
+    if response is not None:
+        return response
 
-    else:
-        return fetch_remote_index(path)
+    # Or a traditional Web address?
+    response = fetch_web_index(path)
+    if response is not None:
+        return response
+
+    # Okay, this is probably a file on local disk
+    response = fetch_local_index(path)
+    if response is not None:
+        return response
+
+    raise ValueError((
+        'Unknown format of index file location: {}. Please provide ' +
+        'a valid local path, HTTP or FTP URL, or an IPFS QmHash.'
+    ).format(path))

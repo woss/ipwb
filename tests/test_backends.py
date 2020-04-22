@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 from ipfshttpclient.exceptions import StatusError
 
-from ipwb.backends import get_web_archive_index
+from ipwb.backends import get_web_archive_index, BackendError
 from pathlib import Path
 
 
@@ -39,7 +39,7 @@ def test_ipfs_success():
 
 
 def test_ipfs_failure():
-    with pytest.raises(Exception):
+    with pytest.raises(BackendError) as err_info:
         with mock.patch(
             'ipfshttpclient.client.Client.cat',
             side_effect=StatusError(original='')
@@ -47,6 +47,10 @@ def test_ipfs_failure():
             get_web_archive_index(
                 'QmReQCtRpmEhdWZVLhoE3e8bqreD8G3avGpVfcLD7r4K6W',
             )
+
+    assert str(err_info.value) == (
+        'Cannot load index file from ipfs.'
+    )
 
 
 def test_ipfs_url_success():
