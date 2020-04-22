@@ -1,46 +1,40 @@
 import os
+from urllib.parse import urlparse
 
 import ipfshttpclient
-from ipfshttpclient.exceptions import StatusError
+import requests
 
 from ipwb import util
 
 
+def fetch_ipfs_index(path: str) -> str:
+    """Fetch CDXJ file content from IPFS by hash."""
+    with ipfshttpclient.connect(util.IPFSAPI_MUTLIADDRESS) as client:
+        return client.cat(path).decode('utf-8')
+
+
+def fetch_web_index(path: str) -> str:
+    """Fetch CDXJ file content from a URL."""
+    return requests.get(path).text
+
+
 def fetch_remote_index(path: str) -> str:
-    """Fetch CDXJ file from IPFS."""
-    path = path.replace('ipfs://', '')
-    # TODO: Take into account /ipfs/(hash), first check if this is correct fmt
+    """Fetch CDXJ file content from a remote location."""
 
-    if '://' not in path:  # isAIPFSHash
-        # TODO: Check if a valid IPFS hash
-        print('No scheme in path, assuming IPFS hash and fetching...')
-        try:
-            print("Trying to ipfs.cat('{0}')".format(path))
-            with ipfshttpclient.connect(util.IPFSAPI_MUTLIADDRESS) as client:
-                return client.cat(path).decode('utf-8')
+    if path.startswith('Qm'):
+        return fetch_ipfs_index(path)
 
-        except StatusError as err:
-            raise Exception((
-                'Cannot find CDXJ index file by hash {hash} in IPFS.'
-            ).format(
-                hash=path,
-            )) from err
+    scheme = urlparse(path).scheme
 
-    # TODO should be refactored into another function
-    else:  # http://, ftp://, smb://, file://
-        print('Path contains a scheme, fetching remote file...')
-        return util.fetch_remote_file(path)
+    if scheme == 'ipfs':
+        return fetch_ipfs_index(path.replace('ipfs://', ''))
 
-    # TODO: Check if valid CDXJ here before returning
+    elif scheme:
+        return fetch_web_index(path)
 
 
 def fetch_local_index(path: str) -> str:
     """Fetch CDXJ index contents from a file on local disk."""
-    # TODO what does this mean?
-    index_file_path = path.replace('ipwb.replay', 'ipwb')
-
-    print('getting index file at {0}'.format(index_file_path))
-
     with open(path, 'r') as f:
         return f.read()
 

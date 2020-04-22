@@ -47,3 +47,16 @@ def test_ipfs_failure():
             get_web_archive_index(
                 'QmReQCtRpmEhdWZVLhoE3e8bqreD8G3avGpVfcLD7r4K6W',
             )
+
+
+def test_ipfs_url_success():
+    with open(SAMPLE_INDEX, 'r') as f:
+        expected_content = f.read()
+
+    connect_to_ipfs = mock.MagicMock()
+    connect_to_ipfs.return_value.cat.return_value = expected_content
+
+    with mock.patch('ipfshttpclient.connect', connect_to_ipfs):
+        assert get_web_archive_index(
+            'ipfs://QmReQCtRpmEhdWZVLhoE3e8bqreD8G3avGpVfcLD7r4K6W'
+        ).startswith('!context ["http://tools.ietf.org/html/rfc7089"]')
