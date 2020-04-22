@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 from ipfshttpclient.exceptions import StatusError
 
-from ipwb.index import fetch_web_archive_index
+from ipwb.backends import get_web_archive_index
 from pathlib import Path
 
 
@@ -13,13 +13,13 @@ SAMPLE_INDEX = str(
 
 
 def test_local():
-    assert fetch_web_archive_index(SAMPLE_INDEX).startswith(
+    assert get_web_archive_index(SAMPLE_INDEX).startswith(
         '!context ["http://tools.ietf.org/html/rfc7089"]'
     )
 
 
 def test_https():
-    assert fetch_web_archive_index(
+    assert get_web_archive_index(
         'https://raw.githubusercontent.com/oduwsdl/ipwb/master/samples/' +
         'indexes/salam-home.cdxj'
     ).startswith('!context ["http://tools.ietf.org/html/rfc7089"]')
@@ -33,7 +33,7 @@ def test_ipfs_success():
     connect_to_ipfs.return_value.cat.return_value = expected_content
 
     with mock.patch('ipfshttpclient.connect', connect_to_ipfs):
-        assert fetch_web_archive_index(
+        assert get_web_archive_index(
             'QmReQCtRpmEhdWZVLhoE3e8bqreD8G3avGpVfcLD7r4K6W'
         ).startswith('!context ["http://tools.ietf.org/html/rfc7089"]')
 
@@ -44,6 +44,6 @@ def test_ipfs_failure():
             'ipfshttpclient.client.Client.cat',
             side_effect=StatusError(original='')
         ):
-            fetch_web_archive_index(
+            get_web_archive_index(
                 'QmReQCtRpmEhdWZVLhoE3e8bqreD8G3avGpVfcLD7r4K6W',
             )

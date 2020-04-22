@@ -35,7 +35,7 @@ from six.moves.urllib_parse import urlsplit, urlunsplit
 from requests.exceptions import HTTPError
 
 from . import util as ipwbUtils
-from .index import get_web_archive_index
+from .backends import get_web_archive_index
 from .util import unsurt
 from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from .util import INDEX_FILE
