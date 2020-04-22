@@ -181,6 +181,8 @@ def showMementosForURIRs_sansJS():
 
 @app.route('/memento/*/<path:urir>')
 def showMementosForURIRs(urir):
+    urir = compile_target_uri(urir, request.query_string)
+
     if ipwbUtils.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
 
@@ -252,9 +254,9 @@ def resolveMemento(urir, datetime):
 def compile_target_uri(url: str, query_string: bytes) -> str:
     """Append GET query string to the page path, to get full URI."""
     if query_string:
-        return '{path}?{query_string}'.format(
-            path=url,
-            query_string=query_string.decode('utf-8'),
+        return '{}?{}'.format(
+            url,
+            query_string.decode('utf-8'),
         )
 
     else:
