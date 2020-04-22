@@ -18,29 +18,24 @@ import subprocess
 import pkg_resources
 import surt
 import re
-import signal
 import traceback
 import tempfile
 
-from flask import Flask
-from flask import Response
-from flask import request
-from flask import redirect
-from flask import abort
-from flask import render_template
+from flask import (
+    Flask, Response, request, redirect, render_template,
+)
 
-from ipfshttpclient.exceptions import StatusError as hashNotInIPFS
 from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
 
-from six.moves.urllib_parse import urlsplit
-from six.moves.urllib_parse import urlunsplit
+from six.moves.urllib_parse import urlsplit, urlunsplit
 
 
 from requests.exceptions import HTTPError
 
 from . import util as ipwbUtils
+from .backends import get_web_archive_index
 from .util import unsurt
 from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from .util import INDEX_FILE
@@ -119,8 +114,6 @@ def upload_file():
             warcPath, app.cdxjFilePath))
         indexer.indexFileAt(warcPath, outfile=app.cdxjFilePath)
         print('Index updated at {0}'.format(app.cdxjFilePath))
-
-        app.cdxjFileContents = getIndexFileContents(app.cdxjFilePath)
 
         # TODO: Release semaphore lock
         resp.location = request.referrer
@@ -295,6 +288,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
     """ Get all CDXJ records corresponding to a URI-R """
     if not indexPath:
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
+
     indexPath = getIndexFileFullPath(indexPath)
 
     print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
@@ -307,11 +301,13 @@ def getCDXJLinesWithURIR(urir, indexPath):
         return []
 
     cdxjLines = []
-    with open(indexPath, 'r') as f:
-        cdxjLines = f.read().split('\n')
-        baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
 
-        cdxjLinesWithURIR.append(baseCDXJLine)
+    content = get_web_archive_index(indexPath)
+
+    cdxjLines = content.split('\n')
+    baseCDXJLine = cdxjLines[cdxjLineIndex]  # via binsearch
+
+    cdxjLinesWithURIR.append(baseCDXJLine)
 
     # Get lines before pivot that match surt
     sI = cdxjLineIndex - 1
@@ -875,52 +871,11 @@ def generateDaemonStatusButton():
     return Response('{0}{1}{2}'.format(statusPageHTML, buttonHTML, footer))
 
 
-def fetchRemoteCDXJFile(path):
-    fileContents = ''
-    path = path.replace('ipfs://', '')
-    # TODO: Take into account /ipfs/(hash), first check if this is correct fmt
-
-    if '://' not in path:  # isAIPFSHash
-        # TODO: Check if a valid IPFS hash
-        print('No scheme in path, assuming IPFS hash and fetching...')
-        try:
-            print("Trying to ipfs.cat('{0}')".format(path))
-            dataFromIPFS = IPFS_API.cat(path)
-        except hashNotInIPFS:
-            print(("The CDXJ at hash {0} could"
-                   " not be found in IPFS").format(path))
-            sys.exit()
-        except Exception as e:
-            print("An error occurred with ipfs.cat")
-            print(sys.exc_info()[0])
-            sys.exit()
-        print('Data successfully obtained from IPFS')
-        return dataFromIPFS
-    else:  # http://, ftp://, smb://, file://
-        print('Path contains a scheme, fetching remote file...')
-        fileContents = ipwbUtils.fetchRemoteFile(path)
-        return fileContents
-
-    # TODO: Check if valid CDXJ here before returning
-
-
-def getIndexFileContents(cdxjFilePath=INDEX_FILE):
-    if not os.path.exists(cdxjFilePath):
-        print('File {0} does not exist locally, fetching remote'.format(
-                                                                 cdxjFilePath))
-        return fetchRemoteCDXJFile(cdxjFilePath) or ''
-
-    indexFilePath = cdxjFilePath.replace('ipwb.replay', 'ipwb')
-    print('getting index file at {0}'.format(indexFilePath))
-
-    indexFileContent = ''
-    with open(cdxjFilePath, 'r') as f:
-        indexFileContent = f.read()
-
-    return indexFileContent
-
-
 def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
+    # Avoid prepending current directory path to an IPFS hash.
+    if cdxjFilePath.startswith('Qm'):
+        return cdxjFilePath
+
     indexFilePath = '/{0}'.format(cdxjFilePath).replace('ipwb.replay', 'ipwb')
 
     if os.path.isfile(cdxjFilePath):
@@ -931,7 +886,7 @@ def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
 
 
 def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
-    indexFileContents = getIndexFileContents(cdxjFilePath)
+    indexFileContents = get_web_archive_index(cdxjFilePath)
 
     if not indexFileContents:
         return 0
@@ -973,12 +928,13 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
 def calculateMementoInfoInIndex(cdxjFilePath=INDEX_FILE):
     print("Retrieving URI-Ms from {0}".format(cdxjFilePath))
-    indexFileContents = getIndexFileContents(cdxjFilePath)
+    indexFileContents = get_web_archive_index(cdxjFilePath)
 
     errReturn = (0, 0)
 
     if not indexFileContents:
         return errReturn
+
     lines = indexFileContents.strip().split('\n')
 
     if not lines:
@@ -1067,15 +1023,16 @@ def getCDXJLine_binarySearch(
          surtURI, cdxjFilePath=INDEX_FILE, retIndex=False, onlyURI=False):
     fullFilePath = getIndexFileFullPath(cdxjFilePath)
 
-    with open(fullFilePath, 'r') as cdxjFile:
-        lines = cdxjFile.read().split('\n')
+    content = get_web_archive_index(fullFilePath)
 
-        lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
-        if lineFound is None:
-            print("Could not find {0} in CDXJ at {1}".format(
-                surtURI, fullFilePath))
+    lines = content.split('\n')
 
-        return lineFound
+    lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
+    if lineFound is None:
+        print("Could not find {0} in CDXJ at {1}".format(
+            surtURI, fullFilePath))
+
+    return lineFound
 
 
 def start(cdxjFilePath, proxy=None):
@@ -1091,9 +1048,6 @@ def start(cdxjFilePath, proxy=None):
     else:
         print('Sample data not pulled from IPFS.')
         print('Check that the IPFS daemon is running.')
-
-    # Perform checks for CDXJ file existence, TODO: reuse cached contents
-    app.cdxjFileContents = getIndexFileContents(cdxjFilePath)
 
     try:
         print('IPWB replay started on http://{0}:{1}'.format(
