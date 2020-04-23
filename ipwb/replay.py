@@ -174,7 +174,7 @@ def showMementosForURIRs_sansJS():
 
 @app.route('/memento/*/<path:urir>')
 def showMementosForURIRs(urir):
-    urir = getCompleteURI(urir)
+    urir = compile_target_uri(urir, request.query_string)
 
     if ipwbUtils.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
@@ -219,8 +219,6 @@ app.url_map.converters['regex'] = RegexConverter
 
 def resolveMemento(urir, datetime):
     """ Request a URI-R at a supplied datetime from the CDXJ """
-    urir = getCompleteURI(urir)
-
     if ipwbUtils.isLocalHosty(urir):
         urir = urir.split('/', 4)[4]
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
@@ -246,8 +244,19 @@ def resolveMemento(urir, datetime):
     return (newDatetime, linkHeader, uri)
 
 
+def compile_target_uri(url: str, query_string: bytes) -> str:
+    """Append GET query string to the page path, to get full URI."""
+    if query_string:
+        return '{}?{}'.format(url, query_string.decode('utf-8'))
+
+    else:
+        return url
+
+
 @app.route('/memento/<regex("[0-9]{1,14}"):datetime>/<path:urir>')
 def showMemento(urir, datetime):
+    urir = compile_target_uri(urir, request.query_string)
+
     try:
         datetime = ipwbUtils.padDigits14(datetime, validate=True)
     except ValueError as e:
@@ -326,6 +335,8 @@ def getCDXJLinesWithURIR(urir, indexPath):
 
 @app.route('/timegate/<path:urir>')
 def queryTimeGate(urir):
+    urir = compile_target_uri(urir, request.query_string)
+
     adt = request.headers.get("Accept-Datetime")
     if adt is None:
         adt = ipwbUtils.getRFC1123OfNow()
@@ -351,7 +362,8 @@ def queryTimeGate(urir):
 
 @app.route('/timemap/<regex("link|cdxj"):format>/<path:urir>')
 def showTimeMap(urir, format):
-    urir = getCompleteURI(urir)
+    urir = compile_target_uri(urir, request.query_string)
+
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
@@ -534,14 +546,6 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     return tmData
 
 
-# Fixes Flask issue of clipping queryString
-def getCompleteURI(uri):
-    qs = request.query_string.decode('utf-8')
-    if qs != '':
-        uri += '?' + qs
-    return uri
-
-
 @app.errorhandler(Exception)
 def all_exception_handler(error):
     print(error)
@@ -612,7 +616,6 @@ def show_uri(path, datetime=None):
                   'IPWB replay homepage</a>.')
         return Response(errStr, status=503)
 
-    path = getCompleteURI(path)
     cdxjLine = ''
     try:
         surtedURI = surt.surt(
