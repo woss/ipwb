@@ -199,7 +199,7 @@ def padDigits14(dtstr, validate=False):
     return dtstr
 
 
-def fetchRemoteFile(path):
+def fetch_remote_file(path):
     try:
         r = requests.get(path)
         return r.text
