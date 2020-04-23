@@ -254,10 +254,7 @@ def resolveMemento(urir, datetime):
 def compile_target_uri(url: str, query_string: bytes) -> str:
     """Append GET query string to the page path, to get full URI."""
     if query_string:
-        return '{}?{}'.format(
-            url,
-            query_string.decode('utf-8'),
-        )
+        return '{}?{}'.format(url, query_string.decode('utf-8'))
 
     else:
         return url
