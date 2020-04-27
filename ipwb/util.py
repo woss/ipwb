@@ -3,7 +3,6 @@ from __future__ import print_function
 from os.path import expanduser
 
 import os
-import sys
 import requests
 import ipfshttpclient as ipfsapi
 
@@ -63,20 +62,18 @@ def isDaemonAlive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
         # ConnectionError/AttributeError if IPFS daemon not running
         client.id()
         return True
-    except (ConnectionError):  # exceptions.AttributeError):
-        logError("Daemon is not running at " + daemonMultiaddr)
+
+    except ConnectionError:  # exceptions.AttributeError):
+        logger.error('Daemon is not running at %s', daemonMultiaddr)
         return False
+
     except OSError:
-        logError("IPFS is likely not installed. "
-                 "See https://ipfs.io/docs/install/")
-        sys.exit()
+        raise Exception(
+            'IPFS is likely not installed. See https://ipfs.io/docs/install/'
+        )
+
     except Exception as e:
-        logError('Unknown error in retrieving daemon status')
-        logError(sys.exc_info()[0])
-
-
-def logError(errIn):
-    print(errIn, file=sys.stderr)
+        raise Exception('Unknown error in retrieving daemon status.') from e
 
 
 def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
@@ -203,11 +200,15 @@ def fetch_remote_file(path):
     try:
         r = requests.get(path)
         return r.text
+
     except ConnectionError:
-        logError('File at {0} is unavailable.'.format(path))
-    except Exception as E:
-        logError('An unknown error occurred trying to fetch {0}'.format(path))
-        logError(sys.exc_info()[0])
+        logger.error('File at %s is unavailable.', path)
+
+    except Exception as e:
+        raise Exception(
+            'An unknown error occurred trying to fetch {}'.format(path)
+        ) from e
+
     return None
 
 
@@ -220,10 +221,11 @@ def readIPFSConfig():
     try:
         with open(ipfsConfigPath, 'r') as f:
             return json.load(f)
+
     except IOError:
-        logError("IPFS config not found.")
-        logError("Have you installed ipfs and run ipfs init?")
-        sys.exit()
+        raise Exception(
+            'IPFS config not found. Have you installed ipfs and run ipfs init?'
+        )
 
 
 def writeIPFSConfig(jsonToWrite):
