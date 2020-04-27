@@ -15,7 +15,6 @@ import logging
 import platform
 
 import json
-from .__init__ import __version__ as ipwb_version
 
 from pkg_resources import parse_version
 
@@ -304,30 +303,3 @@ def unsurt(surt):
     except ValueError:
         # May not be a valid surt
         return surt
-
-
-def compare_current_and_latest_ipwb_versions():
-    try:
-        response = requests.get('https://pypi.python.org/pypi/ipwb/json').json()
-
-        latest_version = response['info']['version']
-        current_version = re.sub(r'\.0+', '.', ipwb_version)
-
-        return current_version, latest_version
-
-    except Exception:
-        return None, None
-
-
-def check_pypi_for_update():
-    (current, latest) = compare_current_and_latest_ipwb_versions()
-
-    if current != latest and current is not None:
-        logger.warning(
-            'This version of ipwb is outdated. ' +
-            'Please run:\n\n' +
-            '   pip install --upgrade ipwb\n\n'
-            '* Latest version: %s\n' +
-            '* Installed version: %s',
-            latest, current
-        )
