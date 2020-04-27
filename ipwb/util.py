@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 from os.path import expanduser
-from os.path import basename
 
 import os
 import sys
@@ -15,13 +14,11 @@ import datetime
 import logging
 import platform
 
-from six.moves.urllib.request import urlopen
 import json
-from .__init__ import __version__ as ipwbVersion
+from .__init__ import __version__ as ipwb_version
 
 from pkg_resources import parse_version
 
-# from requests.exceptions import ConnectionError
 from ipfshttpclient.exceptions import ConnectionError
 from ipfshttpclient.exceptions import AddressError
 from multiaddr.exceptions import StringParseError
@@ -309,19 +306,21 @@ def unsurt(surt):
         return surt
 
 
-def compareCurrentAndLatestIPWBVersions():
+def compare_current_and_latest_ipwb_versions():
     try:
-        resp = urlopen('https://pypi.python.org/pypi/ipwb/json')
-        jResp = json.loads(resp.read())
-        latestVersion = jResp['info']['version']
-        currentVersion = re.sub(r'\.0+', '.', ipwbVersion)
-        return (currentVersion, latestVersion)
-    except Exception as e:
-        return (None, None)
+        response = requests.get('https://pypi.python.org/pypi/ipwb/json').json()
+
+        latest_version = response['info']['version']
+        current_version = re.sub(r'\.0+', '.', ipwb_version)
+
+        return current_version, latest_version
+
+    except Exception:
+        return None, None
 
 
-def checkForUpdate():
-    (current, latest) = compareCurrentAndLatestIPWBVersions()
+def check_pypi_for_update():
+    (current, latest) = compare_current_and_latest_ipwb_versions()
 
     if current != latest and current is not None:
         logger.warning(
