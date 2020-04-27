@@ -26,6 +26,10 @@ from ipfshttpclient.exceptions import ConnectionError
 from ipfshttpclient.exceptions import AddressError
 from multiaddr.exceptions import StringParseError
 
+
+logger = logging.getLogger(__name__)
+
+
 IPFSAPI_MUTLIADDRESS = '/dns/localhost/tcp/5001/http'
 # or '/dns/{host}/tcp/{port}/http'
 # or '/ip4/{ipaddress}/tcp/{port}/http'
@@ -320,7 +324,11 @@ def checkForUpdate():
     (current, latest) = compareCurrentAndLatestIPWBVersions()
 
     if current != latest and current is not None:
-        print('This version of ipwb is outdated.'
-              ' Please run pip install --upgrade ipwb.')
-        print('* Latest version: {0}'.format(latest))
-        print('* Installed version: {0}'.format(current))
+        logger.warning(
+            'This version of ipwb is outdated. ' +
+            'Please run:\n\n' +
+            '   pip install --upgrade ipwb\n\n'
+            '* Latest version: %s\n' +
+            '* Installed version: %s',
+            latest, current
+        )
