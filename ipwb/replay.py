@@ -12,7 +12,7 @@ navigating their captures.
 from __future__ import print_function
 import sys
 import os
-import ipfshttpclient as ipfsapi
+import ipfshttpclient
 import json
 import subprocess
 import pkg_resources
@@ -662,7 +662,7 @@ def show_uri(path, datetime=None):
         # if os.name != 'nt':  # Bug #310
         #    signal.alarm(0)
 
-    except ipfsapi.exceptions.TimeoutError:
+    except ipfshttpclient.exceptions.TimeoutError:
         print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
         respString = ('{0} not found in IPFS :(' +
                       ' <a href="http://{1}:{2}">Go home</a>').format(

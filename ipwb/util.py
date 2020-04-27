@@ -1,26 +1,20 @@
 from __future__ import print_function
 
-from os.path import expanduser
-
-import os
-import requests
-import ipfshttpclient as ipfsapi
-
-import re
+import datetime
+import json
 # Datetime conversion to rfc1123
 import locale
-import datetime
 import logging
+import os
 import platform
+import re
+from os.path import expanduser
 
-import json
-
-from pkg_resources import parse_version
-
-from ipfshttpclient.exceptions import ConnectionError
-from ipfshttpclient.exceptions import AddressError
+import ipfshttpclient
+import requests
+from ipfshttpclient.exceptions import AddressError, ConnectionError
 from multiaddr.exceptions import StringParseError
-
+from pkg_resources import parse_version
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +40,7 @@ dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 def createIPFSClient(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     try:
-        return ipfsapi.Client(daemonMultiaddr)
+        return ipfshttpclient.Client(daemonMultiaddr)
     except (StringParseError, AddressError):
         return None  # Malformed multiaddress for the daemon
 
