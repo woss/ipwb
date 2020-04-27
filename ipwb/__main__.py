@@ -4,7 +4,6 @@ import tempfile
 import string  # For generating a temp file for stdin
 import random  # For generating a temp file for stdin
 
-from ipwb.check_for_update import check_pypi_for_update
 from .__init__ import __version__ as ipwb_version
 
 # ipwb modules
@@ -14,7 +13,6 @@ from . import util
 
 
 def main():
-    check_pypi_for_update()
     checkArgs(sys.argv)
 
 
