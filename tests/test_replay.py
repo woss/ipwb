@@ -25,6 +25,9 @@ import urllib
      '/memento/*/memento.us'),
     ('2mementos.warc', 'memento/*/?url=memento.us', 301,
      '/memento/*/memento.us'),
+    ('2mementos_queryString.warc',
+     '/memento/20130202100000/memento.us/' +
+     'index.php?anotherval=ipsum&someval=lorem', 200, None),
 ])
 def test_replay_search(warc, lookup, status, location):
     ipwbTest.startReplay(warc)
@@ -32,7 +35,8 @@ def test_replay_search(warc, lookup, status, location):
     resp = requests.get('http://localhost:5000/{}'.format(lookup),
                         allow_redirects=False)
     assert resp.status_code == status
-    assert resp.headers.get('location') == location
+    if location is not None:  # Allow for checks w/o redirects
+        assert resp.headers.get('location') == location
 
     ipwbTest.stopReplay()
 
