@@ -24,7 +24,7 @@ setup(
     ],
     install_requires=[
         'warcio>=1.5.3',
-        'ipfshttpclient @ git+https://github.com/ipfs-shipyard/py-ipfs-http-client@master',
+        'ipfshttpclient @ git+https://github.com/ipfs-shipyard/py-ipfs-http-client@master',  # noqa: E501
         'Flask==1.1.1',
         'pycryptodome>=3.4.11',
         'requests>=2.19.1',
