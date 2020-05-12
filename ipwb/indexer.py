@@ -148,7 +148,7 @@ def indexFileAt(warcPaths, encryptionKey=None,
         try:
             outputFile = open(outfile, 'a+')
             # Read existing non-meta lines (if any) to allow automatic merge
-            cdxjLines = [l.strip() for l in outputFile if l[:1] != '!']
+            cdxjLines = [ln.strip() for ln in outputFile if ln[:1] != '!']
         except IOError as e:
             logError(e)
             logError('Writing generated CDXJ to STDOUT instead')
