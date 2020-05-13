@@ -49,6 +49,7 @@ jobs:
         shell: bash
         run: py.test -s --cov=./
   test-in-container:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     name: Test in Docker Container
     steps:
