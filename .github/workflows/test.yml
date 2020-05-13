@@ -5,7 +5,7 @@ on:
   - pull_request
 
 jobs:
-  run-tests:
+  test-in-matrix:
     strategy:
       fail-fast: false
       matrix:
@@ -47,3 +47,10 @@ jobs:
       - name: Run Tests
         shell: bash
         run: py.test -s --cov=./
+  test-in-container:
+    runs-on: ubuntu-latest
+    name: Test in Docker Container
+    steps:
+      - uses: actions/checkout@master
+      - name: Build Image and Test
+        run: docker image build .
