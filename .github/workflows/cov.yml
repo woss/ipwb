@@ -1,0 +1,17 @@
+name: Coverage
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  cov:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    name: Test Coverage
+    steps:
+      - uses: actions/checkout@master
+      - name: Python Code Coverage
+        run: |
+          pip install --user codecov
+          python -m codecov
