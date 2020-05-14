@@ -17,8 +17,8 @@ jobs:
           node_modules/.bin/standard
       - name: Lint Python
         run: |
-          pip install pycodestyle
-          pycodestyle
+          pip install --user pycodestyle
+          python -m pycodestyle
   test-in-matrix:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     strategy:
