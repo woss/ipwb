@@ -13,8 +13,8 @@ jobs:
       - uses: actions/checkout@master
       - name: Lint JavaScript
         run: |
-          npm install -g standard
-          standard
+          npm install standard
+          node_modules/.bin/standard
       - name: Lint Python
         run: |
           pip install pycodestyle
