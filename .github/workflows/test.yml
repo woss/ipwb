@@ -5,6 +5,20 @@ on:
   - pull_request
 
 jobs:
+  lint:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    name: Lint the Code
+    steps:
+      - uses: actions/checkout@master
+      - name: Lint JavaScript
+        run: |
+          npm install -g standard
+          standard
+      - name: Lint Python
+        run: |
+          pip install pycodestyle
+          pycodestyle
   test-in-matrix:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     strategy:
@@ -37,9 +51,6 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -r test-requirements.txt
-      - name: Lint Code
-        shell: bash
-        run: pycodestyle
       - name: Boot IPFS Daemon
         shell: bash
         run: |
