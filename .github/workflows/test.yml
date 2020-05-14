@@ -1,25 +1,11 @@
-name: Run Cross-platform Tests
+name: Test
 
 on:
   - push
   - pull_request
 
 jobs:
-  lint:
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ubuntu-latest
-    name: Lint the Code
-    steps:
-      - uses: actions/checkout@master
-      - name: Lint JavaScript
-        run: |
-          npm install standard
-          node_modules/.bin/standard
-      - name: Lint Python
-        run: |
-          pip install --user pycodestyle
-          python -m pycodestyle
-  test-in-matrix:
+  matrix-test:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     strategy:
       fail-fast: false
@@ -35,7 +21,7 @@ jobs:
           - 0.4
           - 0.5
     runs-on: ${{ matrix.os }}
-    name: Test on ${{ matrix.os }} Py ${{ matrix.python }} IPFS ${{ matrix.ipfs }}
+    name: ${{ matrix.os }} Py-${{ matrix.python }} IPFS-${{ matrix.ipfs }}
     steps:
       - uses: actions/checkout@master
       - name: Set up Python ${{ matrix.python }}
@@ -59,11 +45,3 @@ jobs:
       - name: Run Tests
         shell: bash
         run: py.test -s --cov=./
-  test-in-container:
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: ubuntu-latest
-    name: Test in Docker Container
-    steps:
-      - uses: actions/checkout@master
-      - name: Build Image and Test
-        run: docker image build .

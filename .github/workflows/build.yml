@@ -1,0 +1,15 @@
+name: Build
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build-image:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    name: Docker Image
+    steps:
+      - uses: actions/checkout@master
+      - name: Lint, Test, and Build Image
+        run: docker image build .
