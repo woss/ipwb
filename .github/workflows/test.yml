@@ -32,16 +32,12 @@ jobs:
         uses: ibnesayeed/setup-ipfs@master
         with:
           ipfs_version: ${{ matrix.ipfs }}
+          run_daemon: true
       - name: Install Dependencies
         shell: bash
         run: |
           pip install -r requirements.txt
           pip install -r test-requirements.txt
-      - name: Boot IPFS Daemon
-        shell: bash
-        run: |
-          ipfs daemon &
-          while ! curl -s localhost:5001 > /dev/null; do sleep 1; done
       - name: Run Tests
         shell: bash
         run: py.test -s --cov=./
