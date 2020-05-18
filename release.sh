@@ -20,9 +20,3 @@ TAG_NAME='v'$VERSION_STRING
 git tag $TAG_NAME
 git push
 git push origin $TAG_NAME
-
-# Install release requirements for pypi push
-pip3 install twine
-
-# Push to pypi
-rm -rf dist; python3 setup.py sdist bdist_wheel; python3 -m twine upload dist/*
