@@ -1,4 +1,4 @@
-ARG        PYTHON_TAG=3.7
+ARG        PYTHON_TAG=3
 FROM       python:${PYTHON_TAG} AS base
 
 # Add some metadata
