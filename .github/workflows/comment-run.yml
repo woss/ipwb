@@ -21,10 +21,10 @@ jobs:
         run_daemon: true
     - name: Set up Python
       uses: actions/setup-python@master
-    - name: Install Python Dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install -r test-requirements.txt
+    - name: Install Test Dependencies
+      run: pip install -r test-requirements.txt
+    - name: Install IPWB from Source
+      run: pip install .
     - name: Execute Code in Comment
       uses: ibnesayeed/actions-comment-run@master
       with:
