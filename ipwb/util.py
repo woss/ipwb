@@ -159,10 +159,19 @@ def rfc1123ToDigits14(rfc1123DateString):
     return d.strftime('%Y%m%d%H%M%S')
 
 
-def iso8601ToDigits14(iso8601DateString):
+def iso8601ToDigits14(warcDatetimeString):
     setLocale()
-    d = datetime.datetime.strptime(iso8601DateString,
-                                   "%Y-%m-%dT%H:%M:%SZ")
+
+    iso8601_datestrings = ["%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%MZ", '%Y-%m-%dT%HZ', '%Y-%m-%d', '%Y-%m', '%Y', '%Y-%m-%dT%H:%M:%S.%fZ']
+
+    for format in iso8601_datestrings:
+      try:
+          d = datetime.datetime.strptime(warcDatetimeString, format)
+          break
+
+      except ValueError as ve:
+          print(f'ValueError matching {format} for value {warcDatetimeString}')
+
 
     # TODO: Account for conversion if TZ other than GMT not specified
 
