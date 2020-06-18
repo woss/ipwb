@@ -6,7 +6,7 @@ from os.path import basename
 import os
 import sys
 import requests
-import ipfshttpclient as ipfsapi
+import ipfshttpclient4ipwb as ipfsapi
 
 import re
 # Datetime conversion to rfc1123
@@ -22,8 +22,8 @@ from .__init__ import __version__ as ipwbVersion
 from pkg_resources import parse_version
 
 # from requests.exceptions import ConnectionError
-from ipfshttpclient.exceptions import ConnectionError
-from ipfshttpclient.exceptions import AddressError
+from ipfshttpclient4ipwb.exceptions import ConnectionError
+from ipfshttpclient4ipwb.exceptions import AddressError
 from multiaddr.exceptions import StringParseError
 
 IPFSAPI_MUTLIADDRESS = '/dns/localhost/tcp/5001/http'
