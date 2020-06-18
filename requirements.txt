@@ -1,5 +1,5 @@
 warcio>=1.5.3
-git+git://github.com/ipfs-shipyard/py-ipfs-http-client@master#egg=ipfshttpclient
+ipfshttpclient4ipwb
 Flask==1.1.1
 pycryptodome>=3.4.11
 requests>=2.19.1

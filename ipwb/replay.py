@@ -12,7 +12,7 @@ navigating their captures.
 from __future__ import print_function
 import sys
 import os
-import ipfshttpclient as ipfsapi
+import ipfshttpclient4ipwb as ipfsapi
 import json
 import subprocess
 import pkg_resources

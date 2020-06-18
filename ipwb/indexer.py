@@ -14,7 +14,7 @@ from __future__ import print_function
 import sys
 import os
 import json
-import ipfshttpclient as ipfsapi
+import ipfshttpclient4ipwb as ipfsapi
 import argparse
 import zlib
 import surt
@@ -27,7 +27,7 @@ from warcio.archiveiterator import ArchiveIterator
 from warcio.recordloader import ArchiveLoadFailed
 
 from requests.packages.urllib3.exceptions import NewConnectionError
-from ipfshttpclient.exceptions import ConnectionError
+from ipfshttpclient4ipwb.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 
 from six.moves import input
