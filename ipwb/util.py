@@ -146,6 +146,7 @@ def setLocale():
 
 def digits14ToRFC1123(digits14):
     setLocale()
+    digits14 = digits14[:14]  # Only consider first 14 digits for now, re: #283
     d = datetime.datetime.strptime(digits14, '%Y%m%d%H%M%S')
     return d.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
