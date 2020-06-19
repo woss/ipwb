@@ -165,9 +165,7 @@ class InvalidWARCDateException(Exception):
     target_string: str
 
     def __str__(self):
-        return 'WARC-Date {self.target_string} not parseable.'.format(
-            self=self,
-        )
+        return f'WARC-Date {self.target_string} not parseable.'
 
 
 def iso8601ToDigits14(warcDatetimeString):
