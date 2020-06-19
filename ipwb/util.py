@@ -168,7 +168,26 @@ class InvalidWARCDateException(Exception):
         return f'WARC-Date {self.target_string} not parseable.'
 
 
-def iso8601ToDigits14(warcDatetimeString):
+def is_warc11_subsecond_edgecase(dt):
+    """
+    Check if sub-second value is included in WARC-Date to comply with
+    WARC/1.1 specification allowing 1-9 digits per W3C DTF
+    """
+    dt_f = f'{dt[:26]}{dt[-1:]}'
+    try:
+        dts = datetime.datetime.strptime(dt_f, '%Y-%m-%dT%H:%M:%S.%fZ')
+        within_subsecond_len_threshold = len(dt) <= 30
+        all_subsec_chars_are_digits = dt[20:-1].isdigit()
+        if within_subsecond_len_threshold and all_subsec_chars_are_digits:
+            return '{}{}'.format(
+                dts.strftime('%Y%m%d%H%M%S'), dt[20:-1])
+        else:
+            raise InvalidWARCDateException(target_string=dt)
+    except ValueError as ve:
+        raise InvalidWARCDateException(target_string=dt)
+
+
+def iso8601ToDigits(warcDatetimeString):
     setLocale()
 
     iso8601_datestrings = ["%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%MZ",
@@ -190,7 +209,8 @@ def iso8601ToDigits14(warcDatetimeString):
     # TODO: Account for conversion if TZ other than GMT not specified
 
     if d is None:
-        raise InvalidWARCDateException(target_string=warcDatetimeString)
+        # Check edge case of 1-9 sub-seconds
+        return is_warc11_subsecond_edgecase(warcDatetimeString)
 
     return d.strftime('%Y%m%d%H%M%S')
 

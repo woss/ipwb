@@ -34,7 +34,7 @@ from six.moves import input
 from six import PY2
 from six import PY3
 
-from .util import iso8601ToDigits14
+from .util import iso8601ToDigits
 from . import util as ipwbUtils
 
 # from warcio.archiveiterator import ArchiveIterator
@@ -287,7 +287,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
             originaluri_surted = \
                 surt.surt(originaluri,
                           path_strip_trailing_slash_unless_empty=False)
-            timestamp = iso8601ToDigits14(
+            timestamp = iso8601ToDigits(
                 record.rec_headers.get_header('WARC-Date'))
             mime = record.http_headers.get_header('content-type')
             obj = {
