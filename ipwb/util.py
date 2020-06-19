@@ -6,6 +6,7 @@ from os.path import basename
 import os
 import sys
 import requests
+import dataclasses
 import ipfshttpclient4ipwb as ipfsapi
 
 import re
@@ -159,12 +160,24 @@ def rfc1123ToDigits14(rfc1123DateString):
     return d.strftime('%Y%m%d%H%M%S')
 
 
+@dataclasses.dataclass(frozen=True)
+class InvalidWARCDateException(Exception):
+    target_string: str
+
+    def __str__(self):
+        return 'WARC-Date {self.target_string} not parseable.'.format(
+            self=self,
+        )
+
+
 def iso8601ToDigits14(warcDatetimeString):
     setLocale()
 
     iso8601_datestrings = ["%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%MZ",
                            '%Y-%m-%dT%HZ', '%Y-%m-%d', '%Y-%m', '%Y',
                            '%Y-%m-%dT%H:%M:%S.%fZ']
+
+    d = None
 
     for format in iso8601_datestrings:
         try:
@@ -177,6 +190,9 @@ def iso8601ToDigits14(warcDatetimeString):
                    f'value {warcDatetimeString}'))
 
     # TODO: Account for conversion if TZ other than GMT not specified
+
+    if d is None:
+        raise InvalidWARCDateException(target_string=warcDatetimeString)
 
     return d.strftime('%Y%m%d%H%M%S')
 
