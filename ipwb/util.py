@@ -199,12 +199,12 @@ def iso8601ToDigits(warcDatetimeString):
     for format in iso8601_datestrings:
         try:
             d = datetime.datetime.strptime(warcDatetimeString, format)
-            print(f'Matched {warcDatetimeString} to {format}')
+            logError(f'Matched {warcDatetimeString} to {format}')
             break
 
         except ValueError as ve:
-            print((f'ValueError matching {format} for '
-                   f'value {warcDatetimeString}'))
+            logError((f'ValueError matching {format} for '
+                      f'value {warcDatetimeString}'))
 
     # TODO: Account for conversion if TZ other than GMT not specified
 
