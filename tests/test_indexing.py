@@ -32,9 +32,9 @@ def test_warc_ipwbIndexerBrokenWARCRecord():
 # exhibiting these dates.
 @pytest.mark.ipwbIndexerVariableSizedDates
 def test_warc_ipwbIndexerVariableSizedDates():
-    pathOfBrokenWARC = os.path.join(
-        os.path.dirname(__file__) +
-        '/../samples/warcs/variableSizedDates.warc')
+    pathOfBrokenWARC = \
+        os.path.normpath(os.path.join(os.path.dirname(__file__), '..',
+                         'samples', 'warcs', 'variableSizedDates.warc'))
     indexer.indexFileAt(pathOfBrokenWARC, quiet=True)
 
 # TODO: Have unit tests for each function in indexer.py
