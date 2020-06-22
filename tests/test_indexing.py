@@ -27,4 +27,14 @@ def test_warc_ipwbIndexerBrokenWARCRecord():
     assert ipwbTest.countCDXJEntries(cdxj) == 1
 
 
+# WARC/1.1 allows for dates of length that are not easily converted
+# to 14-digits. This test highlights the failures from a WARC
+# exhibiting these dates.
+@pytest.mark.ipwbIndexerVariableSizedDates
+def test_warc_ipwbIndexerVariableSizedDates():
+    pathOfBrokenWARC = \
+        os.path.normpath(os.path.join(os.path.dirname(__file__), '..',
+                         'samples', 'warcs', 'variableSizedDates.warc'))
+    indexer.indexFileAt(pathOfBrokenWARC, quiet=True)
+
 # TODO: Have unit tests for each function in indexer.py
