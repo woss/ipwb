@@ -161,7 +161,6 @@ def test_helpWithoutDaemon():  # See #244
     pass
 
 
-@pytest.mark.ipfsDaemonStart
 def test_unit_commandDaemon():
     replay.commandDaemon('start')
     sleep(10)
