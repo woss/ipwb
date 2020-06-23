@@ -507,7 +507,7 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     tmData += f'!id {{"uri": "{tmself}"}}\n'
     tmData += '!keys ["memento_datetime_YYYYMMDDhhmmss"]\n'
     tmData += f'!meta {{"original_uri": "{originalURI}"}}\n'
-    tmData += f'!meta {{"timegate_uri": "{tgURI}"}}\n'.
+    tmData += f'!meta {{"timegate_uri": "{tgURI}"}}\n'
     linkTMURI = tmself.replace('/timemap/cdxj/', '/timemap/link/')
     tmData += (f'!meta {{"timemap_uri": {{'
                f'"link_format": "{linkTMURI}", '
