@@ -223,7 +223,7 @@ def resolveMemento(urir, datetime):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    print(f'Getting CDXJ Lines with the URI-R {urir} from {indexPath}')
+    print(f'Getting CDXJ lines with the URI-R {urir} from {indexPath}')
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
