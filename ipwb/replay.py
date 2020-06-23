@@ -761,7 +761,7 @@ def isUri(str):
 
 def generateNoMementosInterface_noDatetime(urir):
     msg = '<h1>ERROR 404</h1>'
-    msg += f'No capture(s) found for {urir}.'
+    msg += f'<p>No captures found for {urir}.</p>'
 
     msg += (f'<form method="get" action="/memento/*/" '
             f'style="margin-top: 1.0em;">'
@@ -775,12 +775,12 @@ def generateNoMementosInterface_noDatetime(urir):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return "<h1>ERROR 404</h1>Not Found", 404
+    return "<h1>ERROR 404</h1><p>Resource not found</p>", 404
 
 
 def generateNoMementosInterface(path, datetime):
     msg = '<h1>ERROR 404</h1>'
-    msg += f'No capture found for {path} at {datetime}.'
+    msg += f'<p>No captures found for {path} at {datetime}.</p>'
 
     linesWithSameURIR = getCDXJLinesWithURIR(path, None)
     print(f'CDXJ lines with URI-R at {path}')
