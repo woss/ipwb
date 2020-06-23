@@ -181,7 +181,7 @@ def showMementosForURIRs(urir):
 
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    print(f'Getting CDXJ Lines with the URI-R {urir} from {indexPath}')
+    print(f'Getting CDXJ lines with the URI-R {urir} from {indexPath}')
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     if len(cdxjLinesWithURIR) == 1:
@@ -223,14 +223,14 @@ def resolveMemento(urir, datetime):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    print(f'Getting CDXJ Lines with the URI-R {urir} from {indexPath}')
+    print(f'Getting CDXJ lines with the URI-R {urir} from {indexPath}')
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
 
     if closestLine is None:
         msg = '<h1>ERROR 404</h1>'
-        msg += f'No capture found for {urir} at {datetime}'
+        msg += f'<p>No captures found for {urir} at {datetime}.</p>'
 
         return Response(msg, status=404)
 
@@ -298,7 +298,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
 
     indexPath = getIndexFileFullPath(indexPath)
 
-    print(f'Getting CDXJ Lines with {urir} in {indexPath}')
+    print(f'Getting CDXJ lines with {urir} in {indexPath}')
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     cdxjLinesWithURIR = []
 
@@ -765,7 +765,7 @@ def generateNoMementosInterface_noDatetime(urir):
 
     msg += (f'<form method="get" action="/memento/*/" '
             f'style="margin-top: 1.0em;">'
-            f'<input type="text" value="{urir}" id="url"'
+            f'<input type="text" value="{urir}" id="url" '
             f'name="url" aria-label="Enter a URI" required />'
             f'<input type="submit" value="Search URL in the archive"/>'
             f'</form>')
