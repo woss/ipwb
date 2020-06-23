@@ -773,7 +773,7 @@ def isUri(str):
 
 def generateNoMementosInterface_noDatetime(urir):
     msg = '<h1>ERROR 404</h1>'
-    msg += f'No capture(s) found for {urir}.'
+    msg += f'<p>No captures found for {urir}.</p>'
 
     msg += ('<form method="get" action="/memento/*/" '
             'style="margin-top: 1.0em;">'
