@@ -230,7 +230,7 @@ def resolveMemento(urir, datetime):
 
     if closestLine is None:
         msg = '<h1>ERROR 404</h1>'
-        msg += f'No capture found for {urir} at {datetime}'
+        msg += f'<p>No captures found for {urir} at {datetime}.</p>'
 
         return Response(msg, status=404)
 
