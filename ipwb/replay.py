@@ -792,7 +792,7 @@ def page_not_found(e):
 
 def generateNoMementosInterface(path, datetime):
     msg = '<h1>ERROR 404</h1>'
-    msg += f'No capture found for {path} at {datetime}.'
+    msg += f'<p>No captures found for {path} at {datetime}.</p>'
 
     linesWithSameURIR = getCDXJLinesWithURIR(path, None)
     print(f'CDXJ lines with URI-R at {path}')
