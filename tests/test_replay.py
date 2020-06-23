@@ -15,7 +15,8 @@ import urllib
 
 @pytest.mark.parametrize("warc,lookup,has_md_header", [
     ('HTTP404.warc', 'memento/20200202100000/memento.us/', True),
-    ('HTTP404.warc', 'memento/20200202100000/memento.ca/', False)])
+    ('HTTP404.warc', 'memento/20200202100000/memento.ca/', False),
+    ('HTTP404.warc', 'loremipsum', False)])
 def test_replay_404(warc, lookup, has_md_header):
     ipwbTest.startReplay(warc)
 
