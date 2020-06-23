@@ -787,7 +787,7 @@ def generateNoMementosInterface_noDatetime(urir):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return "<h1>ERROR 404</h1>Not Found", 404
+    return "<h1>ERROR 404</h1><p>Resource not found</p>", 404
 
 
 def generateNoMementosInterface(path, datetime):
