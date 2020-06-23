@@ -30,6 +30,8 @@ def test_replay_404(warc, lookup, has_md_header):
     else:
         assert 'Memento-Datetime' not in resp.headers
 
+    ipwbTest.stopReplay()
+
 
 @pytest.mark.parametrize("warc,lookup,status,location", [
     ('salam-home.warc', 'memento/*/cs.odu.edu/~salam/', 302,
