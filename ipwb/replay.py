@@ -765,7 +765,7 @@ def generateNoMementosInterface_noDatetime(urir):
 
     msg += (f'<form method="get" action="/memento/*/" '
             f'style="margin-top: 1.0em;">'
-            f'<input type="text" value="{urir}" id="url"'
+            f'<input type="text" value="{urir}" id="url" '
             f'name="url" aria-label="Enter a URI" required />'
             f'<input type="submit" value="Search URL in the archive"/>'
             f'</form>')
