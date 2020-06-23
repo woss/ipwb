@@ -27,6 +27,9 @@ def test_replay_404(warc, lookup, has_md_header):
 
     if has_md_header:
         assert 'Memento-Datetime' in resp.headers
+    else:
+        assert 'Memento-Datetime' not in resp.headers
+
 
 
 @pytest.mark.parametrize("warc,lookup,status,location", [
