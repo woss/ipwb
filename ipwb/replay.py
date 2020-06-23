@@ -298,7 +298,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
 
     indexPath = getIndexFileFullPath(indexPath)
 
-    print(f'Getting CDXJ Lines with {urir} in {indexPath}')
+    print(f'Getting CDXJ lines with {urir} in {indexPath}')
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     cdxjLinesWithURIR = []
 
