@@ -181,7 +181,7 @@ def showMementosForURIRs(urir):
 
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    print(f'Getting CDXJ Lines with the URI-R {urir} from {indexPath}')
+    print(f'Getting CDXJ lines with the URI-R {urir} from {indexPath}')
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     if len(cdxjLinesWithURIR) == 1:
