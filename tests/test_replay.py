@@ -31,7 +31,6 @@ def test_replay_404(warc, lookup, has_md_header):
         assert 'Memento-Datetime' not in resp.headers
 
 
-
 @pytest.mark.parametrize("warc,lookup,status,location", [
     ('salam-home.warc', 'memento/*/cs.odu.edu/~salam/', 302,
      '/memento/20160305192247/cs.odu.edu/~salam/'),
