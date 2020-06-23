@@ -13,6 +13,21 @@ import urllib
 # Comprehensive retrieval of sub-resources
 
 
+@pytest.mark.parametrize("warc,lookup,has_md_header", [
+    ('HTTP404.warc', 'memento/20200202100000/memento.us/', True),
+    ('HTTP404.warc', 'memento/20200202100000/memento.ca/', False)])
+def test_replay_404(warc, lookup, has_md_header):
+    ipwbTest.startReplay(warc)
+
+    resp = requests.get(f'http://localhost:5000/{lookup}',
+                        allow_redirects=False)
+
+    assert resp.status_code == 404
+
+    if has_md_header:
+        assert 'Memento-Datetime' in resp.headers
+
+
 @pytest.mark.parametrize("warc,lookup,status,location", [
     ('salam-home.warc', 'memento/*/cs.odu.edu/~salam/', 302,
      '/memento/20160305192247/cs.odu.edu/~salam/'),
@@ -32,7 +47,7 @@ import urllib
 def test_replay_search(warc, lookup, status, location):
     ipwbTest.startReplay(warc)
 
-    resp = requests.get('http://localhost:5000/{}'.format(lookup),
+    resp = requests.get(f'http://localhost:5000/{lookup}',
                         allow_redirects=False)
     assert resp.status_code == status
     if location is not None:  # Allow for checks w/o redirects

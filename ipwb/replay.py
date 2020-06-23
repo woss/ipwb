@@ -604,8 +604,6 @@ def showLandingPage():
     return render_template('index.html', summary=summary, uris=uris)
 
 
-# TODO: Do we need this route?
-@app.route('/<path:path>')
 def show_uri(path, datetime=None):
     global IPFS_API
 
@@ -775,7 +773,7 @@ def isUri(str):
 
 def generateNoMementosInterface_noDatetime(urir):
     msg = '<h1>ERROR 404</h1>'
-    msg += 'No capture(s) found for {0}.'.format(urir)
+    msg += f'No capture(s) found for {urir}.'
 
     msg += ('<form method="get" action="/memento/*/" '
             'style="margin-top: 1.0em;">'
@@ -787,12 +785,17 @@ def generateNoMementosInterface_noDatetime(urir):
     return msg
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return "<h1>ERROR 404</h1>Not Found", 404
+
+
 def generateNoMementosInterface(path, datetime):
     msg = '<h1>ERROR 404</h1>'
-    msg += 'No capture found for {0} at {1}.'.format(path, datetime)
+    msg += f'No capture found for {path} at {datetime}.'
 
     linesWithSameURIR = getCDXJLinesWithURIR(path, None)
-    print('CDXJ lines with URI-R at {0}'.format(path))
+    print(f'CDXJ lines with URI-R at {path}')
     print(linesWithSameURIR)
 
     # TODO: Use closest instead of conditioning on single entry
