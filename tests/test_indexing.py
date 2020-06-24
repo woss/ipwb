@@ -7,7 +7,6 @@ import os
 from ipwb import indexer
 
 
-@pytest.mark.ipwbIndexerRecordCount
 def test_cdxj_warc_responseRecordCount():
     newWARCPath = ipwbTest.createUniqueWARC()
     # use ipwb indexer to push
@@ -18,7 +17,6 @@ def test_cdxj_warc_responseRecordCount():
 
 # A response record's content-length causes the payload to truncate
 # WARC-Response record for html should still exist in output
-@pytest.mark.ipwbIndexerBrokenWARCRecord
 def test_warc_ipwbIndexerBrokenWARCRecord():
     pathOfBrokenWARC = os.path.join(os.path.dirname(__file__) +
                                     '/../samples/warcs/broken.warc')
