@@ -193,7 +193,7 @@ def padDigits14(dtstr, validate=False):
         H = match.group(4) or '00'
         M = match.group(5) or '00'
         S = match.group(6) or '00'
-        dtstr = '{}{}{}{}{}{}'.format(Y, m, d, H, M, S)
+        dtstr = f'{Y}{m}{d}{H}{M}{S}'
     if validate:
         datetime.datetime.strptime(dtstr, '%Y%m%d%H%M%S')
     return dtstr
@@ -204,9 +204,9 @@ def fetch_remote_file(path):
         r = requests.get(path)
         return r.text
     except ConnectionError:
-        logError('File at {0} is unavailable.'.format(path))
+        logError(f'File at {path} is unavailable.')
     except Exception as E:
-        logError('An unknown error occurred trying to fetch {0}'.format(path))
+        logError(f'An unknown error occurred trying to fetch {path}')
         logError(sys.exc_info()[0])
     return None
 
@@ -322,5 +322,5 @@ def checkForUpdate():
     if current != latest and current is not None:
         print('This version of ipwb is outdated.'
               ' Please run pip install --upgrade ipwb.')
-        print('* Latest version: {0}'.format(latest))
-        print('* Installed version: {0}'.format(current))
+        print(f'* Latest version: {latest}')
+        print(f'* Installed version: {current}')
