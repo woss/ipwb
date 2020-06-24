@@ -271,7 +271,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                     (hstr, payload, nonce) = \
                         encrypt(hstr, payload, encryptionKey)
 
-            # print('Adding {entry.get('url')})
+            # print(f'Adding {entry.get("url")} to IPFS')
             ipfsHashes = pushToIPFS(hstr, payload)
 
             if ipfsHashes is None:
