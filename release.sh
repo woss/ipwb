@@ -16,10 +16,9 @@ git add 'ipwb/'$FILE_NAME
 git commit -m "RELEASE: Bump version to "$VERSION_STRING
 
 # Create a tag in repo
-TAG_NAME='Release '$VERSION_STRING
-git tag $TAG_NAME
+git tag $VERSION_STRING
 git push
-git push origin $TAG_NAME
+git push origin $VERSION_STRING
 
 # The `.github/workflows/dist.yml` Workflow is triggered automatically
 # when the repo is tagged by running this Shell script
