@@ -24,7 +24,7 @@ setup(
     ],
     install_requires=[
         'warcio>=1.5.3',
-        'ipfshttpclient4ipwb',
+        'ipfshttpclient4ipwb>=0.6.0',
         'Flask==1.1.1',
         'pycryptodome>=3.4.11',
         'requests>=2.19.1',
