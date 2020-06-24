@@ -21,11 +21,9 @@ An important aspect of archival replay systems is rewriting various resource ref
 
 Another important feature of archival replays is the inclusion of an archival banner in mementos. The purpose of an archival banner is to highlight that a replayed page is a memento and not a live page, to provide metadata about the memento and the archive, and to facilitate additional interactivity. Many archival banners used in different web archival replay systems are obtrusive in nature and have issues like style leakage. To eliminate both of these issues we have implemented a [Custom HTML Element](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [<reconstructive-banner>](https://oduwsdl.github.io/Reconstructive/docs/class/Reconstructive/reconstructive-banner.js~ReconstructiveBanner.html) as part of the [Reconstructive](https://oduwsdl.github.io/Reconstructive/) library and used in the ipwb.
 
-Both *Service Worker* and *Custom Element* APIs are new and only supported in modern web browsers (e.g., Chrome > v67, Firefox > v63).
-
 ## Installing
 
-InterPlanetary Wayback (ipwb) requires Python 3.6+. ipwb can also be used with Docker ([see below](#user-content-using-docker)).
+InterPlanetary Wayback (ipwb) requires Python 3.7+. ipwb can also be used with Docker ([see below](#user-content-using-docker)).
 
 For conventional usage, the latest release of ipwb can be installed using pip:
 
@@ -124,7 +122,7 @@ To build an image from the source, run the following command from the directory 
 $ docker image build -t oduwsdl/ipwb .
 ```
 
-By default the image building process also performs tests, so it might take a while to build the image. It ensures that an image will not be created with failing tests. However, it is possible to skip tests by supplying a build-arg `--build-arg SKIPTEST=true` as illustrated below:
+By default, the image building process also performs tests, so it might take a while to build the image. It ensures that an image will not be created with failing tests. However, it is possible to skip tests by supplying a build-arg `--build-arg SKIPTEST=true` as illustrated below:
 
 ```
 $ docker image build --build-arg SKIPTEST=true -t oduwsdl/ipwb .

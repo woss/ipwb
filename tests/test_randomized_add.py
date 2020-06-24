@@ -38,7 +38,6 @@ def checkIPWBJSONFieldPresesence(jsonStr):
     return 'locator' in keys and 'mime_type' in keys and 'status_code' in keys
 
 
-@pytest.mark.ipfsDaemonInteraction
 def test_push():
     """
     Read WARC, manipulate content to ensure uniqueness, push to IPFS
