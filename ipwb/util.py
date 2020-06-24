@@ -206,7 +206,7 @@ def fetch_remote_file(path):
     except ConnectionError:
         logError(f'File at {path} is unavailable.')
     except Exception as E:
-        logError(f'An unknown error occurred trying to fetch {path}')
+        logError(f'An unknown error occurred while trying to fetch {path}')
         logError(sys.exc_info()[0])
     return None
 
