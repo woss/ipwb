@@ -121,12 +121,6 @@ def isLocalHosty(uri):
     return False
 
 
-def setupIPWBInIPFSConfig():
-    hostPort = getIPWBReplayConfig()
-    if not hostPort:
-        setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
-
-
 def setLocale():
     currentOS = platform.system()
 
