@@ -10,7 +10,6 @@ This script reads a WARC file and returns a CDXJ representative of its
  JSON block corresponding to the archived URI.
 """
 
-from __future__ import print_function
 import sys
 import os
 import json

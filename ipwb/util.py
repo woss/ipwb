@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from os.path import expanduser
 from os.path import basename
 
@@ -119,12 +117,6 @@ def isLocalHosty(uri):
         if lh in uri:
             return True
     return False
-
-
-def setupIPWBInIPFSConfig():
-    hostPort = getIPWBReplayConfig()
-    if not hostPort:
-        setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
 
 
 def setLocale():
