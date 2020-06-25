@@ -9,7 +9,6 @@ indexer. An interface is supplied when first started to assist the user in
 navigating their captures.
 """
 
-from __future__ import print_function
 import sys
 import os
 import ipfshttpclient4ipwb as ipfsapi

@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from os.path import expanduser
 from os.path import basename
 
