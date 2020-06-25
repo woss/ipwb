@@ -313,7 +313,7 @@ def generateCDXJMetadata(cdxjLines=None):
     metadata = ['!context ["http://tools.ietf.org/html/rfc7089"]']
     metaVals = {
         'generator': f'InterPlanetary Wayback {ipwbVersion}',
-        'created_at': f'{datetime.datetime.now().isoformat()}'
+        'created_at': datetime.datetime.now().isoformat()
     }
     metaVals = f'!meta {json.dumps(metaVals)}'
     metadata.append(metaVals)
