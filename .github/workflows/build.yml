@@ -9,7 +9,6 @@ on:
 
 jobs:
   build-image:
-    if: secrets.DOCKER_REPO
     runs-on: ubuntu-latest
     name: Docker Image
     steps:
