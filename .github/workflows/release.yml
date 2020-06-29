@@ -28,12 +28,19 @@ jobs:
           draft: true
           body: |
             ## Changes Since Last Release
+
             History between `${{ steps.attrs.outputs.tail }}` and `${{ steps.attrs.outputs.head }}`
+
             ### Pull Requests
+
             ${{ steps.attrs.outputs.prs }}
+
             ### Contributors
+
             ${{ steps.attrs.outputs.contributors }}
+
             ### Changed Files
+
             ```
             ${{ steps.attrs.outputs.files }}
             ```
