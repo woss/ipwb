@@ -7,22 +7,26 @@ import requests
 import ipfshttpclient4ipwb as ipfsapi
 
 import re
+
 # Datetime conversion to rfc1123
 import locale
-import datetime
 import logging
+import os
 import platform
+import re
+from os.path import expanduser
 
-from six.moves.urllib.request import urlopen
-import json
-from .__init__ import __version__ as ipwbVersion
-
+import ipfshttpclient
+import requests
+from ipfshttpclient.exceptions import AddressError, ConnectionError
+from multiaddr.exceptions import StringParseError
 from pkg_resources import parse_version
 
 # from requests.exceptions import ConnectionError
 from ipfshttpclient4ipwb.exceptions import ConnectionError
 from ipfshttpclient4ipwb.exceptions import AddressError
 from multiaddr.exceptions import StringParseError
+logger = logging.getLogger(__name__)
 
 IPFSAPI_MUTLIADDRESS = '/dns/localhost/tcp/5001/http'
 # or '/dns/{host}/tcp/{port}/http'
@@ -45,7 +49,7 @@ dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 def createIPFSClient(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     try:
-        return ipfsapi.Client(daemonMultiaddr)
+        return ipfshttpclient.Client(daemonMultiaddr)
     except (StringParseError, AddressError):
         return None  # Malformed multiaddress for the daemon
 
@@ -61,20 +65,18 @@ def isDaemonAlive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
         # ConnectionError/AttributeError if IPFS daemon not running
         client.id()
         return True
-    except (ConnectionError):  # exceptions.AttributeError):
-        logError("Daemon is not running at " + daemonMultiaddr)
+
+    except ConnectionError:  # exceptions.AttributeError):
+        logger.error('Daemon is not running at %s', daemonMultiaddr)
         return False
+
     except OSError:
-        logError("IPFS is likely not installed. "
-                 "See https://ipfs.io/docs/install/")
-        sys.exit()
+        raise Exception(
+            'IPFS is likely not installed. See https://ipfs.io/docs/install/'
+        )
+
     except Exception as e:
-        logError('Unknown error in retrieving daemon status')
-        logError(sys.exc_info()[0])
-
-
-def logError(errIn):
-    print(errIn, file=sys.stderr)
+        raise Exception('Unknown error in retrieving daemon status.') from e
 
 
 def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
@@ -195,11 +197,17 @@ def fetch_remote_file(path):
     try:
         r = requests.get(path)
         return r.text
+
     except ConnectionError:
         logError(f'File at {path} is unavailable.')
     except Exception as E:
         logError(f'An unknown error occurred while trying to fetch {path}')
         logError(sys.exc_info()[0])
+
+        raise Exception(
+            'An unknown error occurred trying to fetch {}'.format(path)
+        ) from e
+
     return None
 
 
@@ -212,10 +220,11 @@ def readIPFSConfig():
     try:
         with open(ipfsConfigPath, 'r') as f:
             return json.load(f)
+
     except IOError:
-        logError("IPFS config not found.")
-        logError("Have you installed ipfs and run ipfs init?")
-        sys.exit()
+        raise Exception(
+            'IPFS config not found. Have you installed ipfs and run ipfs init?'
+        )
 
 
 def writeIPFSConfig(jsonToWrite):
@@ -295,24 +304,3 @@ def unsurt(surt):
     except ValueError:
         # May not be a valid surt
         return surt
-
-
-def compareCurrentAndLatestIPWBVersions():
-    try:
-        resp = urlopen('https://pypi.python.org/pypi/ipwb/json')
-        jResp = json.loads(resp.read())
-        latestVersion = jResp['info']['version']
-        currentVersion = re.sub(r'\.0+', '.', ipwbVersion)
-        return (currentVersion, latestVersion)
-    except Exception as e:
-        return (None, None)
-
-
-def checkForUpdate():
-    (current, latest) = compareCurrentAndLatestIPWBVersions()
-
-    if current != latest and current is not None:
-        print('This version of ipwb is outdated.'
-              ' Please run pip install --upgrade ipwb.')
-        print(f'* Latest version: {latest}')
-        print(f'* Installed version: {current}')
