@@ -2,7 +2,7 @@ import dataclasses
 from typing import Optional
 from urllib.parse import urlparse
 
-import ipfshttpclient
+import ipfshttpclient4ipwb
 import requests
 
 from ipwb import util
@@ -35,10 +35,10 @@ def fetch_ipfs_index(path: str) -> Optional[str]:
         return None
 
     try:
-        with ipfshttpclient.connect(util.IPFSAPI_MUTLIADDRESS) as client:
+        with ipfshttpclient4ipwb.connect(util.IPFSAPI_MUTLIADDRESS) as client:
             return client.cat(path).decode('utf-8')
 
-    except ipfshttpclient.exceptions.StatusError as err:
+    except ipfshttpclient4ipwb.exceptions.StatusError as err:
         raise BackendError(backend_name='ipfs') from err
 
 
@@ -94,6 +94,6 @@ def get_web_archive_index(path: str) -> str:
         return response
 
     raise ValueError((
-        'Unknown format of index file location: {}. Please provide ' +
-        'a valid local path, HTTP or FTP URL, or an IPFS QmHash.'
-    ).format(path))
+        f'Unknown format of index file location: {path}. Please provide '
+        f'a valid local path, HTTP or FTP URL, or an IPFS QmHash.'
+    ))

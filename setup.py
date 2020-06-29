@@ -24,7 +24,7 @@ setup(
     ],
     install_requires=[
         'warcio>=1.5.3',
-        'ipfshttpclient>=0.4.12',
+        'ipfshttpclient4ipwb>=0.6.0',
         'Flask==1.1.1',
         'pycryptodome>=3.4.11',
         'requests>=2.19.1',
@@ -56,8 +56,8 @@ setup(
 
         'Environment :: Web Environment',
 
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
 
         'License :: OSI Approved :: MIT License',
 

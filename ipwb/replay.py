@@ -9,10 +9,9 @@ indexer. An interface is supplied when first started to assist the user in
 navigating their captures.
 """
 
-from __future__ import print_function
 import sys
 import os
-import ipfshttpclient
+import ipfshttpclient4ipwb as ipfsapi
 import json
 import subprocess
 import pkg_resources
@@ -110,10 +109,10 @@ def upload_file():
         # TODO: Check if semaphore lock exists, log it if so, wait for the lock
         # to be released, and create a new lock
 
-        print('Indexing file from uploaded WARC at {0} to {1}'.format(
-            warcPath, app.cdxjFilePath))
+        print((f'Indexing file from uploaded WARC at'
+               f'{warcPath} to {app.cdxjFilePath}'))
         indexer.indexFileAt(warcPath, outfile=app.cdxjFilePath)
-        print('Index updated at {0}'.format(app.cdxjFilePath))
+        print(f'Index updated at {app.cdxjFilePath}')
 
         # TODO: Release semaphore lock
         resp.location = request.referrer
@@ -181,26 +180,25 @@ def showMementosForURIRs(urir):
 
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    print('Getting CDXJ Lines with the URI-R {0} from {1}'
-          .format(urir, indexPath))
+    print(f'Getting CDXJ lines with the URI-R {urir} from {indexPath}')
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     if len(cdxjLinesWithURIR) == 1:
         fields = cdxjLinesWithURIR[0].split(' ', 2)
-        redirectURI = '/memento/{1}/{0}'.format(unsurt(fields[0]), fields[1])
+        redirectURI = f'/memento/{fields[1]}/{unsurt(fields[0])}'
 
         return redirect(redirectURI, code=302)
 
     msg = ''
     if cdxjLinesWithURIR:
-        msg += '<p>{0} capture(s) available:</p><ul>'.format(
-            len(cdxjLinesWithURIR))
+        msg += f'<p>{len(cdxjLinesWithURIR)} capture(s) available:</p><ul>'
+
         for line in cdxjLinesWithURIR:
             fields = line.split(' ', 2)
             dt14 = fields[1]
             dtrfc1123 = ipwbUtils.digits14ToRFC1123(fields[1])
-            msg += ('<li><a href="/memento/{1}/{0}">{0} at {2}</a></li>'
-                    .format(unsurt(fields[0]), dt14, dtrfc1123))
+            msg += (f'<li><a href="/memento/{dt14}/{unsurt(fields[0])}">'
+                    f'{unsurt(fields[0])} at {dtrfc1123}</a></li>')
         msg += '</ul>'
     else:  # No captures for URI-R
         msg = generateNoMementosInterface_noDatetime(urir)
@@ -224,15 +222,14 @@ def resolveMemento(urir, datetime):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
-    print('Getting CDXJ Lines with the URI-R {0} from {1}'
-          .format(urir, indexPath))
+    print(f'Getting CDXJ lines with the URI-R {urir} from {indexPath}')
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
 
     closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
 
     if closestLine is None:
         msg = '<h1>ERROR 404</h1>'
-        msg += 'No capture found for {0} at {1}.'.format(urir, datetime)
+        msg += f'<p>No captures found for {urir} at {datetime}.</p>'
 
         return Response(msg, status=404)
 
@@ -247,7 +244,7 @@ def resolveMemento(urir, datetime):
 def compile_target_uri(url: str, query_string: bytes) -> str:
     """Append GET query string to the page path, to get full URI."""
     if query_string:
-        return '{}?{}'.format(url, query_string.decode('utf-8'))
+        return f"{url}?{query_string.decode('utf-8')}"
 
     else:
         return url
@@ -260,7 +257,7 @@ def showMemento(urir, datetime):
     try:
         datetime = ipwbUtils.padDigits14(datetime, validate=True)
     except ValueError as e:
-        msg = 'Expected a 4-14 digits valid datetime: {}'.format(datetime)
+        msg = f'Expected a 4-14 digits valid datetime: {datetime}'
         return Response(msg, status=400)
     resolvedMemento = resolveMemento(urir, datetime)
 
@@ -270,7 +267,7 @@ def showMemento(urir, datetime):
     (newDatetime, linkHeader, uri) = resolvedMemento
 
     if newDatetime != datetime:
-        resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
+        resp = redirect(f'/memento/{newDatetime}/{urir}', code=302)
     else:
         resp = show_uri(uri, newDatetime)
 
@@ -300,7 +297,7 @@ def getCDXJLinesWithURIR(urir, indexPath):
 
     indexPath = getIndexFileFullPath(indexPath)
 
-    print('Getting CDXJ Lines with {0} in {1}'.format(urir, indexPath))
+    print(f'Getting CDXJ lines with {urir} in {indexPath}')
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     cdxjLinesWithURIR = []
 
@@ -352,7 +349,7 @@ def queryTimeGate(urir):
         return resolvedMemento
     (newDatetime, linkHeader, uri) = resolvedMemento
 
-    resp = redirect('/memento/{0}/{1}'.format(newDatetime, urir), code=302)
+    resp = redirect(f'/memento/{newDatetime}/{urir}', code=302)
 
     resp.headers['Link'] = linkHeader
     resp.headers['Vary'] = 'Accept-Datetime'
@@ -372,9 +369,7 @@ def showTimeMap(urir, format):
 
     hostAndPort = ipwbUtils.getIPWBReplayConfig()
 
-    tgURI = 'http://{0}:{1}/timegate/{2}'.format(
-        hostAndPort[0],
-        hostAndPort[1], urir)
+    tgURI = f'http://{hostAndPort[0]}:{hostAndPort[1]}/timegate/{urir}'
 
     tm = ''  # Initialize for usage beyond below conditionals
     if format == 'link':
@@ -399,13 +394,9 @@ def getLinkHeaderAbbreviatedTimeMap(urir, pivotDatetime):
     cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
     hostAndPort = ipwbUtils.getIPWBReplayConfig()
 
-    tgURI = 'http://{0}:{1}/timegate/{2}'.format(
-        hostAndPort[0],
-        hostAndPort[1], urir)
+    tgURI = f'http://{hostAndPort[0]}:{hostAndPort[1]}/timegate/{urir}'
 
-    tmURI = 'http://{0}:{1}/timemap/link/{2}'.format(
-        hostAndPort[0],
-        hostAndPort[1], urir)
+    tmURI = f'http://{hostAndPort[0]}:{hostAndPort[1]}/timemap/link/{urir}'
     tm = generateLinkTimeMapFromCDXJLines(cdxjLinesWithURIR, s, tmURI, tgURI)
 
     # Fix base TM relation when viewing abbrev version in Link resp
@@ -472,17 +463,17 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     hostAndPort = urlunsplit(tmurl) + '/'
 
     # unsurted URI will never have a scheme, add one
-    originalURI = 'http://{0}'.format(unsurt(original))
+    originalURI = f'http://{unsurt(original)}'
 
-    tmData = '<{0}>; rel="original",\n'.format(originalURI)
-    tmData += '<{0}>; rel="self timemap"; '.format(tmself)
+    tmData = f'<{originalURI}>; rel="original",\n'
+    tmData += f'<{tmself}>; rel="self timemap"; '
     tmData += 'type="application/link-format",\n'
 
     cdxjTMURI = tmself.replace('/timemap/link/', '/timemap/cdxj/')
-    tmData += '<{0}>; rel="timemap"; '.format(cdxjTMURI)
+    tmData += f'<{cdxjTMURI}>; rel="timemap"; '
     tmData += 'type="application/cdxj+ors",\n'
 
-    tmData += '<{0}>; rel="timegate"'.format(tgURI)
+    tmData += f'<{tgURI}>; rel="timegate"'
 
     for i, line in enumerate(cdxjLines):
         (surtURI, datetime, json) = line.split(' ', 2)
@@ -497,9 +488,8 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
         elif len(cdxjLines) == 1:
             firstLastStr = 'first last '
 
-        tmData += ',\n<{0}memento/{1}/{2}>; rel="{3}memento"; datetime="{4}"' \
-                  .format(hostAndPort, datetime, unsurt(surtURI), firstLastStr,
-                          dtRFC1123)
+        tmData += (f',\n<{hostAndPort}memento/{datetime}/{unsurt(surtURI)}>; '
+                   f'rel="{firstLastStr}memento"; datetime="{dtRFC1123}"')
     return tmData + '\n'
 
 
@@ -510,18 +500,18 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
         tgURI = urlunsplit(getProxiedURIT(tgURI))
 
     # unsurted URI will never have a scheme, add one
-    originalURI = 'http://{0}'.format(unsurt(original))
+    originalURI = f'http://{unsurt(original)}'
 
     tmData = '!context ["http://tools.ietf.org/html/rfc7089"]\n'
-    tmData += '!id {{"uri": "{0}"}}\n'.format(tmself)
+    tmData += f'!id {{"uri": "{tmself}"}}\n'
     tmData += '!keys ["memento_datetime_YYYYMMDDhhmmss"]\n'
-    tmData += '!meta {{"original_uri": "{0}"}}\n'.format(originalURI)
-    tmData += '!meta {{"timegate_uri": "{0}"}}\n'.format(tgURI)
+    tmData += f'!meta {{"original_uri": "{originalURI}"}}\n'
+    tmData += f'!meta {{"timegate_uri": "{tgURI}"}}\n'
     linkTMURI = tmself.replace('/timemap/cdxj/', '/timemap/link/')
-    tmData += ('!meta {{"timemap_uri": {{'
-               '"link_format": "{0}", '
-               '"cdxj_format": "{1}"'
-               '}}}}\n').format(linkTMURI, tmself)
+    tmData += (f'!meta {{"timemap_uri": {{'
+               f'"link_format": "{linkTMURI}", '
+               f'"cdxj_format": "{tmself}"'
+               f'}}}}\n')
     hostAndPort = tmself[0:tmself.index('timemap/')]
 
     for i, line in enumerate(cdxjLines):
@@ -537,12 +527,10 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
         elif len(cdxjLines) == 1:
             firstLastStr = 'first last '
 
-        tmData += ('{1} {{'
-                   '"uri": "{0}memento/{1}/{2}", '
-                   '"rel": "{3}memento", '
-                   '"datetime"="{4}"}}\n').format(
-                hostAndPort, datetime, unsurt(surtURI),
-                firstLastStr, dtRFC1123)
+        tmData += (f'{datetime} {{'
+                   f'"uri": "{hostAndPort}memento/{datetime}/{surtURI}", '
+                   f'"rel": "{firstLastStr}memento", '
+                   f'"datetime"="{dtRFC1123}"}}\n')
     return tmData
 
 
@@ -604,8 +592,6 @@ def showLandingPage():
     return render_template('index.html', summary=summary, uris=uris)
 
 
-# TODO: Do we need this route?
-@app.route('/<path:path>')
 def show_uri(path, datetime=None):
     global IPFS_API
 
@@ -630,9 +616,9 @@ def show_uri(path, datetime=None):
 
     except Exception as e:
         print(sys.exc_info()[0])
-        respString = ('{0} not found :(' +
-                      ' <a href="http://{1}:{2}">Go home</a>').format(
-            path, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
+        respString = (f'{path} not found :(' +
+                      f' <a href="http://{IPWBREPLAY_HOST}:{IPWBREPLAY_PORT}">'
+                      f'Go home</a>')
         return Response(respString)
     if cdxjLine is None:  # Resource not found in archives
         return generateNoMementosInterface(path, datetime)
@@ -662,11 +648,11 @@ def show_uri(path, datetime=None):
         # if os.name != 'nt':  # Bug #310
         #    signal.alarm(0)
 
-    except ipfshttpclient.exceptions.TimeoutError:
-        print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
-        respString = ('{0} not found in IPFS :(' +
-                      ' <a href="http://{1}:{2}">Go home</a>').format(
-            path, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
+    except ipfsapi.exceptions.TimeoutError:
+        print(f"{cdxjParts[0]} not found at {digests[-1]}")
+        respString = (f'{path} not found in IPFS :(' +
+                      f' <a href="http://{IPWBREPLAY_HOST}:{IPWBREPLAY_PORT}">'
+                      f'Go home</a>')
         return Response(respString)
     except TypeError as e:
         print('A type error occurred')
@@ -678,8 +664,7 @@ def show_uri(path, datetime=None):
         return "Fetching from IPFS failed", 503
     except HashNotFoundError:
         if payload is None:
-            print("Hashes not found:\n\t{0}\n\t{1}".format(
-                digests[-1], digests[-2]))
+            print(f"Hashes not found:\n\t{digests[-1]}\n\t{digests[-2]}")
             return "Hashed not found", 404
         else:  # payload found but not header, fabricate header
             print("HTTP header not found, fabricating for resp replay")
@@ -775,48 +760,53 @@ def isUri(str):
 
 def generateNoMementosInterface_noDatetime(urir):
     msg = '<h1>ERROR 404</h1>'
-    msg += 'No capture(s) found for {0}.'.format(urir)
+    msg += f'<p>No captures found for {urir}.</p>'
 
-    msg += ('<form method="get" action="/memento/*/" '
-            'style="margin-top: 1.0em;">'
-            '<input type="text" value="{0}" id="url"'
-            'name="url" aria-label="Enter a URI" required />'
-            '<input type="submit" value="Search URL in the archive"/>'
-            '</form>').format(urir)
+    msg += (f'<form method="get" action="/memento/*/" '
+            f'style="margin-top: 1.0em;">'
+            f'<input type="text" value="{urir}" id="url" '
+            f'name="url" aria-label="Enter a URI" required />'
+            f'<input type="submit" value="Search URL in the archive"/>'
+            f'</form>')
 
     return msg
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return "<h1>ERROR 404</h1><p>Resource not found</p>", 404
+
+
 def generateNoMementosInterface(path, datetime):
     msg = '<h1>ERROR 404</h1>'
-    msg += 'No capture found for {0} at {1}.'.format(path, datetime)
+    msg += f'<p>No captures found for {path} at {datetime}.</p>'
 
     linesWithSameURIR = getCDXJLinesWithURIR(path, None)
-    print('CDXJ lines with URI-R at {0}'.format(path))
+    print(f'CDXJ lines with URI-R at {path}')
     print(linesWithSameURIR)
 
     # TODO: Use closest instead of conditioning on single entry
     #  temporary fix for core functionality in #225
     if len(linesWithSameURIR) == 1:
         fields = linesWithSameURIR[0].split(' ', 2)
-        redirectURI = '/{1}/{0}'.format(unsurt(fields[0]), fields[1])
+        redirectURI = f'/{fields[1]}/{unsurt(fields[0])}'
 
         return redirect(redirectURI, code=302)
 
     urir = ''
     if linesWithSameURIR:
-        msg += '<p>{0} capture(s) available:</p><ul>'.format(
-            len(linesWithSameURIR))
+        msg += f'<p>{len(linesWithSameURIR)} capture(s) available:</p><ul>'
+
         for line in linesWithSameURIR:
             fields = line.split(' ', 2)
             urir = unsurt(fields[0])
-            msg += ('<li><a href="/{1}/{0}">{0} at {1}</a></li>'
-                    .format(urir, fields[1]))
+            msg += (f'<li><a href="/{fields[1]}/{urir}">{urir} at {fields[1]}'
+                    f'</a></li>')
         msg += '</ul>'
 
     msg += '<p>TimeMaps: '
-    msg += '<a href="/timemap/link/{0}">Link</a> '.format(urir)
-    msg += '<a href="/timemap/cdxj/{0}">CDXJ</a> '.format(urir)
+    msg += f'<a href="/timemap/link/{urir}">Link</a> '
+    msg += f'<a href="/timemap/cdxj/{urir}">CDXJ</a> '
 
     resp = Response(msg, status=404)
     linkHeader = getLinkHeaderAbbreviatedTimeMap(path, datetime)
@@ -860,18 +850,18 @@ def generateDaemonStatusButton():
         text = 'Running'
         buttonText = 'Stop'
 
-    statusPageHTML = '<html id="status{0}" class="status">'.format(buttonText)
+    statusPageHTML = f'<html id="status{buttonText}" class="status">'
     statusPageHTML += ('<head><base href="/ipwbassets/" />'
                        '<link rel="stylesheet" type="text/css" '
                        'href="webui.css" />'
                        '<script src="webui.js"></script>'
                        '<script src="daemonController.js"></script>'
                        '</head><body>')
-    buttonHTML = '<span id="status">{0}</span>'.format(text)
-    buttonHTML += '<button id="daeAction">{0}</button>'.format(buttonText)
+    buttonHTML = f'<span id="status">{text}</span>'
+    buttonHTML += f'<button id="daeAction">{buttonText}</button>'
 
     footer = '<script>assignStatusButtonHandlers()</script></body></html>'
-    return Response('{0}{1}{2}'.format(statusPageHTML, buttonHTML, footer))
+    return Response(f'{statusPageHTML}{buttonHTML}{footer}')
 
 
 def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
@@ -879,7 +869,7 @@ def getIndexFileFullPath(cdxjFilePath=INDEX_FILE):
     if cdxjFilePath.startswith('Qm'):
         return cdxjFilePath
 
-    indexFilePath = '/{0}'.format(cdxjFilePath).replace('ipwb.replay', 'ipwb')
+    indexFilePath = f'/{cdxjFilePath}'.replace('ipwb.replay', 'ipwb')
 
     if os.path.isfile(cdxjFilePath):
         return cdxjFilePath
@@ -930,7 +920,7 @@ def getURIsAndDatetimesInCDXJ(cdxjFilePath=INDEX_FILE):
 
 
 def calculateMementoInfoInIndex(cdxjFilePath=INDEX_FILE):
-    print("Retrieving URI-Ms from {0}".format(cdxjFilePath))
+    print(f'Retrieving URI-Ms from {cdxjFilePath}')
     indexFileContents = get_web_archive_index(cdxjFilePath)
 
     errReturn = (0, 0)
@@ -990,7 +980,7 @@ def objectifyCDXJData(lines, onlyURI):
             break
         if line[0] != '!':
             (surt, datetime, theRest) = line.split(' ', 2)
-            searchString = "{0} {1}".format(surt, datetime)
+            searchString = f"{surt} {datetime}"
             if onlyURI:
                 searchString = surt
             cdxjData['data'].append(searchString)
@@ -1032,8 +1022,7 @@ def getCDXJLine_binarySearch(
 
     lineFound = binary_search(lines, surtURI, retIndex, onlyURI)
     if lineFound is None:
-        print("Could not find {0} in CDXJ at {1}".format(
-            surtURI, fullFilePath))
+        print(f"Could not find {surtURI} in CDXJ at {fullFilePath}")
 
     return lineFound
 
@@ -1053,17 +1042,16 @@ def start(cdxjFilePath, proxy=None):
         print('Check that the IPFS daemon is running.')
 
     try:
-        print('IPWB replay started on http://{0}:{1}'.format(
-            IPWBREPLAY_HOST, IPWBREPLAY_PORT
-        ))
+        print((f'IPWB replay started on '
+               f'http://{IPWBREPLAY_HOST}:{IPWBREPLAY_PORT}'))
+
         app.run(host='0.0.0.0', port=IPWBREPLAY_PORT)
     except gaierror:
         print('Detected no active Internet connection.')
         print('Overriding to use default IP and port configuration.')
         app.run()
     except socketerror:
-        print('Address {0}:{1} already in use!'.format(
-            IPWBREPLAY_HOST, IPWBREPLAY_PORT))
+        print(f'Address {IPWBREPLAY_HOST}:{IPWBREPLAY_PORT} already in use!')
         sys.exit()
 
 
