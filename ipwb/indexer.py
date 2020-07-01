@@ -13,7 +13,7 @@ This script reads a WARC file and returns a CDXJ representative of its
 import sys
 import os
 import json
-import ipfshttpclient4ipwb as ipfsapi
+import ipfshttpclient as ipfsapi
 import argparse
 import zlib
 import surt
@@ -26,7 +26,7 @@ from warcio.archiveiterator import ArchiveIterator
 from warcio.recordloader import ArchiveLoadFailed
 
 from requests.packages.urllib3.exceptions import NewConnectionError
-from ipfshttpclient4ipwb.exceptions import ConnectionError
+from ipfshttpclient.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 
 from six.moves import input
