@@ -11,7 +11,7 @@ navigating their captures.
 
 import sys
 import os
-import ipfshttpclient4ipwb as ipfsapi
+import ipfshttpclient as ipfsapi
 import json
 import subprocess
 import pkg_resources

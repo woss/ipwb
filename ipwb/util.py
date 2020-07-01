@@ -4,7 +4,7 @@ from os.path import basename
 import os
 import sys
 import requests
-import ipfshttpclient4ipwb as ipfsapi
+import ipfshttpclient as ipfsapi
 
 import re
 
@@ -23,8 +23,8 @@ from multiaddr.exceptions import StringParseError
 from pkg_resources import parse_version
 
 # from requests.exceptions import ConnectionError
-from ipfshttpclient4ipwb.exceptions import ConnectionError
-from ipfshttpclient4ipwb.exceptions import AddressError
+from ipfshttpclient.exceptions import ConnectionError
+from ipfshttpclient.exceptions import AddressError
 from multiaddr.exceptions import StringParseError
 logger = logging.getLogger(__name__)
 
