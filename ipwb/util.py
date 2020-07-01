@@ -14,6 +14,7 @@ import logging
 import os
 import platform
 import re
+import json
 from os.path import expanduser
 
 import ipfshttpclient
