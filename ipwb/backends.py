@@ -94,6 +94,6 @@ def get_web_archive_index(path: str) -> str:
         return response
 
     raise ValueError((
-        'Unknown format of index file location: {}. Please provide ' +
-        'a valid local path, HTTP or FTP URL, or an IPFS QmHash.'
-    ).format(path))
+        f'Unknown format of index file location: {path}. Please provide '
+        f'a valid local path, HTTP or FTP URL, or an IPFS QmHash.'
+    ))

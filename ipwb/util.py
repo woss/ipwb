@@ -1,13 +1,20 @@
-from __future__ import print_function
+from os.path import expanduser
+from os.path import basename
 
-import datetime
-import json
+import os
+import sys
+import requests
+import ipfshttpclient as ipfsapi
+
+import re
+
 # Datetime conversion to rfc1123
 import locale
 import logging
 import os
 import platform
 import re
+import json
 from os.path import expanduser
 
 import ipfshttpclient
@@ -16,8 +23,11 @@ from ipfshttpclient.exceptions import AddressError, ConnectionError
 from multiaddr.exceptions import StringParseError
 from pkg_resources import parse_version
 
+# from requests.exceptions import ConnectionError
+from ipfshttpclient.exceptions import ConnectionError
+from ipfshttpclient.exceptions import AddressError
+from multiaddr.exceptions import StringParseError
 logger = logging.getLogger(__name__)
-
 
 IPFSAPI_MUTLIADDRESS = '/dns/localhost/tcp/5001/http'
 # or '/dns/{host}/tcp/{port}/http'
@@ -112,12 +122,6 @@ def isLocalHosty(uri):
     return False
 
 
-def setupIPWBInIPFSConfig():
-    hostPort = getIPWBReplayConfig()
-    if not hostPort:
-        setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
-
-
 def setLocale():
     currentOS = platform.system()
 
@@ -184,7 +188,7 @@ def padDigits14(dtstr, validate=False):
         H = match.group(4) or '00'
         M = match.group(5) or '00'
         S = match.group(6) or '00'
-        dtstr = '{}{}{}{}{}{}'.format(Y, m, d, H, M, S)
+        dtstr = f'{Y}{m}{d}{H}{M}{S}'
     if validate:
         datetime.datetime.strptime(dtstr, '%Y%m%d%H%M%S')
     return dtstr
@@ -196,9 +200,11 @@ def fetch_remote_file(path):
         return r.text
 
     except ConnectionError:
-        logger.error('File at %s is unavailable.', path)
+        logError(f'File at {path} is unavailable.')
+    except Exception as E:
+        logError(f'An unknown error occurred while trying to fetch {path}')
+        logError(sys.exc_info()[0])
 
-    except Exception as e:
         raise Exception(
             'An unknown error occurred trying to fetch {}'.format(path)
         ) from e
