@@ -11,6 +11,7 @@ from ipwb import indexer
 from ipwb import __file__ as moduleLocation
 
 from multiprocessing import Process
+from pathlib import Path
 
 p = Process()
 
@@ -18,9 +19,10 @@ p = Process()
 def createUniqueWARC():
     lines = []
     warcInFilename = 'frogTest.warc'
+    ipwb_dir = Path(os.path.dirname(__file__)).parents[0]
     warcInPath = os.path.join(
-        os.path.dirname(__file__) +
-        os.path.sep.join(['', '..', 'samples', 'warc', warcInFilename]))
+        ipwb_dir +
+        os.path.sep.join(['', 'samples', 'warc', warcInFilename]))
 
     stringToChange = b'abcdefghijklmnopqrstuvwxz'
     randomString = getRandomString(len(stringToChange))
@@ -32,8 +34,8 @@ def createUniqueWARC():
     warcOutFilename = warcInFilename.replace('.warc', '_' +
                                              randomString + '.warc')
     warcOutPath = os.path.join(
-        os.path.dirname(__file__) +
-        os.path.sep.join(['', '..', 'samples', 'warcs', warcOutFilename]))
+        ipwb_dir +
+        os.path.sep.join(['', 'samples', 'warcs', warcOutFilename]))
 
     print(warcOutPath)
     with open(warcOutPath, 'wb') as warcFile:
@@ -59,8 +61,8 @@ def countCDXJEntries(cdxjData):
 def startReplay(warcFilename):
     global p
     pathOfWARC = os.path.join(
-        os.path.dirname(__file__) +
-        os.path.sep.join(['', '..', 'samples', 'warcs', warcFilename]))
+        Path(os.path.dirname(__file__)).parents[0] +
+        os.path.sep.join(['', 'samples', 'warcs', warcFilename]))
 
     number_of_characters = 12
     character_set = string.ascii_uppercase + string.digits * 6
