@@ -6,6 +6,8 @@ import os
 
 from ipwb import indexer
 
+from pathlib import Path
+
 
 def test_cdxj_warc_responseRecordCount():
     newWARCPath = ipwbTest.createUniqueWARC()
