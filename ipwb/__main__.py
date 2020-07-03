@@ -147,8 +147,7 @@ def checkArgs(argsIn):
     parser.add_argument(
         '-u', '--update-check',
         action='store_true',
-        help=('Checks remotely to determine if the installed version '
-              'of ipwb is current')
+        help='Check whether an updated version of ipwb is available'
         )
     parser.set_defaults(func=ipwbUtil.checkForUpdate)
 
