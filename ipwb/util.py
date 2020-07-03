@@ -308,11 +308,11 @@ def compareCurrentAndLatestIPWBVersions():
         return (None, None)
 
 
-def checkForUpdate():
+def checkForUpdate(_):
     (current, latest) = compareCurrentAndLatestIPWBVersions()
 
     if current != latest and current is not None:
         print('This version of ipwb is outdated.'
               ' Please run pip install --upgrade ipwb.')
-        print(f'* Latest version: {latest}')
-        print(f'* Installed version: {current}')
+    print(f'* Latest version: {latest}')
+    print(f'* Installed version: {current}')

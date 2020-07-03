@@ -15,8 +15,7 @@ from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 
 
 def main():
-    ipwbUtil.checkForUpdate()
-    args = checkArgs(sys.argv)
+    checkArgs(sys.argv)
 
 
 def checkArgs_index(args):
@@ -145,10 +144,17 @@ def checkArgs(argsIn):
     parser.add_argument(
         '-v', '--version', help='Report the version of ipwb', action='version',
         version='InterPlanetary Wayback ' + ipwbVersion)
+    parser.add_argument(
+        '-u', '--update-check',
+        action='store_true',
+        help='Check whether an updated version of ipwb is available'
+        )
+    parser.set_defaults(func=ipwbUtil.checkForUpdate)
 
     argCount = len(argsIn)
     cmdList = ['index', 'replay']
-    baseParserFlagList = ['-d', '--daemon', '-v', '--version']
+    baseParserFlagList = ['-d', '--daemon', '-v', '--version',
+                          '-u', '--update-check']
 
     # Various invocation error, used to show appropriate help
     cmdError_index = argCount == 2 and argsIn[1] == 'index'
