@@ -34,7 +34,7 @@ IPWBREPLAY_ADDRESS = 'localhost:5000'
 (IPWBREPLAY_HOST, IPWBREPLAY_PORT) = IPWBREPLAY_ADDRESS.split(':')
 IPWBREPLAY_PORT = int(IPWBREPLAY_PORT)
 
-INDEX_FILE = 'samples/indexes/salam-home.cdxj'
+INDEX_FILE = os.path.sep.join(['samples', 'indexes', 'salam-home.cdxj'])
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -205,9 +205,10 @@ def fetch_remote_file(path):
 
 # IPFS Config manipulation from here on out.
 def readIPFSConfig():
-    ipfsConfigPath = expanduser("~") + '/.ipfs/config'
+    ipfsConfigPath = os.path.sep.join([expanduser("~"), '.ipfs', 'config'])
     if 'IPFS_PATH' in os.environ:
-        ipfsConfigPath = os.environ.get('IPFS_PATH') + '/config'
+        ipfsConfigPath = os.path.sep.join(
+            [os.environ.get('IPFS_PATH'), 'config'])
 
     try:
         with open(ipfsConfigPath, 'r') as f:
@@ -219,9 +220,10 @@ def readIPFSConfig():
 
 
 def writeIPFSConfig(jsonToWrite):
-    ipfsConfigPath = expanduser("~") + '/.ipfs/config'
+    ipfsConfigPath = os.path.sep.join([expanduser("~"), '.ipfs', 'config'])
     if 'IPFS_PATH' in os.environ:
-        ipfsConfigPath = os.environ.get('IPFS_PATH') + '/config'
+        ipfsConfigPath = os.path.sep.join(
+            [os.environ.get('IPFS_PATH'), 'config'])
 
     with open(ipfsConfigPath, 'w') as f:
         f.write(json.dumps(jsonToWrite, indent=4, sort_keys=True))

@@ -18,8 +18,9 @@ p = Process()
 def createUniqueWARC():
     lines = []
     warcInFilename = 'frogTest.warc'
-    warcInPath = os.path.join(os.path.dirname(__file__) +
-                              '/../samples/warcs/' + warcInFilename)
+    warcInPath = os.path.join(
+        os.path.dirname(__file__) +
+        os.path.sep.join(['', '..', 'samples', 'warc', warcInFilename]))
 
     stringToChange = b'abcdefghijklmnopqrstuvwxz'
     randomString = getRandomString(len(stringToChange))
@@ -30,8 +31,10 @@ def createUniqueWARC():
 
     warcOutFilename = warcInFilename.replace('.warc', '_' +
                                              randomString + '.warc')
-    warcOutPath = os.path.join(os.path.dirname(__file__) +
-                               '/../samples/warcs/' + warcOutFilename)
+    warcOutPath = os.path.join(
+        os.path.dirname(__file__) +
+        os.path.sep.join(['', '..', 'samples', 'warcs', warcOutFilename]))
+
     print(warcOutPath)
     with open(warcOutPath, 'wb') as warcFile:
         warcFile.write(newContent)
@@ -55,10 +58,16 @@ def countCDXJEntries(cdxjData):
 
 def startReplay(warcFilename):
     global p
-    pathOfWARC = os.path.join(os.path.dirname(__file__) +
-                              '/../samples/warcs/' + warcFilename)
-    tempFilePath = tempfile.gettempdir() + '/' + ''.join(random.sample(
-        string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
+    pathOfWARC = os.path.join(
+        os.path.dirname(__file__) +
+        os.path.sep.join(['', '..', 'samples', 'warcs', warcFilename]))
+
+    number_of_characters = 12
+    character_set = string.ascii_uppercase + string.digits * 6
+
+    tempFilePath = (
+        f"{tempfile.gettempdir()}{os.path.sep}"
+        f"{random.sample(character_set, number_of_characters)}.cdxj")
 
     open(tempFilePath, 'a').close()  # Create placeholder file for replay
 
