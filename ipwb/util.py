@@ -42,16 +42,16 @@ log.setLevel(logging.ERROR)
 dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 
-def createIPFSClient(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+def create_ipfs_client(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     try:
         return ipfshttpclient.Client(daemonMultiaddr)
     except (StringParseError, AddressError):
         return None  # Malformed multiaddress for the daemon
 
 
-def isDaemonAlive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+def check_daemon_is_alive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    client = createIPFSClient()
+    client = create_ipfs_client()
 
     if client is None:
         raise Exception("Error initializing IPFS API client.")

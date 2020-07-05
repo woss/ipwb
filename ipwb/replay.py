@@ -64,7 +64,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
 
 
-IPFS_API = ipwbUtils.createIPFSClient()
+IPFS_API = ipwbUtils.create_ipfs_client()
 if IPFS_API is None:
     print("Error initializing IPFS API client")
     sys.exit()
@@ -595,7 +595,7 @@ def showLandingPage():
 def show_uri(path, datetime=None):
     global IPFS_API
 
-    if not ipwbUtils.isDaemonAlive(ipwbUtils.IPFSAPI_MUTLIADDRESS):
+    if not ipwbUtils.check_daemon_is_alive(ipwbUtils.IPFSAPI_MUTLIADDRESS):
         errStr = ('IPFS daemon not running. '
                   'Start it using $ ipfs daemon on the command-line '
                   ' or from the <a href="/">'
@@ -846,7 +846,7 @@ def extractResponseFromChunkedData(data):
 def generateDaemonStatusButton():
     text = 'Not Running'
     buttonText = 'Start'
-    if ipwbUtils.isDaemonAlive():
+    if ipwbUtils.check_daemon_is_alive():
         text = 'Running'
         buttonText = 'Stop'
 
@@ -1034,7 +1034,7 @@ def start(cdxjFilePath, proxy=None):
     if not hostPort:
         ipwbUtils.setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
 
-    if ipwbUtils.isDaemonAlive():
+    if ipwbUtils.check_daemon_is_alive():
         ipwbUtils.setIPWBReplayIndexPath(cdxjFilePath)
         app.cdxjFilePath = cdxjFilePath
     else:

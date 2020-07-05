@@ -52,7 +52,7 @@ from .__init__ import __version__ as ipwbVersion
 
 DEBUG = False
 
-IPFS_API = ipwbUtils.createIPFSClient()
+IPFS_API = ipwbUtils.create_ipfs_client()
 if IPFS_API is None:
     print("Error initializing IPFS API client")
     sys.exit()

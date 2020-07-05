@@ -16,7 +16,7 @@ def main():
 
 
 def checkArgs_index(args):
-    if not util.isDaemonAlive():
+    if not util.check_daemon_is_alive():
         sys.exit()
     encKey = None
     compressionLevel = None
