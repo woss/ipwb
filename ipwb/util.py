@@ -21,6 +21,8 @@ from ipfshttpclient.exceptions import ConnectionError, AddressError
 from multiaddr.exceptions import StringParseError
 from pkg_resources import parse_version
 
+from .exceptions import IPFSDaemonNotAvailable
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,13 +45,23 @@ log.setLevel(logging.ERROR)
 dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 
-@functools.lru_cache()
-def ipfs_client(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
-    """Create and cache IPFS client instance."""
+def create_ipfs_client(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+    """Create and return IPFS client."""
     try:
         return ipfshttpclient.Client(daemonMultiaddr)
     except Exception as err:
         raise Exception('Cannot create an IPFS client.') from err
+
+
+@functools.lru_cache()
+def ipfs_client(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+    """
+    Create and cache IPFS client instance.
+
+    Caching is the single difference between this and
+    `create_ipfs_client()` above.
+    """
+    return create_ipfs_client(daemonMultiaddr)
 
 
 def check_daemon_is_alive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
@@ -62,17 +74,17 @@ def check_daemon_is_alive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
         return True
 
     except ConnectionError as err:
-        raise Exception(
+        raise IPFSDaemonNotAvailable(
             f'Daemon is not running at: {daemonMultiaddr}',
         ) from err
 
     except OSError as err:
-        raise Exception(
+        raise IPFSDaemonNotAvailable(
             'IPFS is likely not installed. See https://ipfs.io/docs/install/'
         ) from err
 
     except Exception as e:
-        raise Exception(
+        raise IPFSDaemonNotAvailable(
             'Unknown error in retrieving IPFS daemon status.',
         ) from e
 

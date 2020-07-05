@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from ipwb.util import check_daemon_is_alive, ipfs_client
+from ipwb.util import check_daemon_is_alive, create_ipfs_client
 from ipfshttpclient.exceptions import ConnectionError
 
 
@@ -13,7 +13,7 @@ def test_exception():
 
     with patch('ipfshttpclient.Client', mock_client):
         with pytest.raises(Exception, match=expected_error):
-            ipfs_client()
+            create_ipfs_client()
 
 
 def test_is_alive():

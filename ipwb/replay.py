@@ -35,6 +35,7 @@ from requests.exceptions import HTTPError
 
 from . import util as ipwbUtils
 from .backends import get_web_archive_index
+from .exceptions import IPFSDaemonNotAvailable
 from .util import unsurt, ipfs_client
 from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from .util import INDEX_FILE
@@ -55,6 +56,10 @@ from flask import flash
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
 from flask import make_response
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 UPLOAD_FOLDER = tempfile.gettempdir()
 ALLOWED_EXTENSIONS = ('.warc', '.warc.gz')
@@ -586,11 +591,15 @@ def showLandingPage():
 
 
 def show_uri(path, datetime=None):
-    if not ipwbUtils.check_daemon_is_alive(ipwbUtils.IPFSAPI_MUTLIADDRESS):
+    try:
+        ipwbUtils.check_daemon_is_alive(ipwbUtils.IPFSAPI_MUTLIADDRESS)
+
+    except IPFSDaemonNotAvailable:
         errStr = ('IPFS daemon not running. '
                   'Start it using $ ipfs daemon on the command-line '
                   ' or from the <a href="/">'
                   'IPWB replay homepage</a>.')
+
         return Response(errStr, status=503)
 
     cdxjLine = ''
@@ -837,7 +846,14 @@ def extractResponseFromChunkedData(data):
 def generateDaemonStatusButton():
     text = 'Not Running'
     buttonText = 'Start'
-    if ipwbUtils.check_daemon_is_alive():
+
+    try:
+        ipwbUtils.check_daemon_is_alive()
+
+    except IPFSDaemonNotAvailable:
+        pass
+
+    else:
         text = 'Running'
         buttonText = 'Stop'
 
@@ -1025,12 +1041,11 @@ def start(cdxjFilePath, proxy=None):
     if not hostPort:
         ipwbUtils.setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
 
-    if ipwbUtils.check_daemon_is_alive():
-        ipwbUtils.setIPWBReplayIndexPath(cdxjFilePath)
-        app.cdxjFilePath = cdxjFilePath
-    else:
-        print('Sample data not pulled from IPFS.')
-        print('Check that the IPFS daemon is running.')
+    # This will throw an exception if daemon is not available.
+    ipwbUtils.check_daemon_is_alive()
+
+    ipwbUtils.setIPWBReplayIndexPath(cdxjFilePath)
+    app.cdxjFilePath = cdxjFilePath
 
     try:
         print((f'IPWB replay started on '
