@@ -23,8 +23,6 @@ def test_is_alive():
         assert check_daemon_is_alive() is True
 
 
-
-
 def test_connection_error():
     mock_client = MagicMock()
     mock_client.return_value.id.side_effect = ConnectionError('boo!')
