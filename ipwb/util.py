@@ -56,9 +56,6 @@ def check_daemon_is_alive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
     client = ipfs_client()
 
-    if client is None:
-        raise Exception("Error initializing IPFS API client.")
-
     try:
         # ConnectionError/AttributeError if IPFS daemon not running
         client.id()
