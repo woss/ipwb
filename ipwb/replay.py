@@ -128,7 +128,6 @@ class UnsupportedIPFSVersions(Exception):
 
 @app.route('/ipfsdaemon/<cmd>')
 def commandDaemon(cmd):
-    global IPFS_API
     if cmd == 'status':
         return generateDaemonStatusButton()
     elif cmd == 'start':
@@ -587,8 +586,6 @@ def showLandingPage():
 
 
 def show_uri(path, datetime=None):
-    global IPFS_API
-
     if not ipwbUtils.check_daemon_is_alive(ipwbUtils.IPFSAPI_MUTLIADDRESS):
         errStr = ('IPFS daemon not running. '
                   'Start it using $ ipfs daemon on the command-line '
@@ -636,8 +633,8 @@ def show_uri(path, datetime=None):
         #    signal.signal(signal.SIGALRM, handler)
         #    signal.alarm(10)
 
-        payload = IPFS_API.cat(digests[-1])
-        header = IPFS_API.cat(digests[-2])
+        payload = ipfs_client().cat(digests[-1])
+        header = ipfs_client().cat(digests[-2])
 
         # if os.name != 'nt':  # Bug #310
         #    signal.alarm(0)
