@@ -1,32 +1,20 @@
-from os.path import expanduser
-from os.path import basename
-
-import os
-import sys
-import requests
-import ipfshttpclient as ipfsapi
-
-import re
-
-# Datetime conversion to rfc1123
+import json
 import locale
 import logging
 import os
 import platform
 import re
-import json
+import sys
 from os.path import expanduser
 
 import ipfshttpclient
 import requests
-from ipfshttpclient.exceptions import AddressError, ConnectionError
+from ipfshttpclient.exceptions import AddressError
+# from requests.exceptions import ConnectionError
+from ipfshttpclient.exceptions import ConnectionError
 from multiaddr.exceptions import StringParseError
 from pkg_resources import parse_version
 
-# from requests.exceptions import ConnectionError
-from ipfshttpclient.exceptions import ConnectionError
-from ipfshttpclient.exceptions import AddressError
-from multiaddr.exceptions import StringParseError
 logger = logging.getLogger(__name__)
 
 IPFSAPI_MUTLIADDRESS = '/dns/localhost/tcp/5001/http'
@@ -58,26 +46,27 @@ def createIPFSClient(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
 def isDaemonAlive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
     client = createIPFSClient()
+
     if client is None:
-        print("Error initializing IPFS API client")
-        return False
+        raise Exception("Error initializing IPFS API client.")
 
     try:
         # ConnectionError/AttributeError if IPFS daemon not running
         client.id()
         return True
 
-    except ConnectionError:  # exceptions.AttributeError):
-        logger.error('Daemon is not running at %s', daemonMultiaddr)
-        return False
+    except ConnectionError as err:
+        raise Exception(f'Daemon is not running at: {daemonMultiaddr}') from err
 
-    except OSError:
+    except OSError as err:
         raise Exception(
             'IPFS is likely not installed. See https://ipfs.io/docs/install/'
-        )
+        ) from err
 
     except Exception as e:
-        raise Exception('Unknown error in retrieving daemon status.') from e
+        raise Exception(
+            'Unknown error in retrieving IPFS daemon status.',
+        ) from e
 
 
 def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax

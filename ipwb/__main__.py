@@ -1,17 +1,16 @@
-import sys
 import argparse
-import tempfile
-import string  # For generating a temp file for stdin
 import random  # For generating a temp file for stdin
-
-from .__init__ import __version__ as ipwb_version
+import string  # For generating a temp file for stdin
+import sys
+import tempfile
 
 # ipwb modules
-from . import replay
-from . import indexer
-from . import util
+from ipwb import settings, replay, indexer, util
+from ipwb.error_handler import exception_logger
+from .__init__ import __version__ as ipwb_version
 
 
+@exception_logger(catch=not settings.DEBUG)
 def main():
     checkArgs(sys.argv)
 
