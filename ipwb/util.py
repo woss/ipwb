@@ -1,10 +1,9 @@
 from os.path import expanduser
-from os.path import basename
 
 import os
-import sys
+
+import ipfshttpclient
 import requests
-import ipfshttpclient as ipfsapi
 
 import re
 # Datetime conversion to rfc1123
