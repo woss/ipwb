@@ -16,11 +16,7 @@ from six.moves.urllib.request import urlopen
 import json
 from .__init__ import __version__ as ipwbVersion
 
-from pkg_resources import parse_version
-
-# from requests.exceptions import ConnectionError
-from ipfshttpclient.exceptions import ConnectionError
-from ipfshttpclient.exceptions import AddressError
+from ipfshttpclient.exceptions import ConnectionError, AddressError
 from multiaddr.exceptions import StringParseError
 from pkg_resources import parse_version
 
@@ -66,7 +62,9 @@ def isDaemonAlive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
         return True
 
     except ConnectionError as err:
-        raise Exception(f'Daemon is not running at: {daemonMultiaddr}') from err
+        raise Exception(
+            f'Daemon is not running at: {daemonMultiaddr}',
+        ) from err
 
     except OSError as err:
         raise Exception(
