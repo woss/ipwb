@@ -35,7 +35,7 @@ from requests.exceptions import HTTPError
 
 from . import util as ipwbUtils
 from .backends import get_web_archive_index
-from .util import unsurt
+from .util import unsurt, ipfs_client
 from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from .util import INDEX_FILE
 
@@ -62,12 +62,6 @@ ALLOWED_EXTENSIONS = ('.warc', '.warc.gz')
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
-
-
-IPFS_API = ipwbUtils.create_ipfs_client()
-if IPFS_API is None:
-    print("Error initializing IPFS API client")
-    sys.exit()
 
 
 @app.context_processor
@@ -143,10 +137,10 @@ def commandDaemon(cmd):
 
     elif cmd == 'stop':
         try:
-            installedIPFSVersion = IPFS_API.version()['Version']
+            installedIPFSVersion = ipfs_client().version()['Version']
             if ipwbUtils.compareVersions(installedIPFSVersion, '0.4.10') < 0:
                 raise UnsupportedIPFSVersions()
-            IPFS_API.shutdown()
+            ipfs_client().shutdown()
         except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as e:
             if os.name != 'nt':  # Big hammer
                 subprocess.call(['killall', 'ipfs'])

@@ -1,3 +1,4 @@
+import functools
 from os.path import expanduser
 
 import os
@@ -42,16 +43,18 @@ log.setLevel(logging.ERROR)
 dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 
-def create_ipfs_client(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+@functools.lru_cache()
+def ipfs_client(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+    """Create and cache IPFS client instance."""
     try:
         return ipfshttpclient.Client(daemonMultiaddr)
-    except (StringParseError, AddressError):
-        return None  # Malformed multiaddress for the daemon
+    except Exception as err:
+        raise Exception('Cannot create an IPFS client.') from err
 
 
 def check_daemon_is_alive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    client = create_ipfs_client()
+    client = ipfs_client()
 
     if client is None:
         raise Exception("Error initializing IPFS API client.")
