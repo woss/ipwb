@@ -141,10 +141,17 @@ def checkArgs(argsIn):
     parser.add_argument(
         '-v', '--version', help='Report the version of ipwb', action='version',
         version='InterPlanetary Wayback ' + ipwb_version)
+    parser.add_argument(
+        '-u', '--update-check',
+        action='store_true',
+        help='Check whether an updated version of ipwb is available'
+        )
+    parser.set_defaults(func=util.checkForUpdate)
 
     argCount = len(argsIn)
     cmdList = ['index', 'replay']
-    baseParserFlagList = ['-d', '--daemon', '-v', '--version']
+    baseParserFlagList = ['-d', '--daemon', '-v', '--version',
+                          '-u', '--update-check']
 
     # Various invocation error, used to show appropriate help
     cmdError_index = argCount == 2 and argsIn[1] == 'index'

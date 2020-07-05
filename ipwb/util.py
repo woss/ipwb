@@ -1,21 +1,32 @@
-import json
-import locale
-import logging
-import os
-import platform
-import re
-import sys
 from os.path import expanduser
+from os.path import basename
 
-import ipfshttpclient
+import os
+import sys
 import requests
-from ipfshttpclient.exceptions import AddressError
+import ipfshttpclient as ipfsapi
+
+import re
+# Datetime conversion to rfc1123
+import locale
+import datetime
+import logging
+import platform
+
+from six.moves.urllib.request import urlopen
+import json
+from .__init__ import __version__ as ipwbVersion
+
+from pkg_resources import parse_version
+
 # from requests.exceptions import ConnectionError
 from ipfshttpclient.exceptions import ConnectionError
+from ipfshttpclient.exceptions import AddressError
 from multiaddr.exceptions import StringParseError
 from pkg_resources import parse_version
 
 logger = logging.getLogger(__name__)
+
 
 IPFSAPI_MUTLIADDRESS = '/dns/localhost/tcp/5001/http'
 # or '/dns/{host}/tcp/{port}/http'
@@ -189,16 +200,12 @@ def fetch_remote_file(path):
         return r.text
 
     except ConnectionError:
-        logError(f'File at {path} is unavailable.')
-    except Exception as E:
-        logError(f'An unknown error occurred while trying to fetch {path}')
-        logError(sys.exc_info()[0])
+        raise Exception(f'File at {path} is unavailable.')
 
+    except Exception as err:
         raise Exception(
             'An unknown error occurred trying to fetch {}'.format(path)
-        ) from e
-
-    return None
+        ) from err
 
 
 # IPFS Config manipulation from here on out.
@@ -211,10 +218,10 @@ def readIPFSConfig():
         with open(ipfsConfigPath, 'r') as f:
             return json.load(f)
 
-    except IOError:
+    except IOError as err:
         raise Exception(
             'IPFS config not found. Have you installed ipfs and run ipfs init?'
-        )
+        ) from err
 
 
 def writeIPFSConfig(jsonToWrite):
@@ -294,3 +301,24 @@ def unsurt(surt):
     except ValueError:
         # May not be a valid surt
         return surt
+
+
+def compareCurrentAndLatestIPWBVersions():
+    try:
+        resp = urlopen('https://pypi.python.org/pypi/ipwb/json')
+        jResp = json.loads(resp.read())
+        latestVersion = jResp['info']['version']
+        currentVersion = re.sub(r'\.0+', '.', ipwbVersion)
+        return (currentVersion, latestVersion)
+    except Exception as e:
+        return (None, None)
+
+
+def checkForUpdate(_):
+    (current, latest) = compareCurrentAndLatestIPWBVersions()
+
+    if current != latest and current is not None:
+        print('This version of ipwb is outdated.'
+              ' Please run pip install --upgrade ipwb.')
+    print(f'* Latest version: {latest}')
+    print(f'* Installed version: {current}')
