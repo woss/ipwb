@@ -65,14 +65,13 @@ def test_acceptdatetime_status(warc, lookup, acceptdatetime, status):
 
     headers = {'Accept-Datetime': acceptdatetime}
 
-    resp = requests.get('http://localhost:5000/{}'.format(lookup),
+    resp = requests.get(f'http://localhost:5000/{lookup}',
                         allow_redirects=False, headers=headers)
     assert resp.status_code == status
 
     ipwbTest.stopReplay()
 
 
-@pytest.mark.mementoRelationOneCount
 def test_mementoRelations_one():
     relsForURIMs = getRelsFromURIMSinWARC('1memento.warc')
 
@@ -89,7 +88,6 @@ def test_mementoRelations_one():
         cond_lastMemento
 
 
-@pytest.mark.mementoRelationTwoCount
 def test_mementoRelations_two():
     relsForURIMs = getRelsFromURIMSinWARC('2mementos.warc')
 
@@ -118,7 +116,6 @@ def test_mementoRelations_two():
         cond_lastMemento
 
 
-@pytest.mark.mementoRelationThreeCount
 def test_mementoRelations_three():
     relsForURIMs = getRelsFromURIMSinWARC('3mementos.warc')
 
@@ -168,7 +165,6 @@ def test_mementoRelations_three():
             cond_m3m3_lastMemento)
 
 
-@pytest.mark.mementoRelationFourCount
 def test_mementoRelations_four():
     relsForURIMs = getRelsFromURIMSinWARC('4mementos.warc')
 
@@ -247,7 +243,6 @@ def test_mementoRelations_four():
             cond_m4m4_lastMemento)
 
 
-@pytest.mark.mementoRelationFiveCount
 def test_mementoRelations_five():
     relsForURIMs = getRelsFromURIMSinWARC('5mementos.warc')
 
