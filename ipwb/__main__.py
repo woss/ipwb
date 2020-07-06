@@ -68,9 +68,9 @@ def checkArgs_replay(args):
         replay.start(cdxjFilePath=args.index, proxy=proxy)
     else:
         print('ERROR: An index file must be specified if not piping, e.g.,')
-        print((f"> ipwb replay "
+        print(("> ipwb replay "
                f"{os.path.sep.join(['', 'path', 'to', 'your', 'index.cdxj'])}"
-               f"\n"))
+               "\n"))
 
         args.onError()
         sys.exit()
