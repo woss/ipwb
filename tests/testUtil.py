@@ -21,7 +21,7 @@ def createUniqueWARC():
     warcInFilename = 'frogTest.warc'
     warcInPath = os.path.join(
         Path(os.path.dirname(__file__)).parent,
-        'samples', 'warcs', warcInFilename))
+        'samples', 'warcs', warcInFilename)
 
     stringToChange = b'abcdefghijklmnopqrstuvwxz'
     randomString = getRandomString(len(stringToChange))
@@ -34,7 +34,7 @@ def createUniqueWARC():
                                              randomString + '.warc')
     warcOutPath = os.path.join(
         Path(os.path.dirname(__file__)).parent,
-        'samples', 'warcs', warcOutFilename))
+        'samples', 'warcs', warcOutFilename)
 
     print(warcOutPath)
     with open(warcOutPath, 'wb') as warcFile:
@@ -61,7 +61,7 @@ def startReplay(warcFilename):
     global p
     pathOfWARC = os.path.join(
         Path(os.path.dirname(__file__)).parent,
-        'samples', 'warcs', warcFilename))
+        'samples', 'warcs', warcFilename)
 
     tf = tempfile.NamedTemporaryFile(mode='a', suffix='.cdxj')
     tempFilePath = tf.name

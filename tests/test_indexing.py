@@ -22,7 +22,7 @@ def test_cdxj_warc_responseRecordCount():
 def test_warc_ipwbIndexerBrokenWARCRecord():
     pathOfBrokenWARC = os.path.join(
         Path(os.path.dirname(__file__)).parent,
-        'samples', 'warcs', 'broken.warc'))
+        'samples', 'warcs', 'broken.warc')
     cdxjList = indexer.indexFileAt(pathOfBrokenWARC, quiet=True)
     cdxj = '\n'.join(cdxjList)
     assert ipwbTest.countCDXJEntries(cdxj) == 1
