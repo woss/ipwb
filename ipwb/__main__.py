@@ -1,26 +1,23 @@
-import sys
-import os
 import argparse
-import tempfile
-import string  # For generating a temp file for stdin
 import random  # For generating a temp file for stdin
-from .__init__ import __version__ as ipwbVersion
+import string  # For generating a temp file for stdin
+import sys
+import tempfile
 
 # ipwb modules
-from . import replay
-from . import indexer
-from . import util as ipwbUtil
-
-from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
+from ipwb import settings, replay, indexer, util
+from ipwb.error_handler import exception_logger
+from .__init__ import __version__ as ipwb_version
 
 
+@exception_logger(catch=not settings.DEBUG)
 def main():
     checkArgs(sys.argv)
 
 
 def checkArgs_index(args):
-    if not ipwbUtil.isDaemonAlive():
-        sys.exit()
+    util.check_daemon_is_alive()
+
     encKey = None
     compressionLevel = None
     if args.e:
@@ -139,17 +136,17 @@ def checkArgs(argsIn):
         '-d', '--daemon',
         help=("Multi-address of IPFS daemon "
               "(default /dns/localhost/tcp/5001/http)"),
-        default=ipwbUtil.IPFSAPI_MUTLIADDRESS,
+        default=util.IPFSAPI_MUTLIADDRESS,
         dest='daemon_address')
     parser.add_argument(
         '-v', '--version', help='Report the version of ipwb', action='version',
-        version='InterPlanetary Wayback ' + ipwbVersion)
+        version=f'InterPlanetary Wayback {ipwb_version}')
     parser.add_argument(
         '-u', '--update-check',
         action='store_true',
         help='Check whether an updated version of ipwb is available'
         )
-    parser.set_defaults(func=ipwbUtil.checkForUpdate)
+    parser.set_defaults(func=util.checkForUpdate)
 
     argCount = len(argsIn)
     cmdList = ['index', 'replay']

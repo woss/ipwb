@@ -14,7 +14,6 @@ import sys
 import os
 import json
 import ipfshttpclient as ipfsapi
-import argparse
 import zlib
 import surt
 import ntpath
@@ -33,14 +32,10 @@ from six.moves import input
 from six import PY2
 from six import PY3
 
-from .util import iso8601ToDigits14
-from . import util as ipwbUtils
-
-# from warcio.archiveiterator import ArchiveIterator
+from ipwb.util import iso8601ToDigits14, ipfs_client
 
 import requests
 import datetime
-import shutil
 
 from bs4 import BeautifulSoup
 
@@ -51,11 +46,6 @@ import base64
 from .__init__ import __version__ as ipwbVersion
 
 DEBUG = False
-
-IPFS_API = ipwbUtils.createIPFSClient()
-if IPFS_API is None:
-    print("Error initializing IPFS API client")
-    sys.exit()
 
 
 def s2b(s):  # Convert str to bytes, cross-py
@@ -367,8 +357,7 @@ def logError(errIn, end='\n'):
 
 
 def pullFromIPFS(hash):
-    global IPFS_API
-    return IPFS_API.cat(hash)
+    return ipfs_client().cat(hash)
 
 
 def pushBytesToIPFS(bytes):
@@ -376,11 +365,9 @@ def pushBytesToIPFS(bytes):
     Call the IPFS API to add the byte string to IPFS.
     When IPFS returns a hash, return this to the caller
     """
-    global IPFS_API
-
     # Returns unicode in py2.7, str in py3.7
     try:
-        res = IPFS_API.add_bytes(bytes)  # bytes)
+        res = ipfs_client().add_bytes(bytes)  # bytes)
     except TypeError as err:
         print('fail')
         logError('IPFS_API had an issue pushing the item to IPFS')

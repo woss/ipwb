@@ -1,10 +1,10 @@
+import functools
 from os.path import expanduser
-from os.path import basename
 
 import os
-import sys
+
+import ipfshttpclient
 import requests
-import ipfshttpclient as ipfsapi
 
 import re
 # Datetime conversion to rfc1123
@@ -17,12 +17,14 @@ from six.moves.urllib.request import urlopen
 import json
 from .__init__ import __version__ as ipwbVersion
 
+from ipfshttpclient.exceptions import ConnectionError, AddressError
+from multiaddr.exceptions import StringParseError
 from pkg_resources import parse_version
 
-# from requests.exceptions import ConnectionError
-from ipfshttpclient.exceptions import ConnectionError
-from ipfshttpclient.exceptions import AddressError
-from multiaddr.exceptions import StringParseError
+from .exceptions import IPFSDaemonNotAvailable
+
+logger = logging.getLogger(__name__)
+
 
 IPFSAPI_MUTLIADDRESS = '/dns/localhost/tcp/5001/http'
 # or '/dns/{host}/tcp/{port}/http'
@@ -43,38 +45,48 @@ log.setLevel(logging.ERROR)
 dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 
-def createIPFSClient(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+def create_ipfs_client(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+    """Create and return IPFS client."""
     try:
-        return ipfsapi.Client(daemonMultiaddr)
-    except (StringParseError, AddressError):
-        return None  # Malformed multiaddress for the daemon
+        return ipfshttpclient.Client(daemonMultiaddr)
+    except Exception as err:
+        raise Exception('Cannot create an IPFS client.') from err
 
 
-def isDaemonAlive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+@functools.lru_cache()
+def ipfs_client(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
+    """
+    Create and cache IPFS client instance.
+
+    Caching is the single difference between this and
+    `create_ipfs_client()` above.
+    """
+    return create_ipfs_client(daemonMultiaddr)
+
+
+def check_daemon_is_alive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
-    client = createIPFSClient()
-    if client is None:
-        print("Error initializing IPFS API client")
-        return False
+    client = ipfs_client()
 
     try:
         # ConnectionError/AttributeError if IPFS daemon not running
         client.id()
         return True
-    except (ConnectionError):  # exceptions.AttributeError):
-        logError("Daemon is not running at " + daemonMultiaddr)
-        return False
-    except OSError:
-        logError("IPFS is likely not installed. "
-                 "See https://ipfs.io/docs/install/")
-        sys.exit()
-    except Exception as e:
-        logError('Unknown error in retrieving daemon status')
-        logError(sys.exc_info()[0])
 
+    except ConnectionError as err:
+        raise IPFSDaemonNotAvailable(
+            f'Daemon is not running at: {daemonMultiaddr}',
+        ) from err
 
-def logError(errIn):
-    print(errIn, file=sys.stderr)
+    except OSError as err:
+        raise IPFSDaemonNotAvailable(
+            'IPFS is likely not installed. See https://ipfs.io/docs/install/'
+        ) from err
+
+    except Exception as err:
+        raise IPFSDaemonNotAvailable(
+            'Unknown error in retrieving IPFS daemon status.',
+        ) from err
 
 
 def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
@@ -195,12 +207,14 @@ def fetch_remote_file(path):
     try:
         r = requests.get(path)
         return r.text
+
     except ConnectionError:
-        logError(f'File at {path} is unavailable.')
-    except Exception as E:
-        logError(f'An unknown error occurred while trying to fetch {path}')
-        logError(sys.exc_info()[0])
-    return None
+        raise Exception(f'File at {path} is unavailable.')
+
+    except Exception as err:
+        raise Exception(
+            'An unknown error occurred trying to fetch {}'.format(path)
+        ) from err
 
 
 # IPFS Config manipulation from here on out.
@@ -212,10 +226,11 @@ def readIPFSConfig():
     try:
         with open(ipfsConfigPath, 'r') as f:
             return json.load(f)
-    except IOError:
-        logError("IPFS config not found.")
-        logError("Have you installed ipfs and run ipfs init?")
-        sys.exit()
+
+    except IOError as err:
+        raise Exception(
+            'IPFS config not found. Have you installed ipfs and run ipfs init?'
+        ) from err
 
 
 def writeIPFSConfig(jsonToWrite):

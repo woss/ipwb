@@ -35,7 +35,8 @@ from requests.exceptions import HTTPError
 
 from . import util as ipwbUtils
 from .backends import get_web_archive_index
-from .util import unsurt
+from .exceptions import IPFSDaemonNotAvailable
+from .util import unsurt, ipfs_client
 from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
 from .util import INDEX_FILE
 
@@ -56,18 +57,16 @@ from werkzeug.utils import secure_filename
 from flask import send_from_directory
 from flask import make_response
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 UPLOAD_FOLDER = tempfile.gettempdir()
 ALLOWED_EXTENSIONS = ('.warc', '.warc.gz')
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.debug = False
-
-
-IPFS_API = ipwbUtils.createIPFSClient()
-if IPFS_API is None:
-    print("Error initializing IPFS API client")
-    sys.exit()
 
 
 @app.context_processor
@@ -134,7 +133,6 @@ class UnsupportedIPFSVersions(Exception):
 
 @app.route('/ipfsdaemon/<cmd>')
 def commandDaemon(cmd):
-    global IPFS_API
     if cmd == 'status':
         return generateDaemonStatusButton()
     elif cmd == 'start':
@@ -143,10 +141,10 @@ def commandDaemon(cmd):
 
     elif cmd == 'stop':
         try:
-            installedIPFSVersion = IPFS_API.version()['Version']
+            installedIPFSVersion = ipfs_client().version()['Version']
             if ipwbUtils.compareVersions(installedIPFSVersion, '0.4.10') < 0:
                 raise UnsupportedIPFSVersions()
-            IPFS_API.shutdown()
+            ipfs_client().shutdown()
         except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as e:
             if os.name != 'nt':  # Big hammer
                 subprocess.call(['killall', 'ipfs'])
@@ -593,13 +591,15 @@ def showLandingPage():
 
 
 def show_uri(path, datetime=None):
-    global IPFS_API
+    try:
+        ipwbUtils.check_daemon_is_alive(ipwbUtils.IPFSAPI_MUTLIADDRESS)
 
-    if not ipwbUtils.isDaemonAlive(ipwbUtils.IPFSAPI_MUTLIADDRESS):
+    except IPFSDaemonNotAvailable:
         errStr = ('IPFS daemon not running. '
                   'Start it using $ ipfs daemon on the command-line '
                   ' or from the <a href="/">'
                   'IPWB replay homepage</a>.')
+
         return Response(errStr, status=503)
 
     cdxjLine = ''
@@ -642,8 +642,8 @@ def show_uri(path, datetime=None):
         #    signal.signal(signal.SIGALRM, handler)
         #    signal.alarm(10)
 
-        payload = IPFS_API.cat(digests[-1])
-        header = IPFS_API.cat(digests[-2])
+        payload = ipfs_client().cat(digests[-1])
+        header = ipfs_client().cat(digests[-2])
 
         # if os.name != 'nt':  # Bug #310
         #    signal.alarm(0)
@@ -846,7 +846,14 @@ def extractResponseFromChunkedData(data):
 def generateDaemonStatusButton():
     text = 'Not Running'
     buttonText = 'Start'
-    if ipwbUtils.isDaemonAlive():
+
+    try:
+        ipwbUtils.check_daemon_is_alive()
+
+    except IPFSDaemonNotAvailable:
+        pass
+
+    else:
         text = 'Running'
         buttonText = 'Stop'
 
@@ -1034,12 +1041,11 @@ def start(cdxjFilePath, proxy=None):
     if not hostPort:
         ipwbUtils.setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
 
-    if ipwbUtils.isDaemonAlive():
-        ipwbUtils.setIPWBReplayIndexPath(cdxjFilePath)
-        app.cdxjFilePath = cdxjFilePath
-    else:
-        print('Sample data not pulled from IPFS.')
-        print('Check that the IPFS daemon is running.')
+    # This will throw an exception if daemon is not available.
+    ipwbUtils.check_daemon_is_alive()
+
+    ipwbUtils.setIPWBReplayIndexPath(cdxjFilePath)
+    app.cdxjFilePath = cdxjFilePath
 
     try:
         print((f'IPWB replay started on '
