@@ -47,15 +47,10 @@ def checkArgs_replay(args):
         random.seed()
         # Write data to temp file (sub-optimal)
 
-        number_of_characters = 12
-        character_set = string.ascii_uppercase + string.digits * 6
-
-        tempFilePath = (
-            f"{tempfile.gettempdir()}{os.path.sep}"
-            f"{random.sample(character_set, number_of_characters)}.cdxj")
-        with open(tempFilePath, 'w') as f:
-            f.write(cdxjIn)
-        args.index = tempFilePath
+        tf = tempfile.NamedTemporaryFile(mode='w', suffix='.cdxj')
+        tf.write(cdxjIn)
+        args.index = tf.name
+        tf.close()
         suppliedIndexParameter = True
 
     proxy = None
