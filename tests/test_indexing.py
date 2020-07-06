@@ -21,8 +21,8 @@ def test_cdxj_warc_responseRecordCount():
 # WARC-Response record for html should still exist in output
 def test_warc_ipwbIndexerBrokenWARCRecord():
     pathOfBrokenWARC = os.path.join(
-        str(Path(os.path.dirname(__file__)).parents[0]) +
-        os.path.sep.join(['', 'samples', 'warcs', 'broken.warc']))
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', 'broken.warc'))
     cdxjList = indexer.indexFileAt(pathOfBrokenWARC, quiet=True)
     cdxj = '\n'.join(cdxjList)
     assert ipwbTest.countCDXJEntries(cdxj) == 1
