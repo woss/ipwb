@@ -205,7 +205,7 @@ def fetch_remote_file(path):
 
 # IPFS Config manipulation from here on out.
 def readIPFSConfig():
-    ipfsConfigPath = os.path.sep.join([expanduser("~"), '.ipfs', 'config'])
+    ipfsConfigPath = os.path.join(expanduser("~"), '.ipfs', 'config')
     if 'IPFS_PATH' in os.environ:
         ipfsConfigPath = os.path.sep.join(
             [os.environ.get('IPFS_PATH'), 'config'])
