@@ -140,7 +140,7 @@ def checkArgs(argsIn):
         dest='daemon_address')
     parser.add_argument(
         '-v', '--version', help='Report the version of ipwb', action='version',
-        version='InterPlanetary Wayback ' + ipwb_version)
+        version=f'InterPlanetary Wayback {ipwb_version}')
     parser.add_argument(
         '-u', '--update-check',
         action='store_true',
