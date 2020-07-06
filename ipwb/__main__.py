@@ -43,16 +43,16 @@ def checkArgs_replay(args):
 
         random.seed()
         # Write data to temp file (sub-optimal)
-        tempFilePath = tempfile.gettempdir() + '/' + ''.join(random.sample(
-              string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
-        with open(tempFilePath, 'w') as f:
-            f.write(cdxjIn)
-        args.index = tempFilePath
+
+        tf = tempfile.NamedTemporaryFile(mode='w', suffix='.cdxj')
+        tf.write(cdxjIn)
+        args.index = tf.name
+        tf.close()
         suppliedIndexParameter = True
 
     proxy = None
     if hasattr(args, 'proxy') and args.proxy is not None:
-        print('Proxying to ' + args.proxy)
+        print(f'Proxying to {args.proxy}')
         proxy = args.proxy
 
     # TODO: add any other sub-arguments for replay here
@@ -60,7 +60,8 @@ def checkArgs_replay(args):
         replay.start(cdxjFilePath=args.index, proxy=proxy)
     else:
         print('ERROR: An index file must be specified if not piping, e.g.,')
-        print('> ipwb replay /path/to/your/index.cdxj\n')
+        print(("> ipwb replay "
+               f"{os.path.join('path', 'to', 'your', 'index.cdxj')}\n"))
 
         args.onError()
         sys.exit()

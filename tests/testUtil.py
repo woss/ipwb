@@ -11,6 +11,7 @@ from ipwb import indexer
 from ipwb import __file__ as moduleLocation
 
 from multiprocessing import Process
+from pathlib import Path
 
 p = Process()
 
@@ -18,8 +19,9 @@ p = Process()
 def createUniqueWARC():
     lines = []
     warcInFilename = 'frogTest.warc'
-    warcInPath = os.path.join(os.path.dirname(__file__) +
-                              '/../samples/warcs/' + warcInFilename)
+    warcInPath = os.path.join(
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', warcInFilename)
 
     stringToChange = b'abcdefghijklmnopqrstuvwxz'
     randomString = getRandomString(len(stringToChange))
@@ -30,8 +32,10 @@ def createUniqueWARC():
 
     warcOutFilename = warcInFilename.replace('.warc', '_' +
                                              randomString + '.warc')
-    warcOutPath = os.path.join(os.path.dirname(__file__) +
-                               '/../samples/warcs/' + warcOutFilename)
+    warcOutPath = os.path.join(
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', warcOutFilename)
+
     print(warcOutPath)
     with open(warcOutPath, 'wb') as warcFile:
         warcFile.write(newContent)
@@ -55,12 +59,13 @@ def countCDXJEntries(cdxjData):
 
 def startReplay(warcFilename):
     global p
-    pathOfWARC = os.path.join(os.path.dirname(__file__) +
-                              '/../samples/warcs/' + warcFilename)
-    tempFilePath = tempfile.gettempdir() + '/' + ''.join(random.sample(
-        string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
+    pathOfWARC = os.path.join(
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', warcFilename)
 
-    open(tempFilePath, 'a').close()  # Create placeholder file for replay
+    tf = tempfile.NamedTemporaryFile(mode='a', suffix='.cdxj')
+    tempFilePath = tf.name
+    tf.close()
 
     p = Process(target=replay.start, args=[tempFilePath])
     p.start()

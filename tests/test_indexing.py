@@ -6,6 +6,8 @@ import os
 
 from ipwb import indexer
 
+from pathlib import Path
+
 
 def test_cdxj_warc_responseRecordCount():
     newWARCPath = ipwbTest.createUniqueWARC()
@@ -18,8 +20,9 @@ def test_cdxj_warc_responseRecordCount():
 # A response record's content-length causes the payload to truncate
 # WARC-Response record for html should still exist in output
 def test_warc_ipwbIndexerBrokenWARCRecord():
-    pathOfBrokenWARC = os.path.join(os.path.dirname(__file__) +
-                                    '/../samples/warcs/broken.warc')
+    pathOfBrokenWARC = os.path.join(
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', 'broken.warc')
     cdxjList = indexer.indexFileAt(pathOfBrokenWARC, quiet=True)
     cdxj = '\n'.join(cdxjList)
     assert ipwbTest.countCDXJEntries(cdxj) == 1
