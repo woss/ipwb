@@ -83,10 +83,10 @@ def check_daemon_is_alive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
             'IPFS is likely not installed. See https://ipfs.io/docs/install/'
         ) from err
 
-    except Exception as e:
+    except Exception as err:
         raise IPFSDaemonNotAvailable(
             'Unknown error in retrieving IPFS daemon status.',
-        ) from e
+        ) from err
 
 
 def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
