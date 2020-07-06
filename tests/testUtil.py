@@ -63,14 +63,9 @@ def startReplay(warcFilename):
         Path(os.path.dirname(__file__)).parent,
         'samples', 'warcs', warcFilename))
 
-    number_of_characters = 12
-    character_set = string.ascii_uppercase + string.digits * 6
-
-    tempFilePath = (
-        f"{tempfile.gettempdir()}{os.path.sep}"
-        f"{random.sample(character_set, number_of_characters)}.cdxj")
-
-    open(tempFilePath, 'a').close()  # Create placeholder file for replay
+    tf = tempfile.NamedTemporaryFile(mode='a', suffix='.cdxj')
+    tempFilePath = tf.name
+    tf.close()
 
     p = Process(target=replay.start, args=[tempFilePath])
     p.start()
