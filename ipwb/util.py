@@ -34,7 +34,7 @@ IPWBREPLAY_ADDRESS = 'localhost:5000'
 (IPWBREPLAY_HOST, IPWBREPLAY_PORT) = IPWBREPLAY_ADDRESS.split(':')
 IPWBREPLAY_PORT = int(IPWBREPLAY_PORT)
 
-INDEX_FILE = os.path.sep.join(['samples', 'indexes', 'salam-home.cdxj'])
+INDEX_FILE = os.path.join('samples', 'indexes', 'salam-home.cdxj')
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
