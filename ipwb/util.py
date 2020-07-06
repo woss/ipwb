@@ -222,8 +222,8 @@ def readIPFSConfig():
 def writeIPFSConfig(jsonToWrite):
     ipfsConfigPath = os.path.sep.join([expanduser("~"), '.ipfs', 'config'])
     if 'IPFS_PATH' in os.environ:
-        ipfsConfigPath = os.path.sep.join(
-            [os.environ.get('IPFS_PATH'), 'config'])
+        ipfsConfigPath = os.path.join(
+            os.environ.get('IPFS_PATH'), 'config')
 
     with open(ipfsConfigPath, 'w') as f:
         f.write(json.dumps(jsonToWrite, indent=4, sort_keys=True))
