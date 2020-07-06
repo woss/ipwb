@@ -64,7 +64,7 @@ def checkArgs_replay(args):
     else:
         print('ERROR: An index file must be specified if not piping, e.g.,')
         print(("> ipwb replay "
-               f"{os.path.join('', 'path', 'to', 'your', 'index.cdxj')}\n"))
+               f"{os.path.join('path', 'to', 'your', 'index.cdxj')}\n"))
 
         args.onError()
         sys.exit()
