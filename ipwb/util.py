@@ -220,7 +220,7 @@ def readIPFSConfig():
 
 
 def writeIPFSConfig(jsonToWrite):
-    ipfsConfigPath = os.path.sep.join([expanduser("~"), '.ipfs', 'config'])
+    ipfsConfigPath = os.path.join(expanduser("~"), '.ipfs', 'config')
     if 'IPFS_PATH' in os.environ:
         ipfsConfigPath = os.path.join(
             os.environ.get('IPFS_PATH'), 'config')
