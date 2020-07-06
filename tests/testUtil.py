@@ -19,10 +19,9 @@ p = Process()
 def createUniqueWARC():
     lines = []
     warcInFilename = 'frogTest.warc'
-    ipwb_dir = str(Path(os.path.dirname(__file__)).parents[0])
     warcInPath = os.path.join(
-        ipwb_dir +
-        os.path.sep.join(['', 'samples', 'warcs', warcInFilename]))
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', warcInFilename))
 
     stringToChange = b'abcdefghijklmnopqrstuvwxz'
     randomString = getRandomString(len(stringToChange))
