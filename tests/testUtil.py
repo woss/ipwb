@@ -33,8 +33,8 @@ def createUniqueWARC():
     warcOutFilename = warcInFilename.replace('.warc', '_' +
                                              randomString + '.warc')
     warcOutPath = os.path.join(
-        ipwb_dir +
-        os.path.sep.join(['', 'samples', 'warcs', warcOutFilename]))
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', warcOutFilename))
 
     print(warcOutPath)
     with open(warcOutPath, 'wb') as warcFile:
