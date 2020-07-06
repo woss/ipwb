@@ -60,8 +60,8 @@ def countCDXJEntries(cdxjData):
 def startReplay(warcFilename):
     global p
     pathOfWARC = os.path.join(
-        str(Path(os.path.dirname(__file__)).parents[0]) +
-        os.path.sep.join(['', 'samples', 'warcs', warcFilename]))
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', warcFilename))
 
     number_of_characters = 12
     character_set = string.ascii_uppercase + string.digits * 6
