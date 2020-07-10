@@ -1,4 +1,4 @@
-[![image](https://raw.githubusercontent.com/oduwsdl/ipwb/master/docs/logo.png)](https://pypi.python.org/pypi/ipwb)
+[![image](docs/logo.png)](https://pypi.python.org/pypi/ipwb)
 
 # InterPlanetary Wayback (ipwb)
 
