@@ -1,4 +1,4 @@
-[![image](docs/logo_stroked_400px.png)](https://pypi.python.org/pypi/ipwb)
+[![image](https://github.com/oduwsdl/ipwb/raw/master/docs/logo_stroked_400px.png)](https://pypi.python.org/pypi/ipwb)
 
 # InterPlanetary Wayback (ipwb)
 
