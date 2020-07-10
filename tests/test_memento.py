@@ -15,22 +15,6 @@ import re
 import sys
 
 
-def getURIMsFromTimeMapInWARC(warcFilename):
-    ipwbTest.startReplay(warcFilename)
-
-    tmURI = 'http://localhost:5000/timemap/link/memento.us/'
-    tm = urlopen(tmURI).read().decode('utf-8')
-
-    urims = []
-    for line in tm.split('\n'):
-        isAMemento = len(re.findall('rel=".*memento"', line)) > 0
-        if isAMemento:
-            urims.append(re.findall('<(.*)>', line)[0])
-    ipwbTest.stopReplay()
-
-    return urims
-
-
 def getRelsFromURIMSinWARC(warc):
     urims = getURIMsFromTimeMapInWARC(warc)
     ipwbTest.startReplay(warc)
