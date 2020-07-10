@@ -57,24 +57,23 @@ def countCDXJEntries(cdxjData):
     return urimCount
 
 
-def startReplay(warcFilename):
+def startReplay(warc_filename):
     global p
-    pathOfWARC = os.path.join(
+    path_of_warc = os.path.join(
         Path(os.path.dirname(__file__)).parent,
-        'samples', 'warcs', warcFilename)
+        'samples', 'warcs', warc_filename)
 
-    tf = tempfile.NamedTemporaryFile(mode='a', suffix='.cdxj')
-    tempFilePath = tf.name
-    tf.close()
+    fh, tempfile_path = tempfile.mkstemp(suffix='.cdxj')
+    os.close(fh)
 
-    p = Process(target=replay.start, args=[tempFilePath])
+    p = Process(target=replay.start, args=[tempfile_path])
     p.start()
     sleep(5)
 
-    cdxjList = indexer.indexFileAt(pathOfWARC, quiet=True)
-    cdxj = '\n'.join(cdxjList)
+    cdxj_list = indexer.indexFileAt(path_of_warc, quiet=True)
+    cdxj = '\n'.join(cdxj_list)
 
-    with open(tempFilePath, 'w') as f:
+    with open(tempfile_path, 'w') as f:
         f.write(cdxj)
 
 

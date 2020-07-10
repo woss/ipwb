@@ -1,4 +1,5 @@
 import argparse
+import os
 import random  # For generating a temp file for stdin
 import string  # For generating a temp file for stdin
 import sys
@@ -44,10 +45,11 @@ def checkArgs_replay(args):
         random.seed()
         # Write data to temp file (sub-optimal)
 
-        tf = tempfile.NamedTemporaryFile(mode='w', suffix='.cdxj')
-        tf.write(cdxjIn)
-        args.index = tf.name
-        tf.close()
+        fh, args.index = tempfile.mkstemp(suffix='.cdxj')
+        os.close(fh)
+        with open(args.index, 'w') as f:
+            f.write(cdxjIn)
+
         suppliedIndexParameter = True
 
     proxy = None
