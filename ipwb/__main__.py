@@ -44,10 +44,10 @@ def checkArgs_replay(args):
         random.seed()
         # Write data to temp file (sub-optimal)
 
-        tf = tempfile.NamedTemporaryFile(mode='w', suffix='.cdxj')
-        tf.write(cdxjIn)
-        args.index = tf.name
-        tf.close()
+        fh, args.index = tempfile.mkstemp(suffix='.cdxj')
+        with open(fh, 'w') as f:
+            f.write(cdxjIn)
+
         suppliedIndexParameter = True
 
     proxy = None
