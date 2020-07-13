@@ -149,7 +149,7 @@ def checkArgs(argsIn):
         action='store_true',
         help='Check whether an updated version of ipwb is available'
         )
-    parser.set_defaults(func=util.checkForUpdate)
+    parser.set_defaults(func=util.check_for_update)
 
     argCount = len(argsIn)
     cmdList = ['index', 'replay']

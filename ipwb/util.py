@@ -9,7 +9,6 @@ import requests
 import re
 # Datetime conversion to rfc1123
 import locale
-import dataclasses
 import datetime
 import logging
 import platform
@@ -317,40 +316,23 @@ def unsurt(surt):
         return surt
 
 
-@dataclasses.dataclass(frozen=True)
-class VersionCompareError(Exception):
-    installed_version: str
-
-    def __str__(self):
-        return ('pypi.org unavailable, '
-                'unable to check if installed version is latest.\n'
-                f'* Installed version {self.installed_version}.'
-                )
-
-
-def compare_installed_and_latest_ipwb_versions():
-    installed_version = None
+def get_latest_version():
     try:
-        installed_version = re.sub(r'\.0+', '.', ipwb_version)
         resp = urlopen('https://pypi.org/pypi/ipwb/json')
-        jResp = json.loads(resp.read())
-        latest_version = jResp['info']['version']
-        return (installed_version, latest_version)
-    except URLError:  # pypi.org unavailable
-        raise VersionCompareError(installed_version=installed_version)
+        return json.loads(resp.read())['info']['version']
+    except:
+        return None
 
 
-def checkForUpdate(_):
-    try:
-        (installed, latest) = compare_installed_and_latest_ipwb_versions()
-
-        if installed != latest and installed is not None:
-            print('This version of ipwb is outdated.'
-                  ' Please run pip install --upgrade ipwb.')
-        print(f'* Latest version: {latest}')
-        print(f'* Installed version: {installed}')
-    except VersionCompareError as err:
-        print(err)
-    except Exception as err:
-        print("An unknown error occurred.")
-        print(err)
+def check_for_update(_):
+    latest = get_latest_version()
+    if not latest:
+        print("Failed to check for the latest version.")
+        return
+    current = re.sub(r'\.0+', '.', ipwb_version)
+    if latest == current:
+        print(f"Installed version {current} is up to date.")
+    else:
+        print("The installed version of ipwb is outdated.")
+        print(f"Installed: {current}\nLatest:    {latest}")
+        print("Please run `pip install --upgrade ipwb` to upgrade.")
