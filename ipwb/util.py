@@ -320,7 +320,7 @@ def get_latest_version():
     try:
         resp = urlopen('https://pypi.org/pypi/ipwb/json')
         return json.loads(resp.read())['info']['version']
-    except:
+    except Exception:
         return None
 
 
