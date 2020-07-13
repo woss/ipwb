@@ -332,7 +332,7 @@ def compare_installed_and_latest_ipwb_versions():
     installed_version = None
     try:
         installed_version = re.sub(r'\.0+', '.', ipwb_version)
-        resp = urlopen('https://pypi.python.org/pypi/ipwb/json')
+        resp = urlopen('https://pypi.org/pypi/ipwb/json')
         jResp = json.loads(resp.read())
         latest_version = jResp['info']['version']
         return (installed_version, latest_version)
