@@ -334,5 +334,5 @@ def check_for_update(_):
         print(f"Installed version {current} is up to date.")
     else:
         print("The installed version of ipwb is outdated.")
-        print(f"Installed: {current}\nLatest:    {latest}")
+        print(f"* Installed: {current}\n* Latest:    {latest}")
         print("Please run `pip install --upgrade ipwb` to upgrade.")
