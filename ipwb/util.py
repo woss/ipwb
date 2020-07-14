@@ -13,9 +13,11 @@ import datetime
 import logging
 import platform
 
-from six.moves.urllib.request import urlopen
+from urllib.request import urlopen
+from urllib.error import URLError
+
 import json
-from .__init__ import __version__ as ipwbVersion
+from .__init__ import __version__ as ipwb_version
 
 from ipfshttpclient.exceptions import ConnectionError, AddressError
 from multiaddr.exceptions import StringParseError
@@ -314,22 +316,23 @@ def unsurt(surt):
         return surt
 
 
-def compareCurrentAndLatestIPWBVersions():
+def get_latest_version():
     try:
-        resp = urlopen('https://pypi.python.org/pypi/ipwb/json')
-        jResp = json.loads(resp.read())
-        latestVersion = jResp['info']['version']
-        currentVersion = re.sub(r'\.0+', '.', ipwbVersion)
-        return (currentVersion, latestVersion)
-    except Exception as e:
-        return (None, None)
+        resp = urlopen('https://pypi.org/pypi/ipwb/json')
+        return json.loads(resp.read())['info']['version']
+    except Exception:
+        return None
 
 
-def checkForUpdate(_):
-    (current, latest) = compareCurrentAndLatestIPWBVersions()
-
-    if current != latest and current is not None:
-        print('This version of ipwb is outdated.'
-              ' Please run pip install --upgrade ipwb.')
-    print(f'* Latest version: {latest}')
-    print(f'* Installed version: {current}')
+def check_for_update(_):
+    latest = get_latest_version()
+    if not latest:
+        print("Failed to check for the latest version.")
+        return
+    current = re.sub(r'\.0+', '.', ipwb_version)
+    if latest == current:
+        print(f"Installed version {current} is up to date.")
+    else:
+        print("The installed version of ipwb is outdated.")
+        print(f"* Installed: {current}\n* Latest:    {latest}")
+        print("Please run `pip install --upgrade ipwb` to upgrade.")
