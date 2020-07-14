@@ -11,6 +11,7 @@ from ipwb import indexer
 from ipwb import __file__ as moduleLocation
 
 from multiprocessing import Process
+from pathlib import Path
 
 p = Process()
 
@@ -18,8 +19,9 @@ p = Process()
 def createUniqueWARC():
     lines = []
     warcInFilename = 'frogTest.warc'
-    warcInPath = os.path.join(os.path.dirname(__file__) +
-                              '/../samples/warcs/' + warcInFilename)
+    warcInPath = os.path.join(
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', warcInFilename)
 
     stringToChange = b'abcdefghijklmnopqrstuvwxz'
     randomString = getRandomString(len(stringToChange))
@@ -30,8 +32,10 @@ def createUniqueWARC():
 
     warcOutFilename = warcInFilename.replace('.warc', '_' +
                                              randomString + '.warc')
-    warcOutPath = os.path.join(os.path.dirname(__file__) +
-                               '/../samples/warcs/' + warcOutFilename)
+    warcOutPath = os.path.join(
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', warcOutFilename)
+
     print(warcOutPath)
     with open(warcOutPath, 'wb') as warcFile:
         warcFile.write(newContent)
@@ -53,23 +57,23 @@ def countCDXJEntries(cdxjData):
     return urimCount
 
 
-def startReplay(warcFilename):
+def startReplay(warc_filename):
     global p
-    pathOfWARC = os.path.join(os.path.dirname(__file__) +
-                              '/../samples/warcs/' + warcFilename)
-    tempFilePath = tempfile.gettempdir() + '/' + ''.join(random.sample(
-        string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
+    path_of_warc = os.path.join(
+        Path(os.path.dirname(__file__)).parent,
+        'samples', 'warcs', warc_filename)
 
-    open(tempFilePath, 'a').close()  # Create placeholder file for replay
+    fh, tempfile_path = tempfile.mkstemp(suffix='.cdxj')
+    os.close(fh)
 
-    p = Process(target=replay.start, args=[tempFilePath])
+    p = Process(target=replay.start, args=[tempfile_path])
     p.start()
     sleep(5)
 
-    cdxjList = indexer.indexFileAt(pathOfWARC, quiet=True)
-    cdxj = '\n'.join(cdxjList)
+    cdxj_list = indexer.indexFileAt(path_of_warc, quiet=True)
+    cdxj = '\n'.join(cdxj_list)
 
-    with open(tempFilePath, 'w') as f:
+    with open(tempfile_path, 'w') as f:
         f.write(cdxj)
 
 

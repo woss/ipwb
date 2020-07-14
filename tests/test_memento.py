@@ -65,7 +65,7 @@ def test_acceptdatetime_status(warc, lookup, acceptdatetime, status):
 
     headers = {'Accept-Datetime': acceptdatetime}
 
-    resp = requests.get('http://localhost:5000/{}'.format(lookup),
+    resp = requests.get(f'http://localhost:5000/{lookup}',
                         allow_redirects=False, headers=headers)
     assert resp.status_code == status
 

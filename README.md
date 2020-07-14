@@ -1,4 +1,4 @@
-[![image](https://raw.githubusercontent.com/oduwsdl/ipwb/master/docs/logo.png)](https://pypi.python.org/pypi/ipwb)
+[![image](https://github.com/oduwsdl/ipwb/raw/master/docs/logo_stroked_400px.png)](https://pypi.python.org/pypi/ipwb)
 
 # InterPlanetary Wayback (ipwb)
 
@@ -134,18 +134,20 @@ Usage of sub-commands in ipwb can be accessed through providing the `-h` or `--h
 
 ```
 $ ipwb -h
-usage: ipwb [-h] [-d DAEMON_ADDRESS] [-v] {index,replay} ...
+usage: ipwb [-h] [-d DAEMON_ADDRESS] [-v] [-u] {index,replay} ...
 
 InterPlanetary Wayback (ipwb)
 
 optional arguments:
   -h, --help            show this help message and exit
   -d DAEMON_ADDRESS, --daemon DAEMON_ADDRESS
-                        Location of ipfs daemon (default 127.0.0.1:5001)
+                        Multi-address of IPFS daemon (default
+                        /dns/localhost/tcp/5001/http)
   -v, --version         Report the version of ipwb
+  -u, --update-check    Check whether an updated version of ipwb is available
 
 ipwb commands:
-  Invoke using "ipwb <command>", e.g., ipwb replay
+  Invoke using "ipwb <command>", e.g., ipwb replay <cdxjFile>
 
   {index,replay}
     index               Index a WARC file for replay in ipwb

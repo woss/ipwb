@@ -1,27 +1,24 @@
-import sys
-import os
 import argparse
-import tempfile
-import string  # For generating a temp file for stdin
+import os
 import random  # For generating a temp file for stdin
-from .__init__ import __version__ as ipwbVersion
+import string  # For generating a temp file for stdin
+import sys
+import tempfile
 
 # ipwb modules
-from . import replay
-from . import indexer
-from . import util as ipwbUtil
-
-from .util import IPWBREPLAY_HOST, IPWBREPLAY_PORT
+from ipwb import settings, replay, indexer, util
+from ipwb.error_handler import exception_logger
+from .__init__ import __version__ as ipwb_version
 
 
+@exception_logger(catch=not settings.DEBUG)
 def main():
-    ipwbUtil.checkForUpdate()
-    args = checkArgs(sys.argv)
+    checkArgs(sys.argv)
 
 
 def checkArgs_index(args):
-    if not ipwbUtil.isDaemonAlive():
-        sys.exit()
+    util.check_daemon_is_alive()
+
     encKey = None
     compressionLevel = None
     if args.e:
@@ -47,16 +44,17 @@ def checkArgs_replay(args):
 
         random.seed()
         # Write data to temp file (sub-optimal)
-        tempFilePath = tempfile.gettempdir() + '/' + ''.join(random.sample(
-              string.ascii_uppercase + string.digits * 6, 12)) + '.cdxj'
-        with open(tempFilePath, 'w') as f:
+
+        fh, args.index = tempfile.mkstemp(suffix='.cdxj')
+        os.close(fh)
+        with open(args.index, 'w') as f:
             f.write(cdxjIn)
-        args.index = tempFilePath
+
         suppliedIndexParameter = True
 
     proxy = None
     if hasattr(args, 'proxy') and args.proxy is not None:
-        print('Proxying to ' + args.proxy)
+        print(f'Proxying to {args.proxy}')
         proxy = args.proxy
 
     # TODO: add any other sub-arguments for replay here
@@ -64,7 +62,8 @@ def checkArgs_replay(args):
         replay.start(cdxjFilePath=args.index, proxy=proxy)
     else:
         print('ERROR: An index file must be specified if not piping, e.g.,')
-        print('> ipwb replay /path/to/your/index.cdxj\n')
+        print(("> ipwb replay "
+               f"{os.path.join('path', 'to', 'your', 'index.cdxj')}\n"))
 
         args.onError()
         sys.exit()
@@ -140,15 +139,22 @@ def checkArgs(argsIn):
         '-d', '--daemon',
         help=("Multi-address of IPFS daemon "
               "(default /dns/localhost/tcp/5001/http)"),
-        default=ipwbUtil.IPFSAPI_MUTLIADDRESS,
+        default=util.IPFSAPI_MUTLIADDRESS,
         dest='daemon_address')
     parser.add_argument(
         '-v', '--version', help='Report the version of ipwb', action='version',
-        version='InterPlanetary Wayback ' + ipwbVersion)
+        version=f'InterPlanetary Wayback {ipwb_version}')
+    parser.add_argument(
+        '-u', '--update-check',
+        action='store_true',
+        help='Check whether an updated version of ipwb is available'
+        )
+    parser.set_defaults(func=util.check_for_update)
 
     argCount = len(argsIn)
     cmdList = ['index', 'replay']
-    baseParserFlagList = ['-d', '--daemon', '-v', '--version']
+    baseParserFlagList = ['-d', '--daemon', '-v', '--version',
+                          '-u', '--update-check']
 
     # Various invocation error, used to show appropriate help
     cmdError_index = argCount == 2 and argsIn[1] == 'index'

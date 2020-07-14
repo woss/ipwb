@@ -10,12 +10,10 @@ This script reads a WARC file and returns a CDXJ representative of its
  JSON block corresponding to the archived URI.
 """
 
-from __future__ import print_function
 import sys
 import os
 import json
-import ipfshttpclient4ipwb as ipfsapi
-import argparse
+import ipfshttpclient as ipfsapi
 import zlib
 import surt
 import ntpath
@@ -27,21 +25,17 @@ from warcio.archiveiterator import ArchiveIterator
 from warcio.recordloader import ArchiveLoadFailed
 
 from requests.packages.urllib3.exceptions import NewConnectionError
-from ipfshttpclient4ipwb.exceptions import ConnectionError
+from ipfshttpclient.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 
 from six.moves import input
 from six import PY2
 from six import PY3
 
-from .util import iso8601ToDigits14
-from . import util as ipwbUtils
-
-# from warcio.archiveiterator import ArchiveIterator
+from ipwb.util import iso8601ToDigits14, ipfs_client
 
 import requests
 import datetime
-import shutil
 
 from bs4 import BeautifulSoup
 
@@ -52,11 +46,6 @@ import base64
 from .__init__ import __version__ as ipwbVersion
 
 DEBUG = False
-
-IPFS_API = ipwbUtils.createIPFSClient()
-if IPFS_API is None:
-    print("Error initializing IPFS API client")
-    sys.exit()
 
 
 def s2b(s):  # Convert str to bytes, cross-py
@@ -82,7 +71,7 @@ def pushToIPFS(hstr, payload):
             payloadIPFSHash = pushBytesToIPFS(payload)
 
             if retryCount > 0:
-                m = 'Retrying succeeded after {0} attempts'.format(retryCount)
+                m = f'Retrying succeeded after {retryCount} attempts'
                 print(m)
             return [httpHeaderIPFSHash, payloadIPFSHash]
         except NewConnectionError as e:
@@ -91,9 +80,8 @@ def pushToIPFS(hstr, payload):
 
             sys.exit()
         except Exception as e:  # TODO: Do not use bare except
-            attemptCount = '{0}/{1}'.format(retryCount + 1, ipfsRetryCount)
-            logError('IPFS failed to add, ' +
-                     'retrying attempt {0}'.format(attemptCount))
+            attemptCount = f'{retryCount + 1}/{ipfsRetryCount}'
+            logError(f'IPFS failed to add, retrying attempt {attemptCount}')
             logError(sys.exc_info())
             traceback.print_tb(sys.exc_info()[-1])
 
@@ -272,7 +260,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                     (hstr, payload, nonce) = \
                         encrypt(hstr, payload, encryptionKey)
 
-            # print('Adding {0} to IPFS'.format(entry.get('url')))
+            # print(f'Adding {entry.get("url")} to IPFS')
             ipfsHashes = pushToIPFS(hstr, payload)
 
             if ipfsHashes is None:
@@ -291,8 +279,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
                 record.rec_headers.get_header('WARC-Date'))
             mime = record.http_headers.get_header('content-type')
             obj = {
-                'locator': 'urn:ipfs/{0}/{1}'.format(
-                    httpHeaderIPFSHash, payloadIPFSHash),
+                'locator': f'urn:ipfs/{httpHeaderIPFSHash}/{payloadIPFSHash}',
                 'status_code': statusCode,
                 'mime_type': mime or '',
                 'original_uri': originaluri
@@ -306,8 +293,7 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
 
             objJSON = json.dumps(obj)
 
-            cdxjLine = '{0} {1} {2}'.format(originaluri_surted,
-                                            timestamp, objJSON)
+            cdxjLine = f'{originaluri_surted} {timestamp} {objJSON}'
             cdxjLines.append(cdxjLine)  # + '\n'
         return cdxjLines
 
@@ -315,10 +301,10 @@ def getCDXJLinesFromFile(warcPath, **encCompOpts):
 def generateCDXJMetadata(cdxjLines=None):
     metadata = ['!context ["http://tools.ietf.org/html/rfc7089"]']
     metaVals = {
-        'generator': "InterPlanetary Wayback v.{0}".format(ipwbVersion),
-        'created_at': '{0}'.format(datetime.datetime.now().isoformat())
+        'generator': f'InterPlanetary Wayback {ipwbVersion}',
+        'created_at': datetime.datetime.now().isoformat()
     }
-    metaVals = '!meta {0}'.format(json.dumps(metaVals))
+    metaVals = f'!meta {json.dumps(metaVals)}'
     metadata.append(metaVals)
 
     return metadata
@@ -356,7 +342,7 @@ def verifyFileExists(warcPath):
 
 
 def showProgress(msg, i, n):
-    line = '{0}: {1}/{2}'.format(msg, i, n)
+    line = f'{msg}: {i}/{n}'
     print(line, file=sys.stderr, end='\r')
     # Clear status line, show complete msg
     if i == n - 1:
@@ -371,8 +357,7 @@ def logError(errIn, end='\n'):
 
 
 def pullFromIPFS(hash):
-    global IPFS_API
-    return IPFS_API.cat(hash)
+    return ipfs_client().cat(hash)
 
 
 def pushBytesToIPFS(bytes):
@@ -380,11 +365,9 @@ def pushBytesToIPFS(bytes):
     Call the IPFS API to add the byte string to IPFS.
     When IPFS returns a hash, return this to the caller
     """
-    global IPFS_API
-
     # Returns unicode in py2.7, str in py3.7
     try:
-        res = IPFS_API.add_bytes(bytes)  # bytes)
+        res = ipfs_client().add_bytes(bytes)  # bytes)
     except TypeError as err:
         # print('fail')
         logError('IPFS_API had an issue pushing the item to IPFS')
