@@ -201,7 +201,7 @@ def bin_search(iter, key, datetime=None):
 
         surtk = surtk.rstrip(b"/")
 
-        matchDegree = getMatchDegree(key, datetime, surtk, datetimeK)
+        matchDegree = get_match_degree(key, datetime, surtk, datetimeK)
 
         if matchDegree == MementoMatch.RIGHTKEYWRONGDATE:
             lines.add(line)
@@ -211,7 +211,7 @@ def bin_search(iter, key, datetime=None):
                 surtk, datetimeK, rest = nextLine.split(maxsplit=2)
                 surtk = surtk.rstrip(b"/")
 
-                matchDegree = getMatchDegree(key, datetime, surtk, datetimeK)
+                matchDegree = get_match_degree(key, datetime, surtk, datetimeK)
                 if matchDegree == MementoMatch.RIGHTKEYWRONGDATE:
                     lines.add(nextLine)
                 elif matchDegree == MementoMatch.EXACTMATCH:
@@ -238,7 +238,7 @@ def bin_search(iter, key, datetime=None):
     return ret
 
 
-def getMatchDegree(surt, datetime, surtK, datetimeK):
+def get_match_degree(surt, datetime, surtK, datetimeK):
     if surt == surtK:
         datetimeK = datetimeK.decode()
         if datetime is None or datetime is not None and datetime != datetimeK:
@@ -319,20 +319,20 @@ def resolveMemento(urir, datetime):
     indexPath = ipwbUtils.getIPWBReplayIndexPath()
 
     print(f'Getting CDXJ lines with the URI-R {urir} from {indexPath}')
-    cdxjLinesWithURIR = getCDXJLinesWithURIR(urir, indexPath)
+    cdxj_lines_with_urir = getCDXJLinesWithURIR(urir, indexPath)
 
-    closestLine = getCDXJLineClosestTo(datetime, cdxjLinesWithURIR)
+    closest_line = getCDXJLineClosestTo(datetime, cdxj_lines_with_urir)
 
-    if closestLine is None or len(closestLine) == 0:
+    if closest_line is None or len(closest_line) == 0:
         msg = '<h1>ERROR 404</h1>'
         msg += f'<p>No captures found for {urir} at {datetime}.</p>'
 
         return Response(msg, status=404)
     else:  # If there is a byte string, conv to reg string for splitting
-        closestLine = closestLine.decode()
+        closestLine = closest_line.decode()
 
-    uri = unsurt(closestLine.split(' ')[0])
-    newDatetime = closestLine.split(' ')[1]
+    uri = unsurt(closest_line.split(' ')[0])
+    newDatetime = closest_line.split(' ')[1]
 
     linkHeader = getLinkHeaderAbbreviatedTimeMap(urir, newDatetime)
 
@@ -358,17 +358,18 @@ def showMemento(urir, datetime):
         msg = f'Expected a 4-14 digits valid datetime: {datetime}'
         return Response(msg, status=400)
     except ipfsapi.exceptions.ErrorResponse:
-        respString = ('{0} not found :(' +
-                      ' <a href="http://{1}:{2}">Go home</a>').format(
-            urir, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
-        return Response(respString, status=404)
+        resp_string = (
+                f'{urir} not found :('
+                f' <a href="http://{IPWBREPLAY_HOST}:{IPWBREPLAY_PORT}">'
+                'Go home</a>')
+        return Response(resp_string, status=404)
 
-    resolvedMemento = resolveMemento(urir, datetime)
+    resolved_memento = resolveMemento(urir, datetime)
 
     # resolved to a 404, flask Response object returned instead of tuple
-    if isinstance(resolvedMemento, Response):
-        return resolvedMemento
-    (newDatetime, linkHeader, uri) = resolvedMemento
+    if isinstance(resolved_memento, Response):
+        return resolved_memento
+    (newDatetime, linkHeader, uri) = resolved_memento
 
     if newDatetime != datetime:
         resp = redirect(f'/memento/{newDatetime}/{urir}', code=302)
@@ -710,10 +711,10 @@ def show_uri(path, datetime=None):
         return Response(errStr, status=503)
 
     uri = getCompleteURI(path)
-    cdxjLine = ''
+    cdxj_line = ''
     try:
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
-        cdxjLine = getCDXJLinesWithURIR(uri, indexPath, datetime)
+        cdxj_line = getCDXJLinesWithURIR(uri, indexPath, datetime)
 
     except Exception as e:
         print(sys.exc_info()[0])
@@ -721,13 +722,13 @@ def show_uri(path, datetime=None):
                       f' <a href="http://{IPWBREPLAY_HOST}:{IPWBREPLAY_PORT}">'
                       f'Go home</a>')
         return Response(respString)
-    if cdxjLine is None:  # Resource not found in archives
+    if cdxj_line is None:  # Resource not found in archives
         return generateNoMementosInterface(path, datetime)
 
-    if len(cdxjLine) == 1:
-        cdxjLine = cdxjLine[0].decode()
+    if len(cdxj_line) == 1:
+        cdxj_line = cdxj_line[0].decode()
 
-    cdxjParts = cdxjLine.split(" ", 2)
+    cdxjParts = cdxj_line.split(" ", 2)
     jObj = json.loads(cdxjParts[2])
     datetime = cdxjParts[1]
 
@@ -835,7 +836,7 @@ def show_uri(path, datetime=None):
     # Add ipwb header for additional SW logic
     newPayload = resp.get_data()
 
-    lineJSON = cdxjLine.split(' ', 2)[2]
+    lineJSON = cdxj_line.split(' ', 2)[2]
     mime = json.loads(lineJSON)['mime_type']
 
     if 'text/html' in mime:
