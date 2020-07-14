@@ -290,7 +290,7 @@ def showMementosForURIRs(urir):
         msg += f'<p>{len(cdxjLinesWithURIR)} capture(s) available:</p><ul>'
 
         for line in cdxjLinesWithURIR:
-            fields = line.decode().split(' ', 2)
+            fields = line.split(' ', 2)
             dt14 = fields[1]
             dtrfc1123 = ipwbUtils.digits14ToRFC1123(fields[1])
             msg += (f'<li><a href="/memento/{dt14}/{unsurt(fields[0])}">'
@@ -328,8 +328,8 @@ def resolveMemento(urir, datetime):
         msg += f'<p>No captures found for {urir} at {datetime}.</p>'
 
         return Response(msg, status=404)
-    else:  # If there is a byte string, conv to reg string for splitting
-        closestLine = closest_line.decode()
+    # else:  # If there is a byte string, conv to reg string for splitting
+    #    closest_line = closest_line.decode()
 
     uri = unsurt(closest_line.split(' ')[0])
     newDatetime = closest_line.split(' ')[1]
@@ -387,7 +387,7 @@ def getCDXJLineClosestTo(datetimeTarget, cdxjLines):
     bestLine = None
     datetimeTarget = int(datetimeTarget)
     for cdxjLine in cdxjLines:
-        dt = int(cdxjLine.decode().split(' ')[1])
+        dt = int(cdxjLine.split(' ')[1])
         diff = abs(dt - datetimeTarget)
         if diff < smallestDiff:
             smallestDiff = diff
@@ -582,7 +582,7 @@ def generateLinkTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     tmData += f'<{tgURI}>; rel="timegate"'
 
     for i, line in enumerate(cdxjLines):
-        (surtURI, datetime, json) = line.decode().split(' ', 2)
+        (surtURI, datetime, json) = line.split(' ', 2)
         dtRFC1123 = ipwbUtils.digits14ToRFC1123(datetime)
         firstLastStr = ''
 
@@ -621,7 +621,7 @@ def generateCDXJTimeMapFromCDXJLines(cdxjLines, original, tmself, tgURI):
     hostAndPort = tmself[0:tmself.index('timemap/')]
 
     for i, line in enumerate(cdxjLines):
-        (surtURI, datetime, json) = line.decode().split(' ', 2)
+        (surtURI, datetime, json) = line.split(' ', 2)
         dtRFC1123 = ipwbUtils.digits14ToRFC1123(datetime)
         firstLastStr = ''
 
