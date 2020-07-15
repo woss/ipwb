@@ -61,7 +61,6 @@ def test_replay_search(warc, lookup, status, location):
     ipwbTest.stopReplay()
 
 
-@pytest.mark.testReplayDatedMemento
 def test_replay_dated_memento():
     ipwbTest.startReplay('salam-home.warc')
 
