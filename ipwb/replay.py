@@ -357,12 +357,6 @@ def showMemento(urir, datetime):
     except ValueError as e:
         msg = f'Expected a 4-14 digits valid datetime: {datetime}'
         return Response(msg, status=400)
-    except ipfsapi.exceptions.ErrorResponse:
-        resp_string = (
-                f'{urir} not found :('
-                f' <a href="http://{IPWBREPLAY_HOST}:{IPWBREPLAY_PORT}">'
-                'Go home</a>')
-        return Response(resp_string, status=404)
 
     resolved_memento = resolveMemento(urir, datetime)
 
