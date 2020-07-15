@@ -710,11 +710,10 @@ def show_uri(path, datetime=None):
 
         return Response(errStr, status=503)
 
-    uri = getCompleteURI(path)
     cdxj_line = ''
     try:
         indexPath = ipwbUtils.getIPWBReplayIndexPath()
-        cdxj_line = getCDXJLinesWithURIR(uri, indexPath, datetime)
+        cdxj_line = getCDXJLinesWithURIR(path, indexPath, datetime)
 
     except Exception as e:
         print(sys.exc_info()[0])
