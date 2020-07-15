@@ -773,12 +773,6 @@ def show_uri(path, datetime=None):
         else:  # payload found but not header, fabricate header
             print("HTTP header not found, fabricating for resp replay")
             header = ''
-    except ipfsapi.exceptions.ErrorResponse:
-        print("{0} not found at {1}".format(cdxjParts[0], digests[-1]))
-        respString = ('{0} not found at {1} :(' +
-                      ' <a href="http://{2}:{3}">Go home</a>').format(
-            path, datetime, IPWBREPLAY_HOST, IPWBREPLAY_PORT)
-        return Response(respString, 404)
     except Exception as e:
         print('Unknown exception occurred while fetching from ipfs.')
         print(e)
