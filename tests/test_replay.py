@@ -67,7 +67,7 @@ def test_replay_dated_memento():
     url = 'http://localhost:5000/memento/{}/cs.odu.edu/~salam/'
     dest = '/memento/20160305192247/cs.odu.edu/~salam/'
 
-    invalidDts = [
+    invalid_dts = [
         '18',
         '20181',
         '201800',
@@ -78,7 +78,7 @@ def test_replay_dated_memento():
         '20180230000000',
         '20180102263127',
     ]
-    for dt in invalidDts:
+    for dt in invalid_dts:
         resp = requests.get(url.format(dt), allow_redirects=False)
         assert resp.status_code == 400
 
@@ -92,7 +92,7 @@ def test_replay_dated_memento():
         resp = requests.get(url.format(dt), allow_redirects=False)
         assert resp.status_code == 404
 
-    validDts = [
+    valid_dts = [
         '2018',
         '201811',
         '20181126',
@@ -100,7 +100,7 @@ def test_replay_dated_memento():
         '201811261342',
         '20181126134257',
     ]
-    for dt in validDts:
+    for dt in valid_dts:
         resp = requests.get(url.format(dt), allow_redirects=False)
         assert resp.status_code == 302
         assert resp.headers.get('location') == dest
@@ -181,8 +181,8 @@ def test_helpWithoutDaemon():  # See #244
     pass
 
 
-def test_unit_commandDaemon():
-    replay.commandDaemon('start')
+def test_unit_command_daemon():
+    replay.command_daemon('start')
     sleep(10)
     try:
         urllib.request.urlopen('http://localhost:5001')

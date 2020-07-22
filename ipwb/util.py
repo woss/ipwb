@@ -44,7 +44,7 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 
-dtPattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
+dt_pattern = re.compile(r"^(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?$")
 
 
 def create_ipfs_client(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
@@ -91,39 +91,39 @@ def check_daemon_is_alive(daemonMultiaddr=IPFSAPI_MUTLIADDRESS):
         ) from err
 
 
-def isValidCDXJ(stringIn):  # TODO: Check specific strict syntax
+def is_valid_cdxj(stringIn):  # TODO: Check specific strict syntax
     # Also, be sure to mind the meta headers starting with @/#, etc.
     return True
 
 
-def isValidCDXJLine(cdxjLine):
+def is_valid_cdxj_line(cdxj_line):
     try:
-        (surtURI, datetime, jsonData) = cdxjLine.split(' ', 2)
+        (surt_uri, datetime, jsonData) = cdxj_line.split(' ', 2)
 
         json.loads(jsonData)
-        validDatetime = len(datetime) == 14
+        valid_datetime = len(datetime) == 14
 
-        validSURT = True  # TODO: check valid SURT URI
+        valid_surt = True  # TODO: check valid SURT URI
 
-        return validSURT and validDatetime
+        return valid_surt and valid_datetime
     except ValueError:  # Not valid JSON
         return False
     except NameError:
-        return isCDXJMetadataRecord(cdxjLine)
+        return is_cdxj_metadata_record(cdxj_line)
     except Exception as e:
         return False
 
 
 # Compare versions of software, <0 if a<b, 0 if ==, >1 if b>a
-def compareVersions(versionA, versionB):
+def compare_versions(versionA, versionB):
     return parse_version(versionA) < parse_version(versionB)
 
 
-def isCDXJMetadataRecord(cdxjLine):
-    return cdxjLine.strip()[:1] == '!'
+def is_cdxj_metadata_record(cdxj_line):
+    return cdxj_line.strip()[:1] == '!'
 
 
-def isLocalHosty(uri):
+def is_localhosty(uri):
     # TODO: check for these SW conditions
     # (*, localhost, *); (*, 127/8, *); (*, ::1/128, *)
     localhosts = ['localhost', '127.0.0.1']
@@ -133,31 +133,31 @@ def isLocalHosty(uri):
     return False
 
 
-def setLocale():
+def set_locale():
     currentOS = platform.system()
 
     if currentOS == 'Darwin':
-        newLocale = 'en_US'
+        new_locale = 'en_US'
     elif currentOS == 'Windows':
-        newLocale = 'english'
+        new_locale = 'english'
     else:  # Assume Linux
-        newLocale = 'en_US.utf8'
+        new_locale = 'en_US.utf8'
 
     try:
-        locale.setlocale(locale.LC_TIME, newLocale)
+        locale.set_locale(locale.LC_TIME, new_locale)
     except locale.Error:
-        locale.setlocale(locale.LC_TIME, '')
+        locale.set_locale(locale.LC_TIME, '')
 
 
-def digits14ToRFC1123(digits14):
-    setLocale()
+def digits14_to_rfc1123(digits14):
+    set_locale()
     d = datetime.datetime.strptime(digits14, '%Y%m%d%H%M%S')
     return d.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
 
-def rfc1123ToDigits14(rfc1123DateString):
-    setLocale()
-    d = datetime.datetime.strptime(rfc1123DateString,
+def rfc1123_to_digits14(rfc1123_datestring):
+    set_locale()
+    d = datetime.datetime.strptime(rfc1123_datestring,
                                    '%a, %d %b %Y %H:%M:%S %Z')
 
     # TODO: Account for conversion if TZ other than GMT not specified
@@ -165,8 +165,8 @@ def rfc1123ToDigits14(rfc1123DateString):
     return d.strftime('%Y%m%d%H%M%S')
 
 
-def iso8601ToDigits14(iso8601DateString):
-    setLocale()
+def iso8601_to_digits14(iso8601DateString):
+    set_locale()
     d = datetime.datetime.strptime(iso8601DateString,
                                    "%Y-%m-%dT%H:%M:%SZ")
 
@@ -175,7 +175,7 @@ def iso8601ToDigits14(iso8601DateString):
     return d.strftime('%Y%m%d%H%M%S')
 
 
-def isRFC1123Compliant(dtstr):
+def is_rfc1123_compliant(dtstr):
     try:
         datetime.datetime.strptime(dtstr, '%a, %d %b %Y %H:%M:%S GMT')
         return True
@@ -183,15 +183,15 @@ def isRFC1123Compliant(dtstr):
         return False
 
 
-def getRFC1123OfNow():
-    setLocale()
+def get_rfc1123_of_now():
+    set_locale()
     d = datetime.datetime.now()
     return d.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
 
-def padDigits14(dtstr, validate=False):
+def pad_digits14(dtstr, validate=False):
     '''Pad datetime to make a 14-digit string and optionally validate it'''
-    match = dtPattern.match(dtstr)
+    match = dt_pattern.match(dtstr)
     if match:
         Y = match.group(1)
         m = match.group(2) or '01'
@@ -220,14 +220,14 @@ def fetch_remote_file(path):
 
 
 # IPFS Config manipulation from here on out.
-def readIPFSConfig():
-    ipfsConfigPath = os.path.join(expanduser("~"), '.ipfs', 'config')
+def read_ipfs_config():
+    ipfs_config_path = os.path.join(expanduser("~"), '.ipfs', 'config')
     if 'IPFS_PATH' in os.environ:
-        ipfsConfigPath = os.path.join(
+        ipfs_config_path = os.path.join(
             os.environ.get('IPFS_PATH'), 'config')
 
     try:
-        with open(ipfsConfigPath, 'r') as f:
+        with open(ipfs_config_path, 'r') as f:
             return json.load(f)
 
     except IOError as err:
@@ -236,67 +236,67 @@ def readIPFSConfig():
         ) from err
 
 
-def writeIPFSConfig(jsonToWrite):
-    ipfsConfigPath = os.path.join(expanduser("~"), '.ipfs', 'config')
+def write_ipfs_config(json_to_write):
+    ipfs_config_path = os.path.join(expanduser("~"), '.ipfs', 'config')
     if 'IPFS_PATH' in os.environ:
-        ipfsConfigPath = os.path.join(
+        ipfs_config_path = os.path.join(
             os.environ.get('IPFS_PATH'), 'config')
 
-    with open(ipfsConfigPath, 'w') as f:
-        f.write(json.dumps(jsonToWrite, indent=4, sort_keys=True))
+    with open(ipfs_config_path, 'w') as f:
+        f.write(json.dumps(json_to_write, indent=4, sort_keys=True))
 
 
-def getIPFSAPIHostAndPort(ipfsJSON=None):
-    if not ipfsJSON:
-        ipfsJSON = readIPFSConfig()
+def get_ipfsapi_host_and_port(ipfs_json=None):
+    if not ipfs_json:
+        ipfs_json = read_ipfs_config()
 
     (scheme, host, protocol, port) = (
-        ipfsJSON['Addresses']['API'][1:].split('/')
+        ipfs_json['Addresses']['API'][1:].split('/')
     )
     return host + ':' + port
 
 
-def getIPWBReplayConfig(ipfsJSON=None):
-    if not ipfsJSON:
-        ipfsJSON = readIPFSConfig()
+def get_ipwb_replay_config(ipfs_json=None):
+    if not ipfs_json:
+        ipfs_json = read_ipfs_config()
     port = None
-    if ('Ipwb' in ipfsJSON and 'Replay' in ipfsJSON['Ipwb'] and
-       'Port' in ipfsJSON['Ipwb']['Replay']):
-        host = ipfsJSON['Ipwb']['Replay']['Host']
-        port = ipfsJSON['Ipwb']['Replay']['Port']
+    if ('Ipwb' in ipfs_json and 'Replay' in ipfs_json['Ipwb'] and
+       'Port' in ipfs_json['Ipwb']['Replay']):
+        host = ipfs_json['Ipwb']['Replay']['Host']
+        port = ipfs_json['Ipwb']['Replay']['Port']
         return (host, port)
     else:
         return None
 
 
-def setIPWBReplayConfig(Host, Port, ipfsJSON=None):
-    if not ipfsJSON:
-        ipfsJSON = readIPFSConfig()
-    ipfsJSON['Ipwb'] = {}
-    ipfsJSON['Ipwb']['Replay'] = {
+def set_ipwb_replay_config(Host, Port, ipfs_json=None):
+    if not ipfs_json:
+        ipfs_json = read_ipfs_config()
+    ipfs_json['Ipwb'] = {}
+    ipfs_json['Ipwb']['Replay'] = {
       u'Host': Host,
       u'Port': Port
     }
-    writeIPFSConfig(ipfsJSON)
+    write_ipfs_config(ipfs_json)
 
 
-def setIPWBReplayIndexPath(cdxj):
+def set_ipwb_replay_index_path(cdxj):
     if cdxj is None:
         cdxj = INDEX_FILE
-    ipfsJSON = readIPFSConfig()
-    ipfsJSON['Ipwb']['Replay']['Index'] = cdxj
-    writeIPFSConfig(ipfsJSON)
+    ipfs_json = read_ipfs_config()
+    ipfs_json['Ipwb']['Replay']['Index'] = cdxj
+    write_ipfs_config(ipfs_json)
     return
 
 
-def getIPWBReplayIndexPath():
-    ipfsJSON = readIPFSConfig()
-    if 'Ipwb' not in ipfsJSON:
-        setIPWBReplayConfig(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
-        ipfsJSON = readIPFSConfig()
+def get_ipwb_replay_index_path():
+    ipfs_json = read_ipfs_config()
+    if 'Ipwb' not in ipfs_json:
+        set_ipwb_replay_config(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
+        ipfs_json = read_ipfs_config()
 
-    if 'Index' in ipfsJSON['Ipwb']['Replay']:
-        return ipfsJSON['Ipwb']['Replay']['Index']
+    if 'Index' in ipfs_json['Ipwb']['Replay']:
+        return ipfs_json['Ipwb']['Replay']['Index']
     else:
         return ''
 

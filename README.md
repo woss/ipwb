@@ -157,12 +157,12 @@ ipwb commands:
 ```
 $ ipwb index -h
 usage: ipwb [-h] [-e] [-c] [--compressFirst] [-o OUTFILE] [--debug]
-            index <warcPath> [index <warcPath> ...]
+            index <warc_path> [index <warc_path> ...]
 
 Index a WARC file for replay in ipwb
 
 positional arguments:
-  index <warcPath>      Path to a WARC[.gz] file
+  index <warc_path>      Path to a WARC[.gz] file
 
 optional arguments:
   -h, --help            show this help message and exit

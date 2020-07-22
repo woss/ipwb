@@ -20,13 +20,13 @@ def checkArgs_index(args):
     util.check_daemon_is_alive()
 
     encKey = None
-    compressionLevel = None
+    compression_level = None
     if args.e:
         encKey = ''
     if args.c:
-        compressionLevel = 6  # Magic 6, TA-DA!
+        compression_level = 6  # Magic 6, TA-DA!
 
-    indexer.indexFileAt(args.warcPath, encKey, compressionLevel,
+    indexer.index_file_at(args.warc_path, encKey, compression_level,
                         args.compressFirst, outfile=args.outfile,
                         debug=args.debug)
 
@@ -59,7 +59,7 @@ def checkArgs_replay(args):
 
     # TODO: add any other sub-arguments for replay here
     if suppliedIndexParameter:
-        replay.start(cdxjFilePath=args.index, proxy=proxy)
+        replay.start(cdxj_file_path=args.index, proxy=proxy)
     else:
         print('ERROR: An index file must be specified if not piping, e.g.,')
         print(("> ipwb replay "
@@ -87,9 +87,9 @@ def checkArgs(argsIn):
         description="Index a WARC file for replay in ipwb",
         help="Index a WARC file for replay in ipwb")
     indexParser.add_argument(
-        'warcPath',
+        'warc_path',
         help="Path to a WARC[.gz] file",
-        metavar="index <warcPath>",
+        metavar="index <warc_path>",
         nargs='+',
         default=None)
     indexParser.add_argument(

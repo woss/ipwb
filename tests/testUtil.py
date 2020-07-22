@@ -48,9 +48,9 @@ def getRandomString(n):
                    string.ascii_lowercase + string.digits) for _ in range(n))
 
 
-def countCDXJEntries(cdxjData):
+def countCDXJEntries(cdxj_data):
     urimCount = 0
-    lines = cdxjData.strip().split('\n')
+    lines = cdxj_data.strip().split('\n')
     for line in lines:
         if line[0] != '!':  # Exclude metadata from count
             urimCount += 1
@@ -70,7 +70,7 @@ def startReplay(warc_filename):
     p.start()
     sleep(5)
 
-    cdxj_list = indexer.indexFileAt(path_of_warc, quiet=True)
+    cdxj_list = indexer.index_file_at(path_of_warc, quiet=True)
     cdxj = '\n'.join(cdxj_list)
 
     with open(tempfile_path, 'w') as f:

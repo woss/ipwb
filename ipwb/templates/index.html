@@ -30,7 +30,7 @@ let uris = {{ uris|safe }}
   <p id="memCount"><a id="memCountListLink"><span id="memCountInt">{{ summary.urimCount}}</span></a> Memento<span id="plural">s</span> available</p>
   <details>
     <summary>Options and Details...</summary>
-      <p><label>Archive Index(es): </label>{{ summary.indexPath }}</p>
+      <p><label>Archive Index(es): </label>{{ summary.index_path }}</p>
       <p><label class="twoRowLabel">Service Worker: </label><div><span id="serviceWorkerVersion">checking...</span><br /><button id="reinstallServiceWorker">Reinstall Service Worker</button></div></p>
       <p><form method="post" action="/upload" enctype="multipart/form-data">
         <label class="twoRowLabel">Upload WARC</label>

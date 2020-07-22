@@ -9,10 +9,10 @@ from ipwb import indexer
 from pathlib import Path
 
 
-def test_cdxj_warc_responseRecordCount():
-    newWARCPath = ipwbTest.createUniqueWARC()
+def test_cdxj_warc_responserecord_count():
+    new_warc_path = ipwbTest.createUniqueWARC()
     # use ipwb indexer to push
-    cdxjList = indexer.indexFileAt(newWARCPath, quiet=True)
+    cdxjList = indexer.index_file_at(new_warc_path, quiet=True)
     cdxj = '\n'.join(cdxjList)
     assert ipwbTest.countCDXJEntries(cdxj) == 2
 
@@ -23,7 +23,7 @@ def test_warc_ipwbIndexerBrokenWARCRecord():
     pathOfBrokenWARC = os.path.join(
         Path(os.path.dirname(__file__)).parent,
         'samples', 'warcs', 'broken.warc')
-    cdxjList = indexer.indexFileAt(pathOfBrokenWARC, quiet=True)
+    cdxjList = indexer.index_file_at(pathOfBrokenWARC, quiet=True)
     cdxj = '\n'.join(cdxjList)
     assert ipwbTest.countCDXJEntries(cdxj) == 1
 

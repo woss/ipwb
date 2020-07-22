@@ -8,15 +8,15 @@ from ipwb import indexer
 from . import testUtil as ipwbTest
 
 
-def isValidSURT(surt):
+def is_valid_surt(surt):
     return True  # The surt library does not yet have a way to check this
 
 
-def isValidDatetime(dt):
+def is_valid_datetime(dt):
     return len(dt) == 14 and dt.isdigit()
 
 
-def isValidJSON(jsonIn):
+def is_valid_json(jsonIn):
     try:
         j = json.loads(json.dumps(jsonIn))
     except ValueError:
@@ -24,13 +24,13 @@ def isValidJSON(jsonIn):
     return True
 
 
-def checkCDXJFields(cdxjEntry):
+def check_cdxj_fields(cdxjEntry):
     (surt, dt, json) = cdxjEntry.split(' ', 2)
-    validSURT = isValidSURT(surt)
-    validDT = isValidDatetime(dt)
-    validJSON = isValidJSON(json)
+    valid_surt = is_valid_surt(surt)
+    valid_dt = is_valid_datetime(dt)
+    valid_json = is_valid_json(json)
 
-    return validSURT and validDT and validJSON
+    return valid_surt and valid_dt and valid_json
 
 
 def checkIPWBJSONFieldPresesence(jsonStr):
@@ -45,9 +45,9 @@ def test_push():
       each: surt URI, datetime, JSON
       JSON should contain AT LEAST locator, mime_type, and status fields
     """
-    newWARCPath = ipwbTest.createUniqueWARC()
+    new_warc_path = ipwbTest.createUniqueWARC()
     # use ipwb indexer to push
-    cdxjList = indexer.indexFileAt(newWARCPath, quiet=True)
+    cdxjList = indexer.index_file_at(new_warc_path, quiet=True)
     cdxj = '\n'.join(cdxjList)
 
     firstEntry = cdxj.split('\n')[0]
@@ -57,6 +57,6 @@ def test_push():
             firstNonMetadataEntry = line
             break
 
-    assert checkCDXJFields(firstNonMetadataEntry)
+    assert check_cdxj_fields(firstNonMetadataEntry)
     firstEntryLastField = firstNonMetadataEntry.split(' ', 2)[2]
     assert checkIPWBJSONFieldPresesence(firstEntryLastField)
