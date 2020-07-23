@@ -112,8 +112,8 @@ def create_ipfs_temp_path():
 
 
 def index_file_at(warc_paths, encryption_key=None,
-                compression_level=None, encrypt_THEN_compress=True,
-                quiet=False, outfile=None, debug=False):
+                  compression_level=None, encrypt_THEN_compress=True,
+                  quiet=False, outfile=None, debug=False):
     global DEBUG
     DEBUG = debug
 
@@ -279,7 +279,8 @@ def cdx_cdxj_lines_from_file(warc_path, **enc_comp_opts):
                 record.rec_headers.get_header('WARC-Date'))
             mime = record.http_headers.get_header('content-type')
             obj = {
-                'locator': f'urn:ipfs/{http_header_ipfs_hash}/{payload_ipfs_hash}',
+                'locator':
+                    f'urn:ipfs/{http_header_ipfs_hash}/{payload_ipfs_hash}',
                 'status_code': status_code,
                 'mime_type': mime or '',
                 'original_uri': original_uri

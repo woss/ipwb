@@ -299,7 +299,8 @@ def get_cdxj_lines_with_urir(urir, index_path):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     cdxj_lines_with_urir = []
 
-    cdxj_line_index = get_cdxj_line_binarySearch(s, index_path, True, True)  # get i
+    cdxj_line_index = get_cdxj_line_binarySearch(
+        s, index_path, True, True)  # get i
 
     if cdxj_line_index is None:
         return []
@@ -394,8 +395,10 @@ def get_link_header_abbreviated_timemap(urir, pivot_datetime):
 
     tg_uri = f'http://{host_and_port[0]}:{host_and_port[1]}/timegate/{urir}'
 
-    tm_uri = f'http://{host_and_port[0]}:{host_and_port[1]}/timemap/link/{urir}'
-    tm = generate_link_timemap_from_cdxj_lines(cdxj_lines_with_urir, s, tm_uri, tg_uri)
+    tm_uri = (f'http://{host_and_port[0]}:{host_and_port[1]}'
+              f'/timemap/link/{urir}')
+    tm = generate_link_timemap_from_cdxj_lines(
+        cdxj_lines_with_urir, s, tm_uri, tg_uri)
 
     # Fix base TM relation when viewing abbrev version in Link resp
     tm = tm.replace('rel="self timemap"', 'rel="timemap"')
@@ -449,7 +452,8 @@ def get_proxied_urit(uriT):
     return tmurl
 
 
-def generate_link_timemap_from_cdxj_lines(cdxj_lines, original, tm_self, tg_uri):
+def generate_link_timemap_from_cdxj_lines(
+        cdxj_lines, original, tm_self, tg_uri):
     tmurl = get_proxied_urit(tm_self)
 
     if app.proxy is not None:
@@ -486,12 +490,14 @@ def generate_link_timemap_from_cdxj_lines(cdxj_lines, original, tm_self, tg_uri)
         elif len(cdxj_lines) == 1:
             first_last_str = 'first last '
 
-        tm_data += (f',\n<{host_and_port}memento/{datetime}/{unsurt(surt_uri)}>; '
-                   f'rel="{first_last_str}memento"; datetime="{dt_rfc1123}"')
+        tm_data += (
+            f',\n<{host_and_port}memento/{datetime}/{unsurt(surt_uri)}>; '
+            f'rel="{first_last_str}memento"; datetime="{dt_rfc1123}"')
     return tm_data + '\n'
 
 
-def generate_cdxj_timemap_from_cdxj_lines(cdxj_lines, original, tm_self, tg_uri):
+def generate_cdxj_timemap_from_cdxj_lines(
+        cdxj_lines, original, tm_self, tg_uri):
     tmurl = get_proxied_urit(tm_self)
     if app.proxy is not None:
         tm_self = urlunsplit(tmurl)
@@ -507,9 +513,9 @@ def generate_cdxj_timemap_from_cdxj_lines(cdxj_lines, original, tm_self, tg_uri)
     tm_data += f'!meta {{"timegate_uri": "{tg_uri}"}}\n'
     link_tm_uri = tm_self.replace('/timemap/cdxj/', '/timemap/link/')
     tm_data += (f'!meta {{"timemap_uri": {{'
-               f'"link_format": "{link_tm_uri}", '
-               f'"cdxj_format": "{tm_self}"'
-               f'}}}}\n')
+                f'"link_format": "{link_tm_uri}",'
+                f''f'"cdxj_format": "{tm_self}"'
+                f'}}}}\n')
     host_and_port = tm_self[0:tm_self.index('timemap/')]
 
     for i, line in enumerate(cdxj_lines):
@@ -526,9 +532,9 @@ def generate_cdxj_timemap_from_cdxj_lines(cdxj_lines, original, tm_self, tg_uri)
             first_last_str = 'first last '
 
         tm_data += (f'{datetime} {{'
-                   f'"uri": "{host_and_port}memento/{datetime}/{surt_uri}", '
-                   f'"rel": "{first_last_str}memento", '
-                   f'"datetime"="{dt_rfc1123}"}}\n')
+                    f'"uri": "{host_and_port}memento/{datetime}/{surt_uri}", '
+                    f'"rel": "{first_last_str}memento", '
+                    f'"datetime"="{dt_rfc1123}"}}\n')
     return tm_data
 
 
@@ -616,9 +622,10 @@ def show_uri(path, datetime=None):
 
     except Exception as e:
         print(sys.exc_info()[0])
-        resp_string = (f'{path} not found :(' +
-                      f' <a href="http://{IPWBREPLAY_HOST}:{IPWBREPLAY_PORT}">'
-                      f'Go home</a>')
+        resp_string = (
+            f'{path} not found :('
+            f' <a href="http://{IPWBREPLAY_HOST}:{IPWBREPLAY_PORT}">'
+            f'Go home</a>')
         return Response(resp_string)
     if cdxj_line is None:  # Resource not found in archives
         return generate_no_mementos_interface(path, datetime)
@@ -650,9 +657,10 @@ def show_uri(path, datetime=None):
 
     except ipfsapi.exceptions.TimeoutError:
         print(f"{cdxj_parts[0]} not found at {digests[-1]}")
-        resp_string = (f'{path} not found in IPFS :(' +
-                      f' <a href="http://{IPWBREPLAY_HOST}:{IPWBREPLAY_PORT}">'
-                      f'Go home</a>')
+        resp_string = (
+            f'{path} not found in IPFS :('
+            f' <a href="http://{IPWBREPLAY_HOST}:{IPWBREPLAY_PORT}">'
+            f'Go home</a>')
         return Response(resp_string)
     except TypeError as e:
         print('A type error occurred')
@@ -859,11 +867,11 @@ def generate_daemon_status_button():
 
     status_page_html = f'<html id="status{button_text}" class="status">'
     status_page_html += ('<head><base href="/ipwbassets/" />'
-                       '<link rel="stylesheet" type="text/css" '
-                       'href="webui.css" />'
-                       '<script src="webui.js"></script>'
-                       '<script src="daemonController.js"></script>'
-                       '</head><body>')
+                         '<link rel="stylesheet" type="text/css" '
+                         'href="webui.css" />'
+                         '<script src="webui.js"></script>'
+                         '<script src="daemonController.js"></script>'
+                         '</head><body>')
     button_html = f'<span id="status">{text}</span>'
     button_html += f'<button id="daeAction">{button_text}</button>'
 
@@ -881,7 +889,8 @@ def get_index_file_full_path(cdxj_file_path=INDEX_FILE):
     if os.path.isfile(cdxj_file_path):
         return cdxj_file_path
 
-    index_file_name = pkg_resources.resource_filename(__name__, index_file_path)
+    index_file_name = pkg_resources.resource_filename(
+        __name__, index_file_path)
     return index_file_name
 
 
@@ -1005,7 +1014,7 @@ def binary_search(haystack, needle, returnIndex=False, only_uri=False):
     cdxj_obj = objectify_cdxj_data(haystack, only_uri)
     surt_uris_and_datetimes = cdxj_obj['data']
 
-    meta_line_count= len(cdxj_obj['metadata'])
+    meta_line_count = len(cdxj_obj['metadata'])
 
     uBound = len(surt_uris_and_datetimes)
 
@@ -1013,8 +1022,8 @@ def binary_search(haystack, needle, returnIndex=False, only_uri=False):
 
     if pos != uBound and surt_uris_and_datetimes[pos] == needle:
         if returnIndex:  # Index useful for adjacent line searching
-            return pos + metaLineCount
-        return haystack[pos + metaLineCount]
+            return pos + meta_line_count
+        return haystack[pos + meta_line_count]
     else:
         return None
 

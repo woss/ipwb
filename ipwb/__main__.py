@@ -27,8 +27,8 @@ def checkArgs_index(args):
         compression_level = 6  # Magic 6, TA-DA!
 
     indexer.index_file_at(args.warc_path, encKey, compression_level,
-                        args.compressFirst, outfile=args.outfile,
-                        debug=args.debug)
+                          args.compressFirst, outfile=args.outfile,
+                          debug=args.debug)
 
 
 def checkArgs_replay(args):

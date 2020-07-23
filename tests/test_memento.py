@@ -43,7 +43,8 @@ def getRelsFromURIMSinWARC(warc):
 
     relsForURIMs = []
     for link_header in link_headers:
-        relForURIM = ipwbTest.extractRelationEntriesFromLinkTimeMap(link_header)
+        relForURIM = ipwbTest.extract_relation_entries_from_link_timemap(
+            link_header)
         relsForURIMs.append(relForURIM)
 
     ipwbTest.stopReplay()

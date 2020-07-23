@@ -82,7 +82,7 @@ def stopReplay():
     p.terminate()
 
 
-def extractRelationEntriesFromLinkTimeMap(tm):
+def extract_relation_entries_from_link_timemap(tm):
     matches = re.findall('rel=".*?"', tm)
     matches = map(lambda s: s[5:-1], matches)
     return matches
