@@ -10,9 +10,9 @@ jobs:
     name: Build and Publish Package
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Set up Python 3.8
-        uses: actions/setup-python@master
+        uses: actions/setup-python@v2
         with:
           python-version: 3.8
       - name: Upgrade setuptools and wheel
