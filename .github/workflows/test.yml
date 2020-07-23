@@ -24,13 +24,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} Py-${{ matrix.python }} IPFS-${{ matrix.ipfs }}
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@master
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
       - name: Set up IPFS ${{ matrix.ipfs }}
-        uses: ibnesayeed/setup-ipfs@master
+        uses: ibnesayeed/setup-ipfs
         with:
           ipfs_version: ${{ matrix.ipfs }}
           run_daemon: true

@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
       - name: Extract Repo Attributes
         id: attrs
-        uses: ibnesayeed/repo-attrs@master
+        uses: ibnesayeed/repo-attrs
       - name: Draft Release
         id: create_release
         uses: actions/create-release@v1

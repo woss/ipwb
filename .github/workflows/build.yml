@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Docker Image
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - id: imgtagger
         run: |
           imgtags=$(echo "${{ github.ref }}" | sed 's/refs\/tags\//latest,/; s/refs\/heads\///')
