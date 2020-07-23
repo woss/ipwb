@@ -16,7 +16,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Set up IPFS and Rub Daemon
-      uses: ibnesayeed/setup-ipfs
+      uses: ibnesayeed/setup-ipfs@master
       with:
         run_daemon: true
     - name: Set up Python
@@ -26,7 +26,7 @@ jobs:
     - name: Install IPWB from Source
       run: pip install .
     - name: Execute Code in Comment
-      uses: ibnesayeed/actions-comment-run
+      uses: ibnesayeed/actions-comment-run@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         allowed-associations: '["OWNER", "MEMBER"]'

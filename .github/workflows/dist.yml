@@ -20,7 +20,7 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: python setup.py sdist bdist_wheel
       - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish
+        uses: pypa/gh-action-pypi-publish@master
         with:
           password: ${{ secrets.pypi_password }}
           # The PyPI API token (password) was generated as per https://pypi.org/help/#apitoken
