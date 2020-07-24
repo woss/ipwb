@@ -36,7 +36,6 @@ The latest development version containing changes not yet released can be instal
 ```
 $ git clone https://github.com/oduwsdl/ipwb
 $ cd ipwb
-$ pip install -r requirements.txt
 $ pip install ./
 ```
 
