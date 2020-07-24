@@ -4,6 +4,7 @@
 h1 {font-size: 72px; margin-bottom: 0.5em; font-family: sans-serif;}
 h1 img {height: 2.0em;}
 abbr:hover {cursor: help;}
+abbr[title] {text-decoration-skip-ink: auto; text-underline-position: under;}
 .hidden {display: none;}
 #uriList {list-style-type: none; text-align: left; margin: auto;}
 a#memCountListLink {border-bottom: 1px dotted black; cursor: pointer;}
