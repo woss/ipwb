@@ -38,3 +38,16 @@ details label.twoRowLabel {height: 2.0em;}
 form input[type=submit] {display: block; clear: both; margin: 0.5em auto 0 auto;}
 
 span.datetime {color: #999; font-size: 0.8em; margin-right: 5px;}
+
+@media only screen and (prefers-color-scheme: dark) {
+    body {background-color: #111;}
+    h3 {color: #eee;}
+    a {color: #8f1d27;}
+    #memCount {color: #eee;}
+    details {color: #8f1d27;}
+    details summary {color: #ccc;}
+    details label {color: #eee;}
+    ul#uriList li[data-display] {background-color: transparent;}
+    h4#htmlCountHeader {color: #eee;}
+    a#memCountListLink.activated {border-bottom: 2px solid #8f1d27;}
+}
