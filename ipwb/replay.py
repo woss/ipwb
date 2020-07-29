@@ -141,8 +141,8 @@ def command_daemon(cmd):
 
     elif cmd == 'stop':
         try:
-            installed_ipfs_version = ipfs_client().version()['Version']
-            if ipwb_utils.compare_versions(installed_ipfs_version, '0.4.10') < 0:
+            ipfs_version = ipfs_client().version()['Version']
+            if ipwb_utils.compare_versions(ipfs_version, '0.4.10') < 0:
                 raise UnsupportedIPFSVersions()
             ipfs_client().shutdown()
         except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as e:
@@ -755,7 +755,8 @@ def show_uri(path, datetime=None):
 
     if status[0] == '3' and isUri(resp.headers.get('Location')):
         # Bad assumption that the URI-M will contain \d14 but works for now.
-        uri_before_urir = request.url[:re.search(r'/\d{14}/', request.url).end()]
+        uri_before_urir = request.url[
+                          :re.search(r'/\d{14}/', request.url).end()]
         new_urim = uri_before_urir + resp.headers['Location']
         resp.headers['Location'] = new_urim
 
