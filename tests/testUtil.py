@@ -18,37 +18,37 @@ p = Process()
 
 def createUniqueWARC():
     lines = []
-    warcInFilename = 'frogTest.warc'
-    warcInPath = os.path.join(
+    warc_in_filename = 'frogTest.warc'
+    warc_in_path = os.path.join(
         Path(os.path.dirname(__file__)).parent,
-        'samples', 'warcs', warcInFilename)
+        'samples', 'warcs', warc_in_filename)
 
-    stringToChange = b'abcdefghijklmnopqrstuvwxz'
-    randomString = getRandomString(len(stringToChange))
-    randomBytes = str.encode(randomString)
+    string_to_change = b'abcdefghijklmnopqrstuvwxz'
+    random_string = get_random_string(len(string_to_change))
+    random_bytes = str.encode(random_string)
 
-    with open(warcInPath, 'rb') as warcFile:
-        newContent = warcFile.read().replace(stringToChange, randomBytes)
+    with open(warc_in_path, 'rb') as warcFile:
+        newContent = warcFile.read().replace(string_to_change, random_bytes)
 
-    warcOutFilename = warcInFilename.replace('.warc', '_' +
-                                             randomString + '.warc')
-    warcOutPath = os.path.join(
+    warc_out_filename = warc_in_filename.replace('.warc',
+                                                 f'_{random_string}.warc')
+    warc_out_path = os.path.join(
         Path(os.path.dirname(__file__)).parent,
-        'samples', 'warcs', warcOutFilename)
+        'samples', 'warcs', warc_out_filename)
 
-    print(warcOutPath)
-    with open(warcOutPath, 'wb') as warcFile:
+    print(warc_out_path)
+    with open(warc_out_path, 'wb') as warcFile:
         warcFile.write(newContent)
 
-    return warcOutPath
+    return warc_out_path
 
 
-def getRandomString(n):
+def get_random_string(n):
     return ''.join(random.SystemRandom().choice(
                    string.ascii_lowercase + string.digits) for _ in range(n))
 
 
-def countCDXJEntries(cdxj_data):
+def count_cdxj_entries(cdxj_data):
     urimCount = 0
     lines = cdxj_data.strip().split('\n')
     for line in lines:
@@ -57,7 +57,7 @@ def countCDXJEntries(cdxj_data):
     return urimCount
 
 
-def startReplay(warc_filename):
+def start_replay(warc_filename):
     global p
     path_of_warc = os.path.join(
         Path(os.path.dirname(__file__)).parent,
@@ -77,7 +77,7 @@ def startReplay(warc_filename):
         f.write(cdxj)
 
 
-def stopReplay():
+def stop_replay():
     global p
     p.terminate()
 

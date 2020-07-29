@@ -5,7 +5,7 @@ import json
 
 from ipwb import indexer
 
-from . import testUtil as ipwbTest
+from . import testUtil as ipwb_test
 
 
 def is_valid_surt(surt):
@@ -33,7 +33,7 @@ def check_cdxj_fields(cdxjEntry):
     return valid_surt and valid_dt and valid_json
 
 
-def checkIPWBJSONFieldPresesence(jsonStr):
+def check_ipwb_json_field_presence(jsonStr):
     keys = json.loads(jsonStr)
     return 'locator' in keys and 'mime_type' in keys and 'status_code' in keys
 
@@ -45,18 +45,18 @@ def test_push():
       each: surt URI, datetime, JSON
       JSON should contain AT LEAST locator, mime_type, and status fields
     """
-    new_warc_path = ipwbTest.createUniqueWARC()
+    new_warc_path = ipwb_test.createUniqueWARC()
     # use ipwb indexer to push
-    cdxjList = indexer.index_file_at(new_warc_path, quiet=True)
-    cdxj = '\n'.join(cdxjList)
+    cdxj_list = indexer.index_file_at(new_warc_path, quiet=True)
+    cdxj = '\n'.join(cdxj_list)
 
-    firstEntry = cdxj.split('\n')[0]
-    firstNonMetadataEntry = ''
+    first_entry = cdxj.split('\n')[0]
+    first_non_metadata_entry = ''
     for line in cdxj.split('\n'):
         if line[0] != '!':
-            firstNonMetadataEntry = line
+            first_non_metadata_entry = line
             break
 
-    assert check_cdxj_fields(firstNonMetadataEntry)
-    firstEntryLastField = firstNonMetadataEntry.split(' ', 2)[2]
-    assert checkIPWBJSONFieldPresesence(firstEntryLastField)
+    assert check_cdxj_fields(first_non_metadata_entry)
+    first_entry_last__field = first_non_metadata_entry.split(' ', 2)[2]
+    assert check_ipwb_json_field_presence(first_entry_last__field)
