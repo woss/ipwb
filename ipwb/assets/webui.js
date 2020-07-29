@@ -74,11 +74,11 @@ function showURIs () {
 }
 
 function setUIExpandedState (urisObj) {
-  const urisHash = calculate_uris_hash(urisObj)
+  const urisHash = calculateURIsHash(urisObj)
   setURIsHash(urisHash)
 }
 
-function calculate_uris_hash (urisObj) {
+function calculateURIsHash (urisObj) {
   return getStringHashCode(JSON.stringify(urisObj))
 }
 
@@ -140,7 +140,7 @@ function addEventListeners () { // eslint-disable-line no-unused-vars
 
 function setShowURIsVisibility () {
   const previousHash = getURIsHash() + ''
-  const newHash = calculate_uris_hash(uris) + ''
+  const newHash = calculateURIsHash(uris) + ''
 
   if (window.localStorage.getItem('showURIs') && previousHash === newHash) {
     showURIs()
