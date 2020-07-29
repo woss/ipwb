@@ -144,9 +144,9 @@ def set_locale():
         new_locale = 'en_US.utf8'
 
     try:
-        locale.set_locale(locale.LC_TIME, new_locale)
+        locale.setlocale(locale.LC_TIME, new_locale)
     except locale.Error:
-        locale.set_locale(locale.LC_TIME, '')
+        locale.setlocale(locale.LC_TIME, '')
 
 
 def digits14_to_rfc1123(digits14):
