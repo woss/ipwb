@@ -185,7 +185,7 @@ def index_file_at(warc_paths, encryption_key=None,
         print('\n'.join(cdxj_lines))
 
 
-def sanitizecdxj_line(cdxj_line):
+def sanitize_cdxj_line(cdxj_line):
     return cdxj_line
 
 
