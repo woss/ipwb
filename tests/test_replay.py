@@ -1,6 +1,6 @@
 import pytest
 
-from . import testUtil as ipwbTest
+from . import testUtil as ipwb_test
 from ipwb import replay
 from time import sleep
 
@@ -18,7 +18,7 @@ import urllib
     ('HTTP404.warc', 'memento/20200202100000/memento.ca/', False),
     ('HTTP404.warc', 'loremipsum', False)])
 def test_replay_404(warc, lookup, has_md_header):
-    ipwbTest.startReplay(warc)
+    ipwb_test.start_replay(warc)
 
     resp = requests.get(f'http://localhost:5000/{lookup}',
                         allow_redirects=False)
@@ -30,7 +30,7 @@ def test_replay_404(warc, lookup, has_md_header):
     else:
         assert 'Memento-Datetime' not in resp.headers
 
-    ipwbTest.stopReplay()
+    ipwb_test.stop_replay()
 
 
 @pytest.mark.parametrize("warc,lookup,status,location", [
@@ -50,7 +50,7 @@ def test_replay_404(warc, lookup, has_md_header):
      'index.php?anotherval=ipsum&someval=lorem', 200, None),
 ])
 def test_replay_search(warc, lookup, status, location):
-    ipwbTest.startReplay(warc)
+    ipwb_test.start_replay(warc)
 
     resp = requests.get(f'http://localhost:5000/{lookup}',
                         allow_redirects=False)
@@ -58,16 +58,16 @@ def test_replay_search(warc, lookup, status, location):
     if location is not None:  # Allow for checks w/o redirects
         assert resp.headers.get('location') == location
 
-    ipwbTest.stopReplay()
+    ipwb_test.stop_replay()
 
 
 def test_replay_dated_memento():
-    ipwbTest.startReplay('salam-home.warc')
+    ipwb_test.start_replay('salam-home.warc')
 
     url = 'http://localhost:5000/memento/{}/cs.odu.edu/~salam/'
     dest = '/memento/20160305192247/cs.odu.edu/~salam/'
 
-    invalidDts = [
+    invalid_dts = [
         '18',
         '20181',
         '201800',
@@ -78,7 +78,7 @@ def test_replay_dated_memento():
         '20180230000000',
         '20180102263127',
     ]
-    for dt in invalidDts:
+    for dt in invalid_dts:
         resp = requests.get(url.format(dt), allow_redirects=False)
         assert resp.status_code == 400
 
@@ -92,7 +92,7 @@ def test_replay_dated_memento():
         resp = requests.get(url.format(dt), allow_redirects=False)
         assert resp.status_code == 404
 
-    validDts = [
+    valid_dts = [
         '2018',
         '201811',
         '20181126',
@@ -100,7 +100,7 @@ def test_replay_dated_memento():
         '201811261342',
         '20181126134257',
     ]
-    for dt in validDts:
+    for dt in valid_dts:
         resp = requests.get(url.format(dt), allow_redirects=False)
         assert resp.status_code == 302
         assert resp.headers.get('location') == dest
@@ -108,7 +108,7 @@ def test_replay_dated_memento():
     resp = requests.get(url.format('20160305192247'), allow_redirects=False)
     assert resp.status_code == 200
 
-    ipwbTest.stopReplay()
+    ipwb_test.stop_replay()
 
 
 @pytest.mark.skip(reason='not implemented')
@@ -181,8 +181,8 @@ def test_helpWithoutDaemon():  # See #244
     pass
 
 
-def test_unit_commandDaemon():
-    replay.commandDaemon('start')
+def test_unit_command_daemon():
+    replay.command_daemon('start')
     sleep(10)
     try:
         urllib.request.urlopen('http://localhost:5001')
