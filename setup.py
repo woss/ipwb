@@ -13,7 +13,7 @@ setup(
     url='https://github.com/oduwsdl/ipwb',
     download_url="https://github.com/oduwsdl/ipwb",
     author='Mat Kelly',
-    author_email='mkelly@cs.odu.edu',
+    author_email='me@matkelly.com',
     description=desc,
     packages=['ipwb'],
     license='MIT',
