@@ -548,7 +548,7 @@ def all_exception_handler(error):
 
 
 @app.route('/ipwbadmin', strict_slashes=False)
-def showAdmin():
+def show_admin():
     status = {'ipwbVersion': ipwbVersion,
               'ipfsEndpoint': ipwb_utils.IPFSAPI_MUTLIADDRESS}
     iFile = ipwb_utils.get_ipwb_replay_index_path()
@@ -575,12 +575,14 @@ def showAdmin():
                'htmlCount': htmlCount,
                'earliest': oldest_datetime,
                'latest': newest_datetime}
+
+    # TODO: determine why summary.htmlCount work propagate to template
     return render_template('admin.html', status=status, indexes=indexes,
-                           summary=summary)
+                           uris=uris, htmlCount=htmlCount, summary=summary)
 
 
 @app.route('/', strict_slashes=False)
-def showLandingPage():
+def show_landing_page():
     iFile = ipwb_utils.get_ipwb_replay_index_path()
     memento_info = calculate_memento_info_in_index(iFile)
 

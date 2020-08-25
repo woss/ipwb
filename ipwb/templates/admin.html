@@ -2,7 +2,9 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="/ipwbassets/webui.css" />
     <link rel="stylesheet" href="/ipwbassets/admin.css" />
+      <script src="ipwbassets/webui.js"></script>
       <script>
         let uris = {{ summary.uris|safe }}
       </script>
@@ -48,8 +50,8 @@
       <h2>Collection</h2>
       <p>{{ summary.urimCount }} mementos of {{ summary.urirCount }} resources with {{ summary.htmlCount }} HTML pages between {{ summary.earliest }} and {{ summary.latest }}</p>
 
-        <span id="htmlPages">0</span>
-        HTML page<span id="htmlPagesPlurality">s</span> listed
+        <!--<span id="htmlPages">0</span>
+        HTML page<span id="htmlPagesPlurality">s</span> listed-->
 
         <ul id="uriList"></ul>
 
@@ -61,7 +63,10 @@
         </div>
         </form>
 
-      <p>TODO: Paginated list of mementos with option to filter and sort</p>
+        <ul id="uriList"></ul>
     </section>
+  <script>
+    addURIListToDOM()
+  </script>
   </body>
 </html>
