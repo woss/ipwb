@@ -578,7 +578,7 @@ def show_admin():
 
     # TODO: determine why summary.htmlCount work propagate to template
     return render_template('admin.html', status=status, indexes=indexes,
-                           uris=uris, htmlCount=htmlCount, summary=summary)
+                           summary=summary)
 
 
 @app.route('/', strict_slashes=False)
