@@ -548,12 +548,12 @@ def all_exception_handler(error):
 
 
 @app.route('/ipwbadmin', strict_slashes=False)
-def showAdmin():
+def show_admin():
     status = {'ipwbVersion': ipwbVersion,
               'ipfsEndpoint': ipwb_utils.IPFSAPI_MUTLIADDRESS}
-    iFile = ipwb_utils.get_ipwb_replay_index_path()
+    index_file = ipwb_utils.get_ipwb_replay_index_path()
 
-    memento_info = calculate_memento_info_in_index(iFile)
+    memento_info = calculate_memento_info_in_index(index_file)
 
     mCount = memento_info['mementoCount']
     unique_urirs = len(memento_info['surt_uris'].keys())
@@ -561,7 +561,7 @@ def showAdmin():
     oldest_datetime = memento_info['oldest_datetime']
     newest_datetime = memento_info['newest_datetime']
 
-    uris = get_uris_and_datetimes_in_cdxj(iFile)
+    uris = get_uris_and_datetimes_in_cdxj(index_file)
 
     # TODO: Calculate actual URI-R/M counts
     indexes = [{'path': ipwb_utils.get_ipwb_replay_index_path(),
@@ -575,24 +575,25 @@ def showAdmin():
                'htmlCount': htmlCount,
                'earliest': oldest_datetime,
                'latest': newest_datetime}
+
     return render_template('admin.html', status=status, indexes=indexes,
                            summary=summary)
 
 
 @app.route('/', strict_slashes=False)
-def showLandingPage():
-    iFile = ipwb_utils.get_ipwb_replay_index_path()
-    memento_info = calculate_memento_info_in_index(iFile)
+def show_landing_page():
+    index_file = ipwb_utils.get_ipwb_replay_index_path()
+    memento_info = calculate_memento_info_in_index(index_file)
 
     mCount = memento_info['mementoCount']
     unique_urirs = len(memento_info['surt_uris'].keys())
     htmlCount = memento_info['htmlCount']
 
-    summary = {'index_path': iFile,
+    summary = {'index_path': index_file,
                'urimCount': mCount,
                'urirCount': unique_urirs,
                'htmlCount': htmlCount}
-    uris = get_uris_and_datetimes_in_cdxj(iFile)
+    uris = get_uris_and_datetimes_in_cdxj(index_file)
     return render_template('index.html', summary=summary, uris=uris)
 
 
