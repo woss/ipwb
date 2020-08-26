@@ -49,12 +49,12 @@ def get_random_string(n):
 
 
 def count_cdxj_entries(cdxj_data):
-    urimCount = 0
+    urim_count = 0
     lines = cdxj_data.strip().split('\n')
     for line in lines:
         if line[0] != '!':  # Exclude metadata from count
-            urimCount += 1
-    return urimCount
+            urim_count += 1
+    return urim_count
 
 
 def start_replay(warc_filename):

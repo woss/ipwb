@@ -32,10 +32,10 @@ def checkArgs_index(args):
 
 
 def checkArgs_replay(args):
-    suppliedIndexParameter = hasattr(args, 'index') and args.index is not None
-    likelyPiping = not sys.stdin.isatty()
+    supplied_index_parameter = hasattr(args, 'index') and args.index is not None
+    likely_piping = not sys.stdin.isatty()
 
-    if not suppliedIndexParameter and likelyPiping:
+    if not supplied_index_parameter and likely_piping:
         cdxjIn = ''.join(sys.stdin.readlines())
         if len(cdxjIn) == 0:  # Daemon was not running, so nothing was indexed
             print(('ERROR: The IPFS daemon must be running to pipe input from'
@@ -50,7 +50,7 @@ def checkArgs_replay(args):
         with open(args.index, 'w') as f:
             f.write(cdxjIn)
 
-        suppliedIndexParameter = True
+        supplied_index_parameter = True
 
     proxy = None
     if hasattr(args, 'proxy') and args.proxy is not None:
@@ -58,7 +58,7 @@ def checkArgs_replay(args):
         proxy = args.proxy
 
     # TODO: add any other sub-arguments for replay here
-    if suppliedIndexParameter:
+    if supplied_index_parameter:
         replay.start(cdxj_file_path=args.index, proxy=proxy)
     else:
         print('ERROR: An index file must be specified if not piping, e.g.,')
