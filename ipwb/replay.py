@@ -49,7 +49,7 @@ from Crypto.Util.Padding import pad
 import base64
 
 from werkzeug.routing import BaseConverter
-from .__init__ import __version__ as ipwbVersion
+from .__init__ import __version__ as ipwb_version
 
 
 from flask import flash
@@ -76,7 +76,8 @@ def formatters():
 
 @app.after_request
 def set_server_header(response):
-    response.headers['Server'] = 'InterPlanetary Wayback Replay/' + ipwbVersion
+    response.headers['Server'] = ('InterPlanetary Wayback Replay/'
+                                  f'{ipwb_version}')
     response.autocorrect_location_header = False
     return response
 
@@ -462,7 +463,7 @@ def generate_link_timemap_from_cdxj_lines(
 
     # Extract and trim for host:port prepending
     tmurl[2] = ''  # Clear TM path
-    host_and_port = urlunsplit(tmurl) + '/'
+    host_and_port = f'{urlunsplit(tmurl)}/'
 
     # unsurted URI will never have a scheme, add one
     original_uri = f'http://{unsurt(original)}'
@@ -493,7 +494,7 @@ def generate_link_timemap_from_cdxj_lines(
         tm_data += (
             f',\n<{host_and_port}memento/{datetime}/{unsurt(surt_uri)}>; '
             f'rel="{first_last_str}memento"; datetime="{dt_rfc1123}"')
-    return tm_data + '\n'
+    return f'{tm_data}\n'
 
 
 def generate_cdxj_timemap_from_cdxj_lines(
@@ -549,15 +550,15 @@ def all_exception_handler(error):
 
 @app.route('/ipwbadmin', strict_slashes=False)
 def show_admin():
-    status = {'ipwbVersion': ipwbVersion,
-              'ipfsEndpoint': ipwb_utils.IPFSAPI_MUTLIADDRESS}
+    status = {'ipwb_version': ipwb_version,
+              'ipfs_endpoint': ipwb_utils.IPFSAPI_MUTLIADDRESS}
     index_file = ipwb_utils.get_ipwb_replay_index_path()
 
     memento_info = calculate_memento_info_in_index(index_file)
 
-    mCount = memento_info['mementoCount']
+    m_count = memento_info['memento_count']
     unique_urirs = len(memento_info['surt_uris'].keys())
-    htmlCount = memento_info['htmlCount']
+    html_count = memento_info['html_count']
     oldest_datetime = memento_info['oldest_datetime']
     newest_datetime = memento_info['newest_datetime']
 
@@ -566,13 +567,13 @@ def show_admin():
     # TODO: Calculate actual URI-R/M counts
     indexes = [{'path': ipwb_utils.get_ipwb_replay_index_path(),
                 'enabled': True,
-                'urimCount': mCount,
-                'urirCount': unique_urirs}]
+                'urim_count': m_count,
+                'urir_count': unique_urirs}]
     # TODO: Calculate actual values
-    summary = {'urimCount': mCount,
-               'urirCount': unique_urirs,
+    summary = {'urim_count': m_count,
+               'urir_count': unique_urirs,
                'uris': uris,
-               'htmlCount': htmlCount,
+               'html_count': html_count,
                'earliest': oldest_datetime,
                'latest': newest_datetime}
 
@@ -585,14 +586,14 @@ def show_landing_page():
     index_file = ipwb_utils.get_ipwb_replay_index_path()
     memento_info = calculate_memento_info_in_index(index_file)
 
-    mCount = memento_info['mementoCount']
+    m_count = memento_info['memento_count']
     unique_urirs = len(memento_info['surt_uris'].keys())
-    htmlCount = memento_info['htmlCount']
+    html_count = memento_info['html_count']
 
     summary = {'index_path': index_file,
-               'urimCount': mCount,
-               'urirCount': unique_urirs,
-               'htmlCount': htmlCount}
+               'urim_count': m_count,
+               'urir_count': unique_urirs,
+               'html_count': html_count}
     uris = get_uris_and_datetimes_in_cdxj(index_file)
     return render_template('index.html', summary=summary, uris=uris)
 
@@ -617,7 +618,7 @@ def show_uri(path, datetime=None):
 
         search_string = surted_uri
         if datetime is not None:
-            search_string = surted_uri + ' ' + datetime
+            search_string = f'{surted_uri} {datetime}'
 
         cdxj_line = get_cdxj_line_binarySearch(search_string, index_path)
 
@@ -632,10 +633,10 @@ def show_uri(path, datetime=None):
         return generate_no_mementos_interface(path, datetime)
 
     cdxj_parts = cdxj_line.split(" ", 2)
-    jObj = json.loads(cdxj_parts[2])
+    json_object = json.loads(cdxj_parts[2])
     datetime = cdxj_parts[1]
 
-    digests = jObj['locator'].split('/')
+    digests = json_object['locator'].split('/')
 
     class HashNotFoundError(Exception):
         pass
@@ -683,38 +684,38 @@ def show_uri(path, datetime=None):
         print(e)
         return "An unknown exception occurred", 500
 
-    if 'encryption_method' in jObj:
-        keyString = None
-        while keyString is None:
-            if 'encryption_key' in jObj:
-                keyString = jObj['encryption_key']
+    if 'encryption_method' in json_object:
+        key_string = None
+        while key_string is None:
+            if 'encryption_key' in json_object:
+                key_string = json_object['encryption_key']
             else:
-                askForKey = ('Enter a path for file',
-                             ' containing decryption key: \n> ')
-                keyString = raw_input(askForKey)
+                ask_for_key = ('Enter a path for file',
+                               ' containing decryption key: \n> ')
+                key_string = raw_input(ask_for_key)
 
-        padded_encryption_key = pad(keyString, AES.block_size)
+        padded_encryption_key = pad(key_string, AES.block_size)
         key = base64.b64encode(padded_encryption_key)
 
-        nonce = b64decode(jObj['encryption_nonce'])
+        nonce = b64decode(json_object['encryption_nonce'])
         cipher = AES.new(key, AES.MODE_CTR, nonce=nonce)
         header = cipher.decrypt(base64.b64decode(header))
         payload = cipher.decrypt(base64.b64decode(payload))
 
-    hLines = header.decode() \
-                   .replace('\r', '') \
-                   .replace('\n\t', '\t') \
-                   .replace('\n ', ' ') \
-                   .split('\n')
-    hLines.pop(0)
+    h_lines = header.decode() \
+        .replace('\r', '') \
+        .replace('\n\t', '\t') \
+        .replace('\n ', ' ') \
+        .split('\n')
+    h_lines.pop(0)
 
     status = 200
-    if 'status_code' in jObj:
-        status = jObj['status_code']
+    if 'status_code' in json_object:
+        status = json_object['status_code']
 
     resp = Response(payload, status=status)
 
-    for idx, hLine in enumerate(hLines):
+    for idx, hLine in enumerate(h_lines):
         k, v = hLine.split(':', 1)
 
         if k.lower() == 'transfer-encoding' and \
@@ -741,7 +742,7 @@ def show_uri(path, datetime=None):
                       <script>injectIPWBJS()</script>"""
 
         new_payload = new_payload.decode('utf-8').replace(
-            '</html>', ipwb_js_inject + '</html>')
+            '</html>', f'{ipwb_js_inject}</html>')
 
         resp.set_data(new_payload)
 
@@ -941,19 +942,19 @@ def calculate_memento_info_in_index(cdxj_file_path=INDEX_FILE):
     print(f'Retrieving URI-Ms from {cdxj_file_path}')
     index_file_contents = get_web_archive_index(cdxj_file_path)
 
-    errReturn = (0, 0)
+    err_return = (0, 0)
 
     if not index_file_contents:
-        return errReturn
+        return err_return
 
     lines = index_file_contents.strip().split('\n')
 
     if not lines:
-        return errReturn
+        return err_return
 
     memento_info = {
-        'mementoCount': 0,
-        'htmlCount': 0,
+        'memento_count': 0,
+        'html_count': 0,
         'surt_uris': {},
         'oldest_datetime': None,
         'newest_datetime': None
@@ -963,7 +964,7 @@ def calculate_memento_info_in_index(cdxj_file_path=INDEX_FILE):
         valid_cdxj_line = ipwb_utils.is_valid_cdxj_line(l)
         metadata_record = ipwb_utils.is_cdxj_metadata_record(l)
         if valid_cdxj_line and not metadata_record:
-            memento_info['mementoCount'] += 1
+            memento_info['memento_count'] += 1
             (surt_uri, datetime, jsonInLine) = l.split(' ', 2)
             if surt_uri not in memento_info['surt_uris']:
                 memento_info['surt_uris'][surt_uri] = 1
@@ -972,11 +973,11 @@ def calculate_memento_info_in_index(cdxj_file_path=INDEX_FILE):
 
             j = json.loads(jsonInLine)
 
-            # Count only non-redirect HTML pages for htmlCount display
+            # Count only non-redirect HTML pages for html_count display
             if j['mime_type'] and \
                     j['mime_type'].lower().startswith('text/html') and \
                     j['status_code'][0] != '3':
-                memento_info['htmlCount'] += 1
+                memento_info['html_count'] += 1
 
             if memento_info['oldest_datetime'] is None:
                 memento_info['oldest_datetime'] = datetime

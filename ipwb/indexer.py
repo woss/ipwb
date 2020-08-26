@@ -43,7 +43,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 import base64
 
-from .__init__ import __version__ as ipwbVersion
+from .__init__ import __version__ as ipwb_version
 
 DEBUG = False
 
@@ -302,7 +302,7 @@ def cdx_cdxj_lines_from_file(warc_path, **enc_comp_opts):
 def generate_cdxj_metadata(cdxj_lines=None):
     metadata = ['!context ["http://tools.ietf.org/html/rfc7089"]']
     metaVals = {
-        'generator': f'InterPlanetary Wayback {ipwbVersion}',
+        'generator': f'InterPlanetary Wayback {ipwb_version}',
         'created_at': datetime.datetime.now().isoformat()
     }
     metaVals = f'!meta {json.dumps(metaVals)}'
