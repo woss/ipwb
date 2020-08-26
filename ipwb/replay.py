@@ -633,10 +633,10 @@ def show_uri(path, datetime=None):
         return generate_no_mementos_interface(path, datetime)
 
     cdxj_parts = cdxj_line.split(" ", 2)
-    jObj = json.loads(cdxj_parts[2])
+    json_object = json.loads(cdxj_parts[2])
     datetime = cdxj_parts[1]
 
-    digests = jObj['locator'].split('/')
+    digests = json_object['locator'].split('/')
 
     class HashNotFoundError(Exception):
         pass
@@ -684,11 +684,11 @@ def show_uri(path, datetime=None):
         print(e)
         return "An unknown exception occurred", 500
 
-    if 'encryption_method' in jObj:
+    if 'encryption_method' in json_object:
         key_string = None
         while key_string is None:
-            if 'encryption_key' in jObj:
-                key_string = jObj['encryption_key']
+            if 'encryption_key' in json_object:
+                key_string = json_object['encryption_key']
             else:
                 ask_for_key = ('Enter a path for file',
                                ' containing decryption key: \n> ')
@@ -697,7 +697,7 @@ def show_uri(path, datetime=None):
         padded_encryption_key = pad(key_string, AES.block_size)
         key = base64.b64encode(padded_encryption_key)
 
-        nonce = b64decode(jObj['encryption_nonce'])
+        nonce = b64decode(json_object['encryption_nonce'])
         cipher = AES.new(key, AES.MODE_CTR, nonce=nonce)
         header = cipher.decrypt(base64.b64decode(header))
         payload = cipher.decrypt(base64.b64decode(payload))
@@ -710,8 +710,8 @@ def show_uri(path, datetime=None):
     h_lines.pop(0)
 
     status = 200
-    if 'status_code' in jObj:
-        status = jObj['status_code']
+    if 'status_code' in json_object:
+        status = json_object['status_code']
 
     resp = Response(payload, status=status)
 
