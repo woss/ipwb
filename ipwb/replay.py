@@ -76,7 +76,8 @@ def formatters():
 
 @app.after_request
 def set_server_header(response):
-    response.headers['Server'] = f'InterPlanetary Wayback Replay/{ipwb_version}'
+    response.headers['Server'] = ('InterPlanetary Wayback Replay/'
+                                  f'{ipwb_version}')
     response.autocorrect_location_header = False
     return response
 
@@ -690,7 +691,7 @@ def show_uri(path, datetime=None):
                 key_string = jObj['encryption_key']
             else:
                 ask_for_key = ('Enter a path for file',
-                             ' containing decryption key: \n> ')
+                               ' containing decryption key: \n> ')
                 key_string = raw_input(ask_for_key)
 
         padded_encryption_key = pad(key_string, AES.block_size)
@@ -702,10 +703,10 @@ def show_uri(path, datetime=None):
         payload = cipher.decrypt(base64.b64decode(payload))
 
     h_lines = header.decode() \
-                   .replace('\r', '') \
-                   .replace('\n\t', '\t') \
-                   .replace('\n ', ' ') \
-                   .split('\n')
+        .replace('\r', '') \
+        .replace('\n\t', '\t') \
+        .replace('\n ', ' ') \
+        .split('\n')
     h_lines.pop(0)
 
     status = 200

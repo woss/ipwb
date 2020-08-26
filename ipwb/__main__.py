@@ -32,7 +32,8 @@ def checkArgs_index(args):
 
 
 def checkArgs_replay(args):
-    supplied_index_parameter = hasattr(args, 'index') and args.index is not None
+    supplied_index_parameter = hasattr(args, 'index') and \
+                               args.index is not None
     likely_piping = not sys.stdin.isatty()
 
     if not supplied_index_parameter and likely_piping:
