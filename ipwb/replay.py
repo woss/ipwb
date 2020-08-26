@@ -576,7 +576,6 @@ def show_admin():
                'earliest': oldest_datetime,
                'latest': newest_datetime}
 
-    # TODO: determine why summary.htmlCount work propagate to template
     return render_template('admin.html', status=status, indexes=indexes,
                            summary=summary)
 
