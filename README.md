@@ -205,7 +205,7 @@ We have numerous publications related to this project, but the most significant 
 
 > Mat Kelly, Sawood Alam, Michael L. Nelson, and Michele C. Weigle. __InterPlanetary Wayback: Peer-To-Peer Permanence of Web Archives__. In _Proceedings of the 20th International Conference on Theory and Practice of Digital Libraries_, pages 411–416, Hamburg, Germany, June 2016.
 
-```latex
+```bib
 @INPROCEEDINGS{ipwb-tpdl2016,
   AUTHOR    = {Mat Kelly and
                Sawood Alam and
