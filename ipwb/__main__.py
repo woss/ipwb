@@ -17,6 +17,7 @@ def main():
 
 
 def checkArgs_index(args):
+    settings.App.set("ipfsapi", args.daemon_address)
     util.check_daemon_is_alive()
 
     encKey = None
@@ -57,7 +58,8 @@ def checkArgs_replay(args):
     if hasattr(args, 'proxy') and args.proxy is not None:
         print(f'Proxying to {args.proxy}')
         proxy = args.proxy
-
+    settings.App.set("ipfsapi", args.daemon_address)
+        
     # TODO: add any other sub-arguments for replay here
     if supplied_index_parameter:
         replay.start(cdxj_file_path=args.index, proxy=proxy)
@@ -140,7 +142,7 @@ def checkArgs(argsIn):
         '-d', '--daemon',
         help=("Multi-address of IPFS daemon "
               "(default /dns/localhost/tcp/5001/http)"),
-        default=util.IPFSAPI_MUTLIADDRESS,
+        default=settings.App.config("ipfsapi"),
         dest='daemon_address')
     parser.add_argument(
         '-v', '--version', help='Report the version of ipwb', action='version',
