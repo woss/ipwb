@@ -243,6 +243,7 @@ def write_ipfs_config(json_to_write):
     with open(ipfs_config_path, 'w') as f:
         f.write(json.dumps(json_to_write, indent=4, sort_keys=True))
 
+
 def get_ipfsapi_host_and_port():
     daemon_address = settings.App.config("ipfsapi")
     # format right now is "/dns/localhost/tcp/5001/http"
@@ -253,6 +254,7 @@ def get_ipfsapi_host_and_port():
         return host
     else:
         return host + ':' + port
+
 
 def get_ipwb_replay_config(ipfs_json=None):
     if not ipfs_json:

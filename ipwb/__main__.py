@@ -59,7 +59,7 @@ def checkArgs_replay(args):
         print(f'Proxying to {args.proxy}')
         proxy = args.proxy
     settings.App.set("ipfsapi", args.daemon_address)
-        
+
     # TODO: add any other sub-arguments for replay here
     if supplied_index_parameter:
         replay.start(cdxj_file_path=args.index, proxy=proxy)

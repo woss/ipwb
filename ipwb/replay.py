@@ -136,7 +136,7 @@ class UnsupportedIPFSVersions(Exception):
 @app.route('/ipfsdaemon/<cmd>')
 def command_daemon(cmd):
     local_daemon = ipwb_utils.is_localhosty(settings.App.config("ipfsapi"))
-    
+
     if cmd == 'status':
         return generate_daemon_status_button()
     elif cmd == 'start' and local_daemon:
