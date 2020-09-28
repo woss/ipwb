@@ -554,7 +554,7 @@ def all_exception_handler(error):
 @app.route('/ipwbadmin', strict_slashes=False)
 def show_admin():
     status = {'ipwb_version': ipwb_version,
-              'ipfs_endpoint': settings.IPFSAPI_MUTLIADDRESS}
+              'ipfs_endpoint': settings.App.config("ipfsapi")}
     index_file = ipwb_utils.get_ipwb_replay_index_path()
 
     memento_info = calculate_memento_info_in_index(index_file)
