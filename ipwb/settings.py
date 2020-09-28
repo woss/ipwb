@@ -53,6 +53,6 @@ class App:
     @staticmethod
     def set(name, value):
         if name in App.__setters:
-         App.__conf[name] = value
+            App.__conf[name] = value
         else:
-         raise NameError("Name not accepted in set() method")
+            raise NameError("Name not accepted in set() method")
