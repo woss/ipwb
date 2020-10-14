@@ -205,7 +205,7 @@ def cdx_cdxj_lines_from_file(warc_path, **enc_comp_opts):
         records_processed = 0
         # Throws pywb.warc.recordloader.ArchiveLoadFailed if not a warc
         for record in ArchiveIterator(fh):
-            msg = 'Processing WARC records in ' + ntpath.basename(warc_path)
+            msg = f'Processing WARC records in {ntpath.basename(warc_path)}'
             show_progress(msg, records_processed, record_count)
 
             records_processed += 1
@@ -329,16 +329,16 @@ def ask_user_for_encryption_key():
 def verify_daemon_is_alive(host_and_port):
     """Ensure that the IPFS daemon is running via HTTP before proceeding"""
     try:
-        requests.get('http://' + host_and_port)
+        requests.get(f'http://{host_and_port}')
     except ConnectionError:
-        print('Daemon is not running at http://' + host_and_port)
+        print(f'Daemon is not running at http://{host_and_port}')
         sys.exit()
 
 
 def verify_file_exists(warc_path):
     if os.path.isfile(warc_path):
         return
-    logError('File at ' + warc_path + ' does not exist!')
+    logError(f'File at {warc_path} does not exist!')
     sys.exit()
 
 
@@ -347,7 +347,7 @@ def show_progress(msg, i, n):
     print(line, file=sys.stderr, end='\r')
     # Clear status line, show complete msg
     if i == n - 1:
-        final_msg = msg + ' complete'
+        final_msg = f'{msg} complete'
         space_delta = len(final_msg) - len(msg)
         spaces = '' * space_delta if space_delta > 0 else ''
         print(final_msg + spaces, file=sys.stderr, end='\r\n')
