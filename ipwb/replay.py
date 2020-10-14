@@ -167,7 +167,7 @@ def show_mementos_for_urirs_sans_js():
     if urir is None or urir.strip() == '':
         return Response('Searching for nothing is not allowed!', status=400)
 
-    return redirect('/memento/*/' + urir, code=301)
+    return redirect(f'/memento/*/{urir}', code=301)
 
 
 @app.route('/memento/*/<path:urir>')
@@ -727,7 +727,7 @@ def show_uri(path, datetime=None):
             resp.set_data(unchunked_payload)
 
         if k.lower() not in ["content-type", "content-encoding", "location"]:
-            k = "X-Archive-Orig-" + k
+            k = f'X-Archive-Orig-{k}'
 
         resp.headers[k] = v.strip()
 
