@@ -146,7 +146,7 @@ def command_daemon(cmd):
             if ipwb_utils.compare_versions(ipfs_version, '0.4.10') < 0:
                 raise UnsupportedIPFSVersions()
             ipfs_client().shutdown()
-        except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as e:
+        except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as _:
             if os.name != 'nt':  # Big hammer
                 subprocess.call(['killall', 'ipfs'])
             else:
@@ -255,7 +255,7 @@ def show_memento(urir, datetime):
 
     try:
         datetime = ipwb_utils.pad_digits14(datetime, validate=True)
-    except ValueError as e:
+    except ValueError as _:
         msg = f'Expected a 4-14 digits valid datetime: {datetime}'
         return Response(msg, status=400)
     resolved_memento = resolve_memento(urir, datetime)
@@ -300,7 +300,7 @@ def get_cdxj_lines_with_urir(urir, index_path):
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
     cdxj_lines_with_urir = []
 
-    cdxj_line_index = get_cdxj_line_binarySearch(
+    cdxj_line_index = get_cdxj_line_binary_search(
         s, index_path, True, True)  # get i
 
     if cdxj_line_index is None:
@@ -357,8 +357,8 @@ def query_timegate(urir):
     return resp
 
 
-@app.route('/timemap/<regex("link|cdxj"):format>/<path:urir>')
-def show_timemap(urir, format):
+@app.route('/timemap/<regex("link|cdxj"):timemap_format>/<path:urir>')
+def show_timemap(urir, timemap_format):
     urir = compile_target_uri(urir, request.query_string)
 
     s = surt.surt(urir, path_strip_trailing_slash_unless_empty=False)
@@ -372,11 +372,11 @@ def show_timemap(urir, format):
     tg_uri = f'http://{host_and_port[0]}:{host_and_port[1]}/timegate/{urir}'
 
     tm = ''  # Initialize for usage beyond below conditionals
-    if format == 'link':
+    if timemap_format == 'link':
         tm = generate_link_timemap_from_cdxj_lines(
             cdxj_lines_with_urir, s, request.url, tg_uri)
         tm_content_type = 'application/link-format'
-    elif format == 'cdxj':
+    elif timemap_format == 'cdxj':
         tm = generate_cdxj_timemap_from_cdxj_lines(
             cdxj_lines_with_urir, s, request.url, tg_uri)
         tm_content_type = 'application/cdxj+ors'
@@ -440,8 +440,8 @@ def get_link_header_abbreviated_timemap(urir, pivot_datetime):
     return ' '.join(filter(None, tm_lines))
 
 
-def get_proxied_urit(uriT):
-    tmurl = list(urlsplit(uriT))
+def get_proxied_urit(uri_t):
+    tmurl = list(urlsplit(uri_t))
     if app.proxy is not None:
         # urlsplit put domain in path for "example.com"
         tmurl[1] = app.proxy  # Set replay host/port if no scheme
@@ -603,12 +603,12 @@ def show_uri(path, datetime=None):
         ipwb_utils.check_daemon_is_alive(ipwb_utils.IPFSAPI_MUTLIADDRESS)
 
     except IPFSDaemonNotAvailable:
-        errStr = ('IPFS daemon not running. '
-                  'Start it using $ ipfs daemon on the command-line '
-                  ' or from the <a href="/">'
-                  'IPWB replay homepage</a>.')
+        err_str = ('IPFS daemon not running. '
+                   'Start it using $ ipfs daemon on the command-line '
+                   ' or from the <a href="/">'
+                   'IPWB replay homepage</a>.')
 
-        return Response(errStr, status=503)
+        return Response(err_str, status=503)
 
     cdxj_line = ''
     try:
@@ -620,9 +620,9 @@ def show_uri(path, datetime=None):
         if datetime is not None:
             search_string = f'{surted_uri} {datetime}'
 
-        cdxj_line = get_cdxj_line_binarySearch(search_string, index_path)
+        cdxj_line = get_cdxj_line_binary_search(search_string, index_path)
 
-    except Exception as e:
+    except Exception as _:
         print(sys.exc_info()[0])
         resp_string = (
             f'{path} not found :('
@@ -692,7 +692,7 @@ def show_uri(path, datetime=None):
             else:
                 ask_for_key = ('Enter a path for file',
                                ' containing decryption key: \n> ')
-                key_string = raw_input(ask_for_key)
+                key_string = input(ask_for_key)
 
         padded_encryption_key = pad(key_string, AES.block_size)
         key = base64.b64encode(padded_encryption_key)
@@ -755,7 +755,7 @@ def show_uri(path, datetime=None):
     # respWithlink_header = get_link_header_abbreviated_timemap(path, datetime)
     # resp.headers['Link'] = respWithlink_header.replace('\n', ' ')
 
-    if status[0] == '3' and isUri(resp.headers.get('Location')):
+    if status[0] == '3' and is_uri(resp.headers.get('Location')):
         # Bad assumption that the URI-M will contain \d14 but works for now.
         uri_before_urir = request.url[
                           :re.search(r'/\d{14}/', request.url).end()]
@@ -765,7 +765,7 @@ def show_uri(path, datetime=None):
     return resp
 
 
-def isUri(str):
+def is_uri(str):
     return re.match('^https?://', str, flags=re.IGNORECASE)
 
 
@@ -784,7 +784,7 @@ def generate_no_mementos_interface_noDatetime(urir):
 
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found(_):
     return "<h1>ERROR 404</h1><p>Resource not found</p>", 404
 
 
@@ -831,7 +831,7 @@ def generate_no_mementos_interface(path, datetime):
 
 
 def extract_response_from_chunked_data(data):
-    retStr = ''
+    ret_str = ''
 
     if isinstance(data, bytes):
         data = data.decode()
@@ -842,7 +842,7 @@ def extract_response_from_chunked_data(data):
         # On fail, exception, delta in header vs. payload chunkedness
         chunk_dec_from_hex = int(chunk_descriptor, 16)  # Get dec for slice
 
-        retStr += rest[:chunk_dec_from_hex]  # Add to payload
+        ret_str += rest[:chunk_dec_from_hex]  # Add to payload
         rest = rest[chunk_dec_from_hex:]  # Trim from the next chunk onward
 
         (CRLF, chunk_descriptor, rest) = rest.split('\n', 2)
@@ -851,7 +851,7 @@ def extract_response_from_chunked_data(data):
         if len(chunk_descriptor.strip()) == 0:
             break
 
-    return retStr
+    return ret_str
 
 
 def generate_daemon_status_button():
@@ -919,7 +919,7 @@ def get_uris_and_datetimes_in_cdxj(cdxj_file_path=INDEX_FILE):
 
         try:
             json_fields = json.loads(cdxj_fields[2])
-        except Exception as e:  # Skip lines w/o JSON block
+        except Exception as _:  # Skip lines w/o JSON block
             continue
 
         if uri not in uris:
@@ -1008,7 +1008,7 @@ def objectify_cdxj_data(lines, only_uri):
     return cdxj_data
 
 
-def binary_search(haystack, needle, returnIndex=False, only_uri=False):
+def binary_search(haystack, needle, return_index=False, only_uri=False):
     lBound = 0
     uBound = None
 
@@ -1024,22 +1024,22 @@ def binary_search(haystack, needle, returnIndex=False, only_uri=False):
     pos = bisect_left(surt_uris_and_datetimes, needle, lBound, uBound)
 
     if pos != uBound and surt_uris_and_datetimes[pos] == needle:
-        if returnIndex:  # Index useful for adjacent line searching
+        if return_index:  # Index useful for adjacent line searching
             return pos + meta_line_count
         return haystack[pos + meta_line_count]
     else:
         return None
 
 
-def get_cdxj_line_binarySearch(
-         surt_uri, cdxj_file_path=INDEX_FILE, retIndex=False, only_uri=False):
+def get_cdxj_line_binary_search(
+         surt_uri, cdxj_file_path=INDEX_FILE, ret_index=False, only_uri=False):
     full_file_path = get_index_file_full_path(cdxj_file_path)
 
     content = get_web_archive_index(full_file_path)
 
     lines = content.split('\n')
 
-    line_found = binary_search(lines, surt_uri, retIndex, only_uri)
+    line_found = binary_search(lines, surt_uri, ret_index, only_uri)
     if line_found is None:
         print(f"Could not find {surt_uri} in CDXJ at {full_file_path}")
 

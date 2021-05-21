@@ -74,15 +74,15 @@ def push_to_ipfs(hstr, payload):
                 m = f'Retrying succeeded after {retry_count} attempts'
                 print(m)
             return [http_header_ipfs_hash, payload_ipfs_hash]
-        except NewConnectionError as e:
+        except NewConnectionError as _:
             print('IPFS daemon is likely not running.')
             print('Run "ipfs daemon" in another terminal session.')
 
             sys.exit()
-        except Exception as e:  # TODO: Do not use bare except
+        except Exception as _:  # TODO: Do not use bare except
             attempt_count = f'{retry_count + 1}/{ipfs_retry_count}'
-            logError(f'IPFS failed to add, retrying attempt {attempt_count}')
-            logError(sys.exc_info())
+            log_error(f'IPFS failed to add, retrying attempt {attempt_count}')
+            log_error(sys.exc_info())
             traceback.print_tb(sys.exc_info()[-1])
 
             retry_count += 1
@@ -112,7 +112,7 @@ def create_ipfs_temp_path():
 
 
 def index_file_at(warc_paths, encryption_key=None,
-                  compression_level=None, encrypt_THEN_compress=True,
+                  compression_level=None, encrypt_then_compress=True,
                   quiet=False, outfile=None, debug=False):
     global DEBUG
     DEBUG = debug
@@ -131,25 +131,25 @@ def index_file_at(warc_paths, encryption_key=None,
             try:
                 os.makedirs(outdir)
             except Exception as e:
-                logError(e)
-                logError('CDXJ output directory was not created')
+                log_error(e)
+                log_error('CDXJ output directory was not created')
         try:
             output_file = open(outfile, 'a+')
             # Read existing non-meta lines (if any) to allow automatic merge
             cdxj_lines = [ln.strip() for ln in output_file if ln[:1] != '!']
         except IOError as e:
-            logError(e)
-            logError('Writing generated CDXJ to STDOUT instead')
+            log_error(e)
+            log_error('Writing generated CDXJ to STDOUT instead')
             outfile = None
 
     if encryption_key is not None and len(encryption_key) == 0:
         encryption_key = ask_user_for_encryption_key()
         if encryption_key == '':
             encryption_key = None
-            logError('Blank key entered, encryption disabled')
+            log_error('Blank key entered, encryption disabled')
 
     encryption_and_compression_setting = {
-        'encrypt_THEN_compress': encrypt_THEN_compress,
+        'encrypt_THEN_compress': encrypt_then_compress,
         'encryption_key': encryption_key,
         'compression_level': compression_level
     }
@@ -161,7 +161,7 @@ def index_file_at(warc_paths, encryption_key=None,
             cdxj_lines += cdx_cdxj_lines_from_file(
                 warc_file_full_path, **encryption_and_compression_setting)
         except ArchiveLoadFailed:
-            logError(warc_path + ' is not a valid WARC file.')
+            log_error(warc_path + ' is not a valid WARC file.')
 
     # De-dupe and sort, needed for CDXJ adherence
     cdxj_lines = list(set(cdxj_lines))
@@ -194,7 +194,7 @@ def cdx_cdxj_lines_from_file(warc_path, **enc_comp_opts):
     with open(warc_path, 'rb') as fhForCounting:
         record_count = 0
         try:
-            for record in ArchiveIterator(fhForCounting):
+            for _ in ArchiveIterator(fhForCounting):
                 record_count += 1
 
         except ArchiveLoadFailed:
@@ -221,7 +221,7 @@ def cdx_cdxj_lines_from_file(warc_path, **enc_comp_opts):
 
             try:
                 status_code = record.http_headers.statusline.split()[0]
-            except Exception as e:  # TODO: Do not use bare except
+            except Exception as _:  # TODO: Do not use bare except
                 break
 
             payload = record.content_stream().read()
@@ -264,8 +264,8 @@ def cdx_cdxj_lines_from_file(warc_path, **enc_comp_opts):
             ipfs_hashes = push_to_ipfs(hstr, payload)
 
             if ipfs_hashes is None:
-                logError('Skipping ' +
-                         record.rec_headers.get_header('WARC-Target-URI'))
+                log_error('Skipping ' +
+                          record.rec_headers.get_header('WARC-Target-URI'))
 
                 continue
 
@@ -292,21 +292,21 @@ def cdx_cdxj_lines_from_file(warc_path, **enc_comp_opts):
             if title is not None:
                 obj['title'] = title
 
-            objJSON = json.dumps(obj)
+            obj_jSON = json.dumps(obj)
 
-            cdxj_line = f'{original_uri_surted} {timestamp} {objJSON}'
+            cdxj_line = f'{original_uri_surted} {timestamp} {obj_jSON}'
             cdxj_lines.append(cdxj_line)  # + '\n'
         return cdxj_lines
 
 
 def generate_cdxj_metadata(cdxj_lines=None):
     metadata = ['!context ["http://tools.ietf.org/html/rfc7089"]']
-    metaVals = {
+    meta_vals = {
         'generator': f'InterPlanetary Wayback {ipwb_version}',
         'created_at': datetime.datetime.now().isoformat()
     }
-    metaVals = f'!meta {json.dumps(metaVals)}'
-    metadata.append(metaVals)
+    meta_vals = f'!meta {json.dumps(meta_vals)}'
+    metadata.append(meta_vals)
 
     return metadata
 
@@ -318,7 +318,7 @@ def ask_user_for_encryption_key():
     output_redirected = os.fstat(0) != os.fstat(1)
     prompt_string = 'Enter a key for encryption: '
     if output_redirected:  # Prevents prompt in redir output
-        logError(prompt_string, end='')
+        log_error(prompt_string, end='')
         prompt_string = ''
 
     key = input(prompt_string)
@@ -338,7 +338,7 @@ def verify_daemon_is_alive(host_and_port):
 def verify_file_exists(warc_path):
     if os.path.isfile(warc_path):
         return
-    logError(f'File at {warc_path} does not exist!')
+    log_error(f'File at {warc_path} does not exist!')
     sys.exit()
 
 
@@ -353,31 +353,31 @@ def show_progress(msg, i, n):
         print(final_msg + spaces, file=sys.stderr, end='\r\n')
 
 
-def logError(errIn, end='\n'):
-    print(errIn, file=sys.stderr, end=end)
+def log_error(err_in, end='\n'):
+    print(err_in, file=sys.stderr, end=end)
 
 
-def pull_from_ipfs(hash):
-    return ipfs_client().cat(hash)
+def pull_from_ipfs(hash_in):
+    return ipfs_client().cat(hash_in)
 
 
-def push_bytes_to_ipfs(bytes):
+def push_bytes_to_ipfs(bytes_in):
     """
     Call the IPFS API to add the byte string to IPFS.
     When IPFS returns a hash, return this to the caller
     """
     # Returns unicode in py2.7, str in py3.7
     try:
-        res = ipfs_client().add_bytes(bytes)  # bytes)
-    except TypeError as err:
+        res = ipfs_client().add_bytes(bytes_in)  # bytes)
+    except TypeError as _:
         print('fail')
-        logError('IPFS_API had an issue pushing the item to IPFS')
-        logError(sys.exc_info())
-        logError(len(bytes))
+        log_error('IPFS_API had an issue pushing the item to IPFS')
+        log_error(sys.exc_info())
+        log_error(len(bytes_in))
         traceback.print_tb(sys.exc_info()[-1])
-    except ipfsapi.exceptions.ConnectionError as connErr:
+    except ipfsapi.exceptions.ConnectionError as _:
         print('ConnErr')
-        logError(sys.exc_info())
+        log_error(sys.exc_info())
         traceback.print_tb(sys.exc_info()[-1])
         return
 
@@ -388,7 +388,7 @@ def push_bytes_to_ipfs(bytes):
     elif type(res).__name__ == 'str':
         return res
 
-    logError('NEITHER UNICODE NOR STR RETURNED.')
+    log_error('NEITHER UNICODE NOR STR RETURNED.')
     return res[0]['Hash']
 
 
