@@ -228,8 +228,8 @@ def test_unit_command_daemon():
     (False, 'http.example.com'),
     (False, 'http-bin.com'),
 ])
-def test_isUri(expected, input):
-    assert expected == bool(replay.isUri(input))
+def test_is_uri(expected, input):
+    assert expected == bool(replay.is_uri(input))
 
 
 # TODO: Have unit tests for each function in replay.py
