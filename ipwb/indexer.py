@@ -300,7 +300,7 @@ def cdx_cdxj_lines_from_file(warc_path, **enc_comp_opts):
 
 
 def generate_cdxj_metadata(cdxj_lines=None):
-    metadata = ['!context ["http://tools.ietf.org/html/rfc7089"]']
+    metadata = ['!context ["https://tools.ietf.org/html/rfc7089"]']
     meta_vals = {
         'generator': f'InterPlanetary Wayback {ipwb_version}',
         'created_at': datetime.datetime.now().isoformat()

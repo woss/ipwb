@@ -507,7 +507,7 @@ def generate_cdxj_timemap_from_cdxj_lines(
     # unsurted URI will never have a scheme, add one
     original_uri = f'http://{unsurt(original)}'
 
-    tm_data = '!context ["http://tools.ietf.org/html/rfc7089"]\n'
+    tm_data = '!context ["https://tools.ietf.org/html/rfc7089"]\n'
     tm_data += f'!id {{"uri": "{tm_self}"}}\n'
     tm_data += '!keys ["memento_datetime_YYYYMMDDhhmmss"]\n'
     tm_data += f'!meta {{"original_uri": "{original_uri}"}}\n'
