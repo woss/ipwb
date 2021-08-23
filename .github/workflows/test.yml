@@ -26,8 +26,6 @@ jobs:
     name: ${{ matrix.os }} Py-${{ matrix.python }} IPFS-${{ matrix.ipfs }}
     steps:
       - uses: actions/checkout@v2
-      - name: Echo branch being used
-        run: git branch
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v2
         with:
