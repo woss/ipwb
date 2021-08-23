@@ -14,7 +14,7 @@ SAMPLE_INDEX = str(
 
 def test_local():
     assert get_web_archive_index(SAMPLE_INDEX).startswith(
-        '!context ["http://tools.ietf.org/html/rfc7089"]'
+        '!context ["https://tools.ietf.org/html/rfc7089"]'
     )
 
 
@@ -22,7 +22,7 @@ def test_https():
     assert get_web_archive_index(
         'https://raw.githubusercontent.com/oduwsdl/ipwb/master/samples/' +
         'indexes/salam-home.cdxj'
-    ).startswith('!context ["http://tools.ietf.org/html/rfc7089"]')
+    ).startswith('!context ["https://tools.ietf.org/html/rfc7089"]')
 
 
 def test_ipfs_success():
@@ -35,7 +35,7 @@ def test_ipfs_success():
     with mock.patch('ipfshttpclient.connect', connect_to_ipfs):
         assert get_web_archive_index(
             'QmReQCtRpmEhdWZVLhoE3e8bqreD8G3avGpVfcLD7r4K6W'
-        ).startswith('!context ["http://tools.ietf.org/html/rfc7089"]')
+        ).startswith('!context ["https://tools.ietf.org/html/rfc7089"]')
 
 
 def test_ipfs_failure():
@@ -63,4 +63,4 @@ def test_ipfs_url_success():
     with mock.patch('ipfshttpclient.connect', connect_to_ipfs):
         assert get_web_archive_index(
             'ipfs://QmReQCtRpmEhdWZVLhoE3e8bqreD8G3avGpVfcLD7r4K6W'
-        ).startswith('!context ["http://tools.ietf.org/html/rfc7089"]')
+        ).startswith('!context ["https://tools.ietf.org/html/rfc7089"]')
