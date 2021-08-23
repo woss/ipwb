@@ -521,6 +521,7 @@ def generate_cdxj_timemap_from_cdxj_lines(
 
     for i, line in enumerate(cdxj_lines):
         (surt_uri, datetime, json) = line.split(' ', 2)
+        unsurted_uri = unsurt(surt_uri)
         dt_rfc1123 = ipwb_utils.digits14_to_rfc1123(datetime)
         first_last_str = ''
 
@@ -533,7 +534,7 @@ def generate_cdxj_timemap_from_cdxj_lines(
             first_last_str = 'first last '
 
         tm_data += (f'{datetime} {{'
-                    f'"uri": "{host_and_port}memento/{datetime}/{surt_uri}", '
+                    f'"uri": "{host_and_port}memento/{datetime}/{unsurted_uri}", '
                     f'"rel": "{first_last_str}memento", '
                     f'"datetime"="{dt_rfc1123}"}}\n')
     return tm_data
