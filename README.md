@@ -41,7 +41,7 @@ $ pip install ./
 
 ## Setup
 
-The InterPlanetary Filesystem (ipfs) daemon must be installed and running before starting ipwb. See the [Install IPFS](https://ipfs.io/docs/install/) page to accomplish this. In the future, we hope to make this more automated. Once ipfs is installed, start the daemon:
+The InterPlanetary File System (ipfs) daemon must be installed and running before starting ipwb. See the [Install IPFS](https://ipfs.io/docs/install/) page to accomplish this. In the future, we hope to make this more automated. Once ipfs is installed, start the daemon:
 
 ```
 $ ipfs daemon
@@ -201,7 +201,7 @@ This repo contains the code for integrating [WARC](http://www.iso.org/iso/catalo
 
 ### Citing Project
 
-We have numerous publications related to this project, but the most significant and primary one was published in TPDL 2016. ([Read the PDF](http://www.cs.odu.edu/~mkelly/papers/2016_tpdl_ipwb.pdf))
+We have numerous publications related to this project, but the most significant and primary one was published in TPDL 2016. ([Read the PDF](https://matkelly.com/papers/2016_tpdl_ipwb.pdf))
 
 > Mat Kelly, Sawood Alam, Michael L. Nelson, and Michele C. Weigle. __InterPlanetary Wayback: Peer-To-Peer Permanence of Web Archives__. In _Proceedings of the 20th International Conference on Theory and Practice of Digital Libraries_, pages 411–416, Hamburg, Germany, June 2016.
 

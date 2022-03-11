@@ -15,12 +15,14 @@ jobs:
           - macos-latest
           # - windows-latest
         python:
-          - 3.7
-          - 3.8
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
         ipfs:
-          - 0.4
-          - 0.5
-          - 0.6
+          - "0.10"
+          - "0.11"
+          - "0.12"
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} Py-${{ matrix.python }} IPFS-${{ matrix.ipfs }}
     steps:

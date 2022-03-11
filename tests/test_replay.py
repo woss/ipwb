@@ -2,6 +2,7 @@ import pytest
 
 from . import testUtil as ipwb_test
 from ipwb import replay
+
 from time import sleep
 
 import requests
@@ -107,6 +108,22 @@ def test_replay_dated_memento():
 
     resp = requests.get(url.format('20160305192247'), allow_redirects=False)
     assert resp.status_code == 200
+
+    ipwb_test.stop_replay()
+
+
+@pytest.mark.parametrize("warc,index,tmformat,urim", [
+    ('5mementos.warc', '5mementos.cdxj', 'cdxj', 'memento.us'),
+    ('5mementos.warc', '5mementos.link', 'link', 'memento.us')
+])
+def test_generate_timemap(warc, index, tmformat, urim):
+    ipwb_test.start_replay(warc)
+
+    resp = requests.get(f'http://localhost:5000/timemap/{tmformat}/{urim}',
+                        allow_redirects=False)
+
+    with open(f'samples/indexes/{index}', 'r') as index:
+        assert index.read().encode('utf-8') == resp.content
 
     ipwb_test.stop_replay()
 
@@ -228,8 +245,8 @@ def test_unit_command_daemon():
     (False, 'http.example.com'),
     (False, 'http-bin.com'),
 ])
-def test_isUri(expected, input):
-    assert expected == bool(replay.isUri(input))
+def test_is_uri(expected, input):
+    assert expected == bool(replay.is_uri(input))
 
 
 # TODO: Have unit tests for each function in replay.py
