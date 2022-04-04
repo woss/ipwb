@@ -21,7 +21,7 @@ import urllib
 def test_replay_404(warc, lookup, has_md_header):
     ipwb_test.start_replay(warc)
 
-    resp = requests.get(f'http://localhost:5000/{lookup}',
+    resp = requests.get(f'http://localhost:2016/{lookup}',
                         allow_redirects=False)
 
     assert resp.status_code == 404
@@ -53,7 +53,7 @@ def test_replay_404(warc, lookup, has_md_header):
 def test_replay_search(warc, lookup, status, location):
     ipwb_test.start_replay(warc)
 
-    resp = requests.get(f'http://localhost:5000/{lookup}',
+    resp = requests.get(f'http://localhost:2016/{lookup}',
                         allow_redirects=False)
     assert resp.status_code == status
     if location is not None:  # Allow for checks w/o redirects
@@ -65,7 +65,7 @@ def test_replay_search(warc, lookup, status, location):
 def test_replay_dated_memento():
     ipwb_test.start_replay('salam-home.warc')
 
-    url = 'http://localhost:5000/memento/{}/cs.odu.edu/~salam/'
+    url = 'http://localhost:2016/memento/{}/cs.odu.edu/~salam/'
     dest = '/memento/20160305192247/cs.odu.edu/~salam/'
 
     invalid_dts = [
@@ -119,7 +119,7 @@ def test_replay_dated_memento():
 def test_generate_timemap(warc, index, tmformat, urim):
     ipwb_test.start_replay(warc)
 
-    resp = requests.get(f'http://localhost:5000/timemap/{tmformat}/{urim}',
+    resp = requests.get(f'http://localhost:2016/timemap/{tmformat}/{urim}',
                         allow_redirects=False)
 
     with open(f'samples/indexes/{index}', 'r') as index:
