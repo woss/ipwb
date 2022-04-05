@@ -1047,13 +1047,15 @@ def get_cdxj_line_binary_search(
     return line_found
 
 
-def start(cdxj_file_path, proxy=None):
+def start(cdxj_file_path, proxy=None, port=IPWBREPLAY_PORT):
     host_port = ipwb_utils.get_ipwb_replay_config()
     app.proxy = proxy
 
+    # Retain port for subsequent runs
+    ipwb_utils.set_ipwb_replay_config(IPWBREPLAY_HOST, port)
+
     if not host_port:
-        ipwb_utils.set_ipwb_replay_config(IPWBREPLAY_HOST, IPWBREPLAY_PORT)
-        host_port = (IPWBREPLAY_HOST, IPWBREPLAY_PORT)
+        host_port = (IPWBREPLAY_HOST, port)
 
     # This will throw an exception if daemon is not available.
     ipwb_utils.check_daemon_is_alive()
