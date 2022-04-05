@@ -58,7 +58,6 @@ def check_args_replay(args):
         print(f'Proxying to {args.proxy}')
         proxy = args.proxy
 
-    port = replay.IPWBREPLAY_PORT
     if hasattr(args, 'port') and args.port is not None:
         print(f'Using custom port {args.port} for replay.')
         util.set_ipwb_replay_config_portonly(args.port)
