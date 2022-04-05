@@ -269,6 +269,12 @@ def get_ipwb_replay_config(ipfs_json=None):
         return None
 
 
+def set_ipwb_replay_config_portonly(port):
+    ipfs_json = read_ipfs_config()
+    ipfs_json['Ipwb']['Replay']['Port'] = port
+    write_ipfs_config(ipfs_json)
+
+
 def set_ipwb_replay_config(Host, Port, ipfs_json=None):
     if not ipfs_json:
         ipfs_json = read_ipfs_config()
