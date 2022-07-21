@@ -26,7 +26,7 @@ RUN        cd /tmp \
            && wget -q https://dist.ipfs.io/kubo/${IPFS_VERSION}/kubo_${IPFS_VERSION}_linux-amd64.tar.gz \
            && tar xvfz kubo*.tar.gz \
            && mv kubo/ipfs /usr/local/bin/ipfs \
-           && rm -rf kubos* \
+           && rm -rf kubo* \
            && ipfs init
 
 # Make necessary changes to prepare the environment for IPWB
