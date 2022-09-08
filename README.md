@@ -36,13 +36,12 @@ The latest development version containing changes not yet released can be instal
 ```
 $ git clone https://github.com/oduwsdl/ipwb
 $ cd ipwb
-$ pip install -r requirements.txt
 $ pip install ./
 ```
 
 ## Setup
 
-The InterPlanetary Filesystem (ipfs) daemon must be installed and running before starting ipwb. See the [Install IPFS](https://ipfs.io/docs/install/) page to accomplish this. In the future, we hope to make this more automated. Once ipfs is installed, start the daemon:
+The InterPlanetary File System (ipfs) daemon must be installed and running before starting ipwb. See the [Install IPFS](https://ipfs.io/docs/install/) page to accomplish this. In the future, we hope to make this more automated. Once ipfs is installed, start the daemon:
 
 ```
 $ ipfs daemon
@@ -89,9 +88,9 @@ $ ipwb replay http://myDomain/files/myIndex.cdxj
 $ ipwb replay QmYwAPJzv5CZsnANOTaREALhashYgPpHdWEz79ojWnPbdG
 ```
 
-Once started, the replay system's web interface can be accessed through a web browser, e.g., <http://localhost:5000/> by default.
+Once started, the replay system's web interface can be accessed through a web browser, e.g., <http://localhost:2016/> by default.
 
-To run it under a domain name other than `localhost`, the easiest approach is to use a reverse proxy that supports HTTPS. The replay system utilizes [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) for URL rerouting/rewriting to prevent [live leakage (zombies)](http://ws-dl.blogspot.com/2012/10/2012-10-10-zombies-in-archives.html). However, for security reason many web browsers have mandated HTTPS for the Service Worker API with only exception if the domain is `localhost`. [Caddy Server](https://caddyserver.com/) and [Traefik](https://traefik.io/) can be used as a reverse-proxy server and are very easy to setup. They come with built-in HTTPS support and manage (install and update) TLS certificates transparently and automatically from [Let's Encrypt](https://letsencrypt.org/). However, any web server proxy that has HTTPS support on the front-end will work. To make ipwb replay aware of the proxy, use `--proxy` or `-P` flag to supply the proxy URL. This way the replay will yield the supplied proxy URL as a prefix when generating various fully qualified domain name (FQDN) URIs or absolute URIs (for example, those in the TimeMap or Link header) instead of the default `http://localhost:5000`. This can be necessary when the service is running in a private network or a container and only exposed via a reverse-proxy. Suppose a reverse-proxy server is running and ready to forward all traffic on the `https://ipwb.example.com` to the ipwb replay server then the replay can be started as following:
+To run it under a domain name other than `localhost`, the easiest approach is to use a reverse proxy that supports HTTPS. The replay system utilizes [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) for URL rerouting/rewriting to prevent [live leakage (zombies)](http://ws-dl.blogspot.com/2012/10/2012-10-10-zombies-in-archives.html). However, for security reason many web browsers have mandated HTTPS for the Service Worker API with only exception if the domain is `localhost`. [Caddy Server](https://caddyserver.com/) and [Traefik](https://traefik.io/) can be used as a reverse-proxy server and are very easy to setup. They come with built-in HTTPS support and manage (install and update) TLS certificates transparently and automatically from [Let's Encrypt](https://letsencrypt.org/). However, any web server proxy that has HTTPS support on the front-end will work. To make ipwb replay aware of the proxy, use `--proxy` or `-P` flag to supply the proxy URL. This way the replay will yield the supplied proxy URL as a prefix when generating various fully qualified domain name (FQDN) URIs or absolute URIs (for example, those in the TimeMap or Link header) instead of the default `http://localhost:2016`. This can be necessary when the service is running in a private network or a container and only exposed via a reverse-proxy. Suppose a reverse-proxy server is running and ready to forward all traffic on the `https://ipwb.example.com` to the ipwb replay server then the replay can be started as following:
 
 ```
 $ ipwb replay --proxy=https://ipwb.example.com <path/to/cdxj>
@@ -102,16 +101,16 @@ $ ipwb replay --proxy=https://ipwb.example.com <path/to/cdxj>
 A pre-built Docker image is made available that can be run as following:
 
 ```
-$ docker container run -it --rm -p 5000:5000 oduwsdl/ipwb
+$ docker container run -it --rm -p 2016:2016 oduwsdl/ipwb
 ```
 
-The container will run an IPFS daemon, index a sample WARC file, and replay it using the newly created index. It will take a few seconds to be ready, then the replay will be accessible at <http://localhost:5000/> with a sample archived page.
+The container will run an IPFS daemon, index a sample WARC file, and replay it using the newly created index. It will take a few seconds to be ready, then the replay will be accessible at <http://localhost:2016/> with a sample archived page.
 
 To index and replay your own WARC file, bind mount your data folders inside the container using `-v` (or `--volume`) flag and run commands accordingly. The provided docker image has designated `/data` directory, inside which there are `warc`, `cdxj`, and `ipfs` folders where host folders can be mounted separately or as a single mount point at the parent `/data` directory. Assuming that the host machine has a `/path/to/data` folder under which there are `warc`, `cdxj`, and `ipfs` folders and a WARC file at `/path/to/data/warc/custom.warc.gz`.
 
 ```
 $ docker container run -it --rm -v /path/to/data:/data oduwsdl/ipwb ipwb index -o /data/cdxj/custom.cdxj /data/warc/custom.warc.gz
-$ docker container run -it --rm -v /path/to/data:/data -p 5000:5000 oduwsdl/ipwb ipwb replay /data/cdxj/custom.cdxj
+$ docker container run -it --rm -v /path/to/data:/data -p 2016:2016 oduwsdl/ipwb ipwb replay /data/cdxj/custom.cdxj
 ```
 
 If the host folder structure is something other than `/some/path/{warc,cdxj,ipfs}` then these volumes need to be mounted separately.
@@ -157,12 +156,12 @@ ipwb commands:
 ```
 $ ipwb index -h
 usage: ipwb [-h] [-e] [-c] [--compressFirst] [-o OUTFILE] [--debug]
-            index <warcPath> [index <warcPath> ...]
+            index <warc_path> [index <warc_path> ...]
 
 Index a WARC file for replay in ipwb
 
 positional arguments:
-  index <warcPath>      Path to a WARC[.gz] file
+  index <warc_path>      Path to a WARC[.gz] file
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -202,11 +201,11 @@ This repo contains the code for integrating [WARC](http://www.iso.org/iso/catalo
 
 ### Citing Project
 
-We have numerous publications related to this project, but the most significant and primary one was published in TPDL 2016. ([Read the PDF](http://www.cs.odu.edu/~mkelly/papers/2016_tpdl_ipwb.pdf))
+We have numerous publications related to this project, but the most significant and primary one was published in TPDL 2016. ([Read the PDF](https://matkelly.com/papers/2016_tpdl_ipwb.pdf))
 
 > Mat Kelly, Sawood Alam, Michael L. Nelson, and Michele C. Weigle. __InterPlanetary Wayback: Peer-To-Peer Permanence of Web Archives__. In _Proceedings of the 20th International Conference on Theory and Practice of Digital Libraries_, pages 411–416, Hamburg, Germany, June 2016.
 
-```latex
+```bib
 @INPROCEEDINGS{ipwb-tpdl2016,
   AUTHOR    = {Mat Kelly and
                Sawood Alam and

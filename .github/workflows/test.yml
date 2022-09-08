@@ -15,18 +15,20 @@ jobs:
           - macos-latest
           # - windows-latest
         python:
-          - 3.7
-          - 3.8
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
         ipfs:
-          - 0.4
-          - 0.5
-          - 0.6
+          - "0.13"
+          - "0.14"
+          - "0.15"
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} Py-${{ matrix.python }} IPFS-${{ matrix.ipfs }}
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@master
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
       - name: Set up IPFS ${{ matrix.ipfs }}
