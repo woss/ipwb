@@ -202,31 +202,31 @@ def bin_search(iter, key, datetime=None):
 
         surtk = surtk.rstrip(b"/")
 
-        matchDegree = get_match_degree(key, datetime, surtk, datetimeK)
+        match_degree = get_match_degree(key, datetime, surtk, datetimeK)
 
-        if matchDegree == MementoMatch.RIGHTKEYWRONGDATE:
+        if match_degree == MementoMatch.RIGHTKEYWRONGDATE:
             lines.add(line)
             # Iterate further to get lines after selection point
-            nextLine = iter.readline()
-            while nextLine:
-                surtk, datetimeK, rest = nextLine.split(maxsplit=2)
+            next_line = iter.readline()
+            while next_line:
+                surtk, datetimeK, rest = next_line.split(maxsplit=2)
                 surtk = surtk.rstrip(b"/")
 
-                matchDegree = get_match_degree(key, datetime, surtk, datetimeK)
-                if matchDegree == MementoMatch.RIGHTKEYWRONGDATE:
-                    lines.add(nextLine)
-                elif matchDegree == MementoMatch.EXACTMATCH:
+                match_degree = get_match_degree(key, datetime, surtk, datetimeK)
+                if match_degree == MementoMatch.RIGHTKEYWRONGDATE:
+                    lines.add(next_line)
+                elif match_degree == MementoMatch.EXACTMATCH:
                     # Exact match found while iterating
-                    return [nextLine]
-                elif matchDegree == MementoMatch.WRONGKEY:
+                    return [next_line]
+                elif match_degree == MementoMatch.WRONGKEY:
                     # Matched keys exhausted
                     break
 
-                nextLine = iter.readline()
+                next_line = iter.readline()
 
             # Continue searching until find first instance
             right = mid
-        elif matchDegree == MementoMatch.EXACTMATCH:
+        elif match_degree == MementoMatch.EXACTMATCH:
             return [line]
         elif key > surtk:
             left = mid
@@ -250,16 +250,16 @@ def get_match_degree(surt, datetime, surtK, datetimeK):
         return MementoMatch.WRONGKEY
 
 
-def getCDXJLinesWithURIR(urir, indexPath, datetime=None):
+def getCDXJLinesWithURIR(urir, index_path, datetime=None):
     """ Get all CDXJ records corresponding to a URI-R """
-    if not indexPath:
-        indexPath = ipwb_utils.getIPWBReplayIndexPath()
-    indexPath = get_index_file_full_path(indexPath)
+    if not index_path:
+        index_path = ipwb_utils.get_ipwb_replay_index_path()
+    index_path = get_index_file_full_path(index_path)
 
     # Convert URI-R to surt
     surtedURIR = surt.surt(urir, path_strip_trailing_slash_unless_empty=True)
 
-    fobj = open(indexPath, "rb")
+    fobj = open(index_path, "rb")
     res = bin_search(fobj, surtedURIR.encode(), datetime)
     fobj.close()
 
