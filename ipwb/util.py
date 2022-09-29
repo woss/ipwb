@@ -13,6 +13,8 @@ import datetime
 import logging
 import platform
 
+from enum import Enum, auto
+
 from urllib.request import urlopen
 from urllib.error import URLError
 
@@ -39,6 +41,13 @@ IPWBREPLAY_ADDRESS = 'localhost:2016'
 IPWBREPLAY_PORT = int(IPWBREPLAY_PORT)
 
 INDEX_FILE = os.path.join('samples', 'indexes', 'salam-home.cdxj')
+
+
+class MementoMatch(Enum):
+    WRONGKEY = auto()
+    RIGHTKEYWRONGDATE = auto()
+    EXACTMATCH = auto()
+
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
