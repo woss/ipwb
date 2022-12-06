@@ -291,3 +291,18 @@ function registerServiceWorker () {
     console.log('Browser does not support Service Worker.')
   }
 }
+
+function localizeNumber (numberIn) {
+    console.log('localizing ')
+    console.log(numberIn)
+    let clientLocale = navigator.language
+    if (navigator.languages && navigator.languages.length) {
+        clientLocale = navigator.languages[0]
+    }
+    return new Intl.NumberFormat(clientLocale).format(numberIn)
+}
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    const memCount = document.querySelector('#memCountInt')
+    memCount.textContent = localizeNumber(memCount.textContent)
+})
