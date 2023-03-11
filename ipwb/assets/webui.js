@@ -315,5 +315,4 @@ window.addEventListener('DOMContentLoaded', (event) => {
   window.fetch('/ipfsdaemon/version')
     .then((response) => response.text())
     .then((txt) => (daemonVersion.innerHTML = txt))
-
 })
