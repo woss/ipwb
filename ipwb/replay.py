@@ -32,6 +32,7 @@ from six.moves.urllib_parse import urlsplit, urlunsplit
 
 
 from requests.exceptions import HTTPError
+from ipfshttpclient.exceptions import ConnectionError
 
 from . import util as ipwb_utils
 from .backends import get_web_archive_index
@@ -965,13 +966,14 @@ def request_daemon_version_via_http():
     try:
         ipfs_version = ipfs_client().version()['Version']
         status = 200
-    except:
-        ipfs_version = "Not Available"
+    except ConnectionError as _:
+        ipfs_version = 'Not Available'
         status = 503
-    resp = Response(response=ipfs_version,
+
+    return Response(response=ipfs_version,
                     status=status,
-                    mimetype="text/plain")
-    return resp
+                    mimetype='text/plain')
+
 
 def generate_daemon_status_button():
     text = 'Not Running'
