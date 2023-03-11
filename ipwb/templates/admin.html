@@ -22,8 +22,8 @@
         <dd>Version: {{ status.ipwb_version }}</dd>
         <dt>IPFS</dt>
         <dd>Endpoint: {{ status.ipfs_endpoint }} (<a href="#" rel="noreferrer">Change</a> | <a href="#" rel="noreferrer">Web UI</a>)</dd>
+        <dd>Daemon Version: <span id="daemonVersion"></span></dd>
         <dd><label id="daemonStatusLabel">Daemon Status:</label><iframe src="ipfsdaemon/status" id="daemonStatus"></iframe></dd>
-        <dd>Daemon Version:<iframe src="ipfsdaemon/version" id="daemonVersion"></iframe></dd>
       </dl>
     </section>
     <section>
@@ -46,7 +46,7 @@
     </section>
     <section>
       <h2>Collection</h2>
-      <p>{{ summary.urim_count }} mementos of {{ summary.urir_count }} resources with {{ summary.html_count }} HTML pages between {{ summary.earliest }} and {{ summary.latest }}</p>
+        <p><span id="memCountInt">{{ summary.urim_count }}</span> mementos of {{ summary.urir_count }} resources with {{ summary.html_count }} HTML pages between {{ summary.earliest }} and {{ summary.latest }}</p>
 
         <!--<span id="htmlPages">0</span>
         HTML page<span id="htmlPagesPlurality">s</span> listed-->

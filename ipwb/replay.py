@@ -138,17 +138,7 @@ def command_daemon(cmd):
     if cmd == 'status':
         return generate_daemon_status_button()
     elif cmd == 'version':
-        try:
-            ipfs_version = ipfs_client().version()['Version']
-            status = 200
-        except:
-            ipfs_version = "Not Available"
-            status = 503
-        resp = Response(response=ipfs_version,
-                        status=status,
-                        mimetype="text/plain")
-
-        return resp
+        return request_daemon_version_via_http()
     elif cmd == 'start':
         subprocess.Popen(['ipfs', 'daemon'])
         return Response('IPFS daemon starting...')
@@ -971,6 +961,18 @@ def extract_response_from_chunked_data(data):
     return ret_str
 
 
+def request_daemon_version_via_http():
+    try:
+        ipfs_version = ipfs_client().version()['Version']
+        status = 200
+    except:
+        ipfs_version = "Not Available"
+        status = 503
+    resp = Response(response=ipfs_version,
+                    status=status,
+                    mimetype="text/plain")
+    return resp
+
 def generate_daemon_status_button():
     text = 'Not Running'
     button_text = 'Start'
@@ -985,7 +987,7 @@ def generate_daemon_status_button():
         text = 'Running'
         button_text = 'Stop'
 
-    status_page_html = f'<html id="status{button_text}" class="status">'
+    status_page_html = f'<!DOCTYPE html><html id="status{button_text}" class="status">'
     status_page_html += ('<head><base href="/ipwbassets/" />'
                          '<link rel="stylesheet" type="text/css" '
                          'href="webui.css" />'
@@ -999,9 +1001,6 @@ def generate_daemon_status_button():
 
     return Response(f'{status_page_html}{button_html}{footer}')
 
-
-def get_daemon_version():
-    pass
 
 def get_index_file_full_path(cdxj_file_path=INDEX_FILE):
     # Avoid prepending current directory path to an IPFS hash.
