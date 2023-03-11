@@ -137,6 +137,18 @@ class UnsupportedIPFSVersions(Exception):
 def command_daemon(cmd):
     if cmd == 'status':
         return generate_daemon_status_button()
+    elif cmd == 'version':
+        try:
+            ipfs_version = ipfs_client().version()['Version']
+            status = 200
+        except:
+            ipfs_version = "Not Available"
+            status = 503
+        resp = Response(response=ipfs_version,
+                        status=status,
+                        mimetype="text/plain")
+
+        return resp
     elif cmd == 'start':
         subprocess.Popen(['ipfs', 'daemon'])
         return Response('IPFS daemon starting...')
@@ -987,6 +999,9 @@ def generate_daemon_status_button():
 
     return Response(f'{status_page_html}{button_html}{footer}')
 
+
+def get_daemon_version():
+    pass
 
 def get_index_file_full_path(cdxj_file_path=INDEX_FILE):
     # Avoid prepending current directory path to an IPFS hash.

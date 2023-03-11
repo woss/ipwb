@@ -18,14 +18,12 @@
     <section>
       <h2>Status</h2>
       <dl>
-        <dt>IPWB Version</dt>
-        <dd>{{ status.ipwb_version }}</dd>
-        <dt>IPFS Endpoint</dt>
-        <dd>{{ status.ipfs_endpoint }} (<a href="#" rel="noreferrer">Change</a> | <a href="#" rel="noreferrer">Web UI</a>)</dd>
-        <dt>IPFS Status</dt>
-        <dd>
-            <label id="daemonStatusLabel">IPFS Daemon: </label><iframe src="ipfsdaemon/status" id="daemonStatus"></iframe>
-        </dd>
+        <dt>IPWB</dt>
+        <dd>Version: {{ status.ipwb_version }}</dd>
+        <dt>IPFS</dt>
+        <dd>Endpoint: {{ status.ipfs_endpoint }} (<a href="#" rel="noreferrer">Change</a> | <a href="#" rel="noreferrer">Web UI</a>)</dd>
+        <dd><label id="daemonStatusLabel">Daemon Status:</label><iframe src="ipfsdaemon/status" id="daemonStatus"></iframe></dd>
+        <dd>Daemon Version:<iframe src="ipfsdaemon/version" id="daemonVersion"></iframe></dd>
       </dl>
     </section>
     <section>
