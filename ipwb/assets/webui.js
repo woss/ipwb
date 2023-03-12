@@ -317,7 +317,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   }
   memCount.innerHTML = localizeNumber(memCount.innerHTML)
 
-  document.querySelector('#daemonStatus'').addEventListener('load', () => { setDaemonVersion() })
+  document.querySelector('#daemonStatus').addEventListener('load', () => { setDaemonVersion() })
 
   set_daemon_version()
 })
