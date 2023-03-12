@@ -293,8 +293,6 @@ function registerServiceWorker () {
 }
 
 function localizeNumber (numberIn) {
-  console.log('localizing ')
-  console.log(numberIn)
   let clientLocale = navigator.language
   if (navigator.languages && navigator.languages.length) {
     clientLocale = navigator.languages[0]
