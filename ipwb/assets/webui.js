@@ -304,6 +304,7 @@ function localizeNumber (numberIn) {
 
 function set_daemon_version() {
   const daemonVersion = document.querySelector('#daemonVersion')
+
   window.fetch('/ipfsdaemon/version')
     .then((response) => response.text())
     .then((txt) => (daemonVersion.innerHTML = txt))
@@ -315,6 +316,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
     return // JS file called from two contexts
   }
   memCount.innerHTML = localizeNumber(memCount.innerHTML)
+
+  document.querySelector("#daemonStatus").addEventListener('load', () => {set_daemon_version()})
 
   set_daemon_version()
 })
