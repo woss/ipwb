@@ -303,6 +303,16 @@ function localizeNumber (numberIn) {
 }
 
 window.addEventListener('DOMContentLoaded', (event) => {
+  console.log('DOM content loaded called')
+  console.log(document)
   const memCount = document.querySelector('#memCountInt')
-  memCount.textContent = localizeNumber(memCount.textContent)
+  if (!memCount) {
+    return // JS file called from two contexts
+  }
+  memCount.innerHTML = localizeNumber(memCount.innerHTML)
+
+  const daemonVersion = document.querySelector('#daemonVersion')
+  window.fetch('/ipfsdaemon/version')
+    .then((response) => response.text())
+    .then((txt) => (daemonVersion.innerHTML = txt))
 })

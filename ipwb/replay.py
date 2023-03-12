@@ -32,6 +32,7 @@ from six.moves.urllib_parse import urlsplit, urlunsplit
 
 
 from requests.exceptions import HTTPError
+from ipfshttpclient.exceptions import ConnectionError
 
 from . import util as ipwb_utils
 from .backends import get_web_archive_index
@@ -137,6 +138,8 @@ class UnsupportedIPFSVersions(Exception):
 def command_daemon(cmd):
     if cmd == 'status':
         return generate_daemon_status_button()
+    elif cmd == 'version':
+        return request_daemon_version_via_http()
     elif cmd == 'start':
         subprocess.Popen(['ipfs', 'daemon'])
         return Response('IPFS daemon starting...')
@@ -959,6 +962,19 @@ def extract_response_from_chunked_data(data):
     return ret_str
 
 
+def request_daemon_version_via_http():
+    try:
+        ipfs_version = ipfs_client().version()['Version']
+        status = 200
+    except ConnectionError as _:
+        ipfs_version = 'Not Available'
+        status = 503
+
+    return Response(response=ipfs_version,
+                    status=status,
+                    mimetype='text/plain')
+
+
 def generate_daemon_status_button():
     text = 'Not Running'
     button_text = 'Start'
@@ -973,7 +989,7 @@ def generate_daemon_status_button():
         text = 'Running'
         button_text = 'Stop'
 
-    status_page_html = f'<html id="status{button_text}" class="status">'
+    status_page_html = f'<!DOCTYPE html><html id="status{button_text}" class="status">'
     status_page_html += ('<head><base href="/ipwbassets/" />'
                          '<link rel="stylesheet" type="text/css" '
                          'href="webui.css" />'
