@@ -23,7 +23,7 @@
         <dt>IPFS</dt>
         <dd>Endpoint: {{ status.ipfs_endpoint }} (<a href="#" rel="noreferrer">Change</a> | <a href="#" rel="noreferrer">Web UI</a>)</dd>
         <dd>Daemon Version: <span id="daemonVersion"></span></dd>
-        <dd><label id="daemonStatusLabel">Daemon Status:</label><iframe src="ipfsdaemon/status" id="daemonStatus"></iframe></dd>
+        <dd><label id="daemonStatusLabel">Daemon Status:</label><iframe src="ipfsdaemon/status" id="daemonStatus" onload="set_daemon_version()"></iframe></dd>
       </dl>
     </section>
     <section>

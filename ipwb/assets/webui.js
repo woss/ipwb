@@ -302,17 +302,19 @@ function localizeNumber (numberIn) {
   return new Intl.NumberFormat(clientLocale).format(numberIn)
 }
 
+function set_daemon_version() {
+  const daemonVersion = document.querySelector('#daemonVersion')
+  window.fetch('/ipfsdaemon/version')
+    .then((response) => response.text())
+    .then((txt) => (daemonVersion.innerHTML = txt))
+}
+
 window.addEventListener('DOMContentLoaded', (event) => {
-  console.log('DOM content loaded called')
-  console.log(document)
   const memCount = document.querySelector('#memCountInt')
   if (!memCount) {
     return // JS file called from two contexts
   }
   memCount.innerHTML = localizeNumber(memCount.innerHTML)
 
-  const daemonVersion = document.querySelector('#daemonVersion')
-  window.fetch('/ipfsdaemon/version')
-    .then((response) => response.text())
-    .then((txt) => (daemonVersion.innerHTML = txt))
+  set_daemon_version()
 })
