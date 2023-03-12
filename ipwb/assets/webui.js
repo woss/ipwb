@@ -302,7 +302,7 @@ function localizeNumber (numberIn) {
   return new Intl.NumberFormat(clientLocale).format(numberIn)
 }
 
-function set_daemon_version() {
+function setDaemonVersion () {
   const daemonVersion = document.querySelector('#daemonVersion')
 
   window.fetch('/ipfsdaemon/version')
@@ -317,7 +317,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   }
   memCount.innerHTML = localizeNumber(memCount.innerHTML)
 
-  document.querySelector("#daemonStatus").addEventListener('load', () => {set_daemon_version()})
+  document.querySelector('#daemonStatus'').addEventListener('load', () => { setDaemonVersion() })
 
   set_daemon_version()
 })
