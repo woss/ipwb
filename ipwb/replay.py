@@ -149,7 +149,7 @@ def command_daemon(cmd):
             ipfs_version = ipfs_client().version()['Version']
             if ipwb_utils.compare_versions(ipfs_version, '0.4.10') < 0:
                 raise UnsupportedIPFSVersions()
-            ipfs_client().shutdown()
+            ipfs_client().stop()
         except (subprocess.CalledProcessError, UnsupportedIPFSVersions) as _:
             if os.name != 'nt':  # Big hammer
                 subprocess.call(['killall', 'ipfs'])
