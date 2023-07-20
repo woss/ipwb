@@ -13,6 +13,8 @@ import datetime
 import logging
 import platform
 
+from enum import Enum, auto
+
 from urllib.request import urlopen
 from urllib.error import URLError
 
@@ -29,12 +31,24 @@ from .exceptions import IPFSDaemonNotAvailable
 logger = logging.getLogger(__name__)
 
 
-IPWBREPLAY_ADDRESS = 'localhost:5000'
+IPFSAPI_MUTLIADDRESS = '/dns/localhost/tcp/5001/http'
+# or '/dns/{host}/tcp/{port}/http'
+# or '/ip4/{ipaddress}/tcp/{port}/http'
+# or '/ip6/{ipaddress}/tcp/{port}/http
+
+IPWBREPLAY_ADDRESS = 'localhost:2016'
 
 (IPWBREPLAY_HOST, IPWBREPLAY_PORT) = IPWBREPLAY_ADDRESS.split(':')
 IPWBREPLAY_PORT = int(IPWBREPLAY_PORT)
 
 INDEX_FILE = os.path.join('samples', 'indexes', 'salam-home.cdxj')
+
+
+class MementoMatch(Enum):
+    WRONGKEY = auto()
+    RIGHTKEYWRONGDATE = auto()
+    EXACTMATCH = auto()
+
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)

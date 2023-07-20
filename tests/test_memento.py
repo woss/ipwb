@@ -18,7 +18,7 @@ import sys
 def get_urims_from_timemap_in_warc(warcFilename):
     ipwb_test.start_replay(warcFilename)
 
-    tm_uri = 'http://localhost:5000/timemap/link/memento.us/'
+    tm_uri = 'http://localhost:2016/timemap/link/memento.us/'
     tm = urlopen(tm_uri).read().decode('utf-8')
 
     urims = []
@@ -26,6 +26,7 @@ def get_urims_from_timemap_in_warc(warcFilename):
         is_a_memento = len(re.findall('rel=".*memento"', line)) > 0
         if is_a_memento:
             urims.append(re.findall('<(.*)>', line)[0])
+
     ipwb_test.stop_replay()
 
     return urims
@@ -66,7 +67,7 @@ def test_acceptdatetime_status(warc, lookup, acceptdatetime, status):
 
     headers = {'Accept-Datetime': acceptdatetime}
 
-    resp = requests.get(f'http://localhost:5000/{lookup}',
+    resp = requests.get(f'http://localhost:2016/{lookup}',
                         allow_redirects=False, headers=headers)
     assert resp.status_code == status
 
