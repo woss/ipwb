@@ -18,7 +18,7 @@ def main():
     check_args(sys.argv)
 
 
-def checkArgs_index(args):
+def check_args_index(args):
     # args.daemon_address is always set. Either default or by CLI
     try:
         # see if it parses
