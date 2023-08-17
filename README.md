@@ -4,7 +4,7 @@
 
 **Peer-To-Peer Permanence of Web Archives**
 
-[![Build Status](https://travis-ci.org/oduwsdl/ipwb.svg?branch=master)](https://travis-ci.org/oduwsdl/ipwb) [![pypi](https://img.shields.io/pypi/v/ipwb.svg)](https://pypi.org/project/ipwb) [![codecov](https://codecov.io/gh/oduwsdl/ipwb/branch/master/graph/badge.svg)](https://codecov.io/gh/oduwsdl/ipwb)
+[![pypi](https://img.shields.io/pypi/v/ipwb.svg)](https://pypi.org/project/ipwb) [![codecov](https://codecov.io/gh/oduwsdl/ipwb/branch/master/graph/badge.svg)](https://codecov.io/gh/oduwsdl/ipwb)
 
 InterPlanetary Wayback (ipwb) facilitates permanence and collaboration in web archives by disseminating the contents of [WARC](http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717) files into the IPFS network. [IPFS](https://ipfs.io/) is a peer-to-peer content-addressable file system that inherently allows deduplication and facilitates opt-in replication. ipwb splits the header and payload of WARC response records before disseminating into IPFS to leverage the deduplication, builds a [CDXJ index](https://github.com/oduwsdl/ORS/wiki/CDXJ) with references to the IPFS hashes returned, and combines the header and payload from IPFS at the time of replay.
 
