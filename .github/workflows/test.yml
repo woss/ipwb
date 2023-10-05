@@ -20,9 +20,9 @@ jobs:
           - "3.10"
           - "3.11"
         ipfs:
-          - "0.20"
           - "0.21"
           - "0.22"
+          - "0.23"
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} Py-${{ matrix.python }} IPFS-${{ matrix.ipfs }}
     steps:
