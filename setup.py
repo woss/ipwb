@@ -30,7 +30,6 @@ setup(
         'pycryptodome>=3.4.11',
         'requests>=2.19.1',
         'beautifulsoup4>=4.6.3',
-        'six==1.11.0',
         'surt>=0.3.0'
     ],
     tests_require=[
