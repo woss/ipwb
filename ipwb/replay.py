@@ -28,7 +28,7 @@ from bisect import bisect_left
 from socket import gaierror
 from socket import error as socketerror
 
-from six.moves.urllib_parse import urlsplit, urlunsplit
+from urllib.parse import urlsplit, urlunsplit
 
 
 from requests.exceptions import HTTPError
