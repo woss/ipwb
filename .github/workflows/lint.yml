@@ -15,6 +15,12 @@ jobs:
         run: |
           npm install standard
           node_modules/.bin/standard
+      - name: Clean up standard.js artifacts
+        shell: bash
+        run: |
+          rm -rf node_modules
+          rm package-lock.json
+          rm package.json
       - name: Lint Python
         run: |
           pip install --user pycodestyle
