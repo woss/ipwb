@@ -234,7 +234,7 @@ function injectIPWBJS () { // eslint-disable-line no-unused-vars
 function getServiceWorkerVersion () {
   return window.fetch(document.location.href)
     .then(function (resp) {
-      return Promise.resolve(resp.headers.get('Server').split('/')[1])
+      return Promise.resolve(resp.headers.get('Server').split('/').at(-1))
     })
 }
 

@@ -20,20 +20,20 @@ jobs:
           - "3.11"
           - "3.12"
         ipfs:
-          - "0.25"
           - "0.26"
           - "0.27"
           - "0.28"
+          - "0.29"
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} Py-${{ matrix.python }} IPFS-${{ matrix.ipfs }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
       - name: Set up IPFS ${{ matrix.ipfs }}
-        uses: ibnesayeed/setup-ipfs@master
+        uses: oduwsdl/setup-ipfs@main
         with:
           ipfs_version: ${{ matrix.ipfs }}
           run_daemon: true
