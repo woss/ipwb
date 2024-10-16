@@ -24,4 +24,4 @@ def test_catch():
     with patch('ipwb.error_handler.logger.critical', mock_logger):
         caught_error('boo')
 
-    assert mock_logger.assert_called_with(ANY)
+    mock_logger.assert_called_with(ANY)
