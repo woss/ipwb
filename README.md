@@ -6,7 +6,7 @@
 
 [![pypi](https://img.shields.io/pypi/v/ipwb.svg)](https://pypi.org/project/ipwb) [![codecov](https://codecov.io/gh/oduwsdl/ipwb/branch/master/graph/badge.svg)](https://codecov.io/gh/oduwsdl/ipwb)
 
-InterPlanetary Wayback (ipwb) facilitates permanence and collaboration in web archives by disseminating the contents of [WARC](http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717) files into the IPFS network. [IPFS](https://ipfs.io/) is a peer-to-peer content-addressable file system that inherently allows deduplication and facilitates opt-in replication. ipwb splits the header and payload of WARC response records before disseminating into IPFS to leverage the deduplication, builds a [CDXJ index](https://github.com/oduwsdl/ORS/wiki/CDXJ) with references to the IPFS hashes returned, and combines the header and payload from IPFS at the time of replay.
+InterPlanetary Wayback (ipwb) facilitates permanence and collaboration in web archives by disseminating the contents of [WARC](http://www.iso.org/iso/catalogue_detail.htm?csnumber=44717) files into the IPFS network. [IPFS](https://ipfs.io/) is a peer-to-peer content-addressable file system that inherently allows deduplication and facilitates opt-in replication. ipwb splits the header and payload of WARC response records before disseminating into IPFS to leverage the deduplication, builds a [CDXJ index](https://github.com/oduwsdl/ORS/wiki/CDXJ) with references to the IPFS hashes that are returned, and combines the header and payload from IPFS at the time of replay.
 
 InterPlanetary Wayback primarily consists of two scripts:
 
@@ -90,7 +90,7 @@ $ ipwb replay QmYwAPJzv5CZsnANOTaREALhashYgPpHdWEz79ojWnPbdG
 
 Once started, the replay system's web interface can be accessed through a web browser, e.g., <http://localhost:2016/> by default.
 
-To run it under a domain name other than `localhost`, the easiest approach is to use a reverse proxy that supports HTTPS. The replay system utilizes [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) for URL rerouting/rewriting to prevent [live leakage (zombies)](http://ws-dl.blogspot.com/2012/10/2012-10-10-zombies-in-archives.html). However, for security reason many web browsers have mandated HTTPS for the Service Worker API with only exception if the domain is `localhost`. [Caddy Server](https://caddyserver.com/) and [Traefik](https://traefik.io/) can be used as a reverse-proxy server and are very easy to setup. They come with built-in HTTPS support and manage (install and update) TLS certificates transparently and automatically from [Let's Encrypt](https://letsencrypt.org/). However, any web server proxy that has HTTPS support on the front-end will work. To make ipwb replay aware of the proxy, use `--proxy` or `-P` flag to supply the proxy URL. This way the replay will yield the supplied proxy URL as a prefix when generating various fully qualified domain name (FQDN) URIs or absolute URIs (for example, those in the TimeMap or Link header) instead of the default `http://localhost:2016`. This can be necessary when the service is running in a private network or a container and only exposed via a reverse-proxy. Suppose a reverse-proxy server is running and ready to forward all traffic on the `https://ipwb.example.com` to the ipwb replay server then the replay can be started as following:
+To run it under a domain name other than `localhost`, the easiest approach is to use a reverse proxy that supports HTTPS. The replay system utilizes [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) for URL rerouting/rewriting to prevent [live leakage (zombies)](http://ws-dl.blogspot.com/2012/10/2012-10-10-zombies-in-archives.html). However, for security reason many web browsers have mandated HTTPS for the Service Worker API with only exception if the domain is `localhost`. [Caddy Server](https://caddyserver.com/) and [Traefik](https://traefik.io/) can be used as a reverse-proxy server and are very easy to setup. They come with built-in HTTPS support and manage (install and update) TLS certificates transparently and automatically from [Let's Encrypt](https://letsencrypt.org/). However, any web server proxy that has HTTPS support on the front-end will work. To make ipwb replay aware of the proxy, use `--proxy` or `-P` flag to supply the proxy URL. This way the replay will yield the supplied proxy URL as a prefix when generating various fully qualified domain name (FQDN) URIs or absolute URIs (for example, those in the TimeMap or Link header) instead of the default `http://localhost:2016`. This can be necessary when the service is running in a private network or a container, and only exposed via a reverse-proxy. Suppose a reverse-proxy server is running and ready to forward all traffic on the `https://ipwb.example.com` to the ipwb replay server then the replay can be started as following:
 
 ```
 $ ipwb replay --proxy=https://ipwb.example.com <path/to/cdxj>
@@ -121,7 +121,7 @@ To build an image from the source, run the following command from the directory 
 $ docker image build -t oduwsdl/ipwb .
 ```
 
-By default, the image building process also performs tests, so it might take a while to build the image. It ensures that an image will not be created with failing tests. However, it is possible to skip tests by supplying a build-arg `--build-arg SKIPTEST=true` as illustrated below:
+By default, the image building process also performs tests, so it might take a while to build the image. It ensures that an image will not be created with failing tests. However, it is possible to skip tests by supplying a build-arg `--build-arg SKIPTEST=true` as shown below:
 
 ```
 $ docker image build --build-arg SKIPTEST=true -t oduwsdl/ipwb .
@@ -201,7 +201,7 @@ This repo contains the code for integrating [WARC](http://www.iso.org/iso/catalo
 
 ### Citing Project
 
-We have numerous publications related to this project, but the most significant and primary one was published in TPDL 2016. ([Read the PDF](https://matkelly.com/papers/2016_tpdl_ipwb.pdf))
+There are numerous publications related to this project, but the most significant and primary one was published in TPDL 2016. ([Read the PDF](https://matkelly.com/papers/2016_tpdl_ipwb.pdf))
 
 > Mat Kelly, Sawood Alam, Michael L. Nelson, and Michele C. Weigle. __InterPlanetary Wayback: Peer-To-Peer Permanence of Web Archives__. In _Proceedings of the 20th International Conference on Theory and Practice of Digital Libraries_, pages 411–416, Hamburg, Germany, June 2016.
 
