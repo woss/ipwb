@@ -24,7 +24,7 @@ ENV        IPFS_PATH=/data/ipfs
 ARG        IPFS_VERSION=v0.31.0
 ARG        BUILDARCH
 RUN        cd /tmp \
-           && wget -q https://dist.ipfs.io/kubo/${IPFS_VERSION}/kubo_${IPFS_VERSION}_linux-$BUILDARCH.tar.gz \
+           && wget -q https://dist.ipfs.tech/kubo/${IPFS_VERSION}/kubo_${IPFS_VERSION}_linux-$BUILDARCH.tar.gz \
            && tar xvfz kubo*.tar.gz \
            && mv kubo/ipfs /usr/local/bin/ipfs \
            && rm -rf kubo* \
