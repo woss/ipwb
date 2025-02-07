@@ -41,7 +41,7 @@ $ pip install ./
 
 ## Setup
 
-The InterPlanetary File System (ipfs) daemon must be installed and running before starting ipwb. See the [Install IPFS](https://ipfs.io/docs/install/) page to accomplish this. In the future, we hope to make this more automated. Once ipfs is installed, start the daemon:
+The InterPlanetary File System (IPFS) daemon (named "kubo", previously "go-ipfs") must be installed and running before starting ipwb. [Download kubo](https://dist.ipfs.tech/#kubo) and [take your node online](https://docs.ipfs.tech/how-to/command-line-quick-start/#take-your-node-online) to start the IPFS daemon. Once installed, this can be done using the command:
 
 ```
 $ ipfs daemon
