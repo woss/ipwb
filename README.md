@@ -216,7 +216,7 @@ There are numerous publications related to this project, but the most significan
   PAGES     = {411--416},
   MONTH     = {June},
   YEAR      = {2016},
-  ADDRESS   = {Hamburg, Germany},
+  ADDRESS   = {Hannover, Germany},
   DOI       = {10.1007/978-3-319-43997-6_35}
 }
 ```
